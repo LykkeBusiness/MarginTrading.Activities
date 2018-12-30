@@ -1,0 +1,54 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <AssemblyName>MarginTrading.Activities.Broker</AssemblyName>
+    <OutputType>Exe</OutputType>
+    <PackageId>MarginTrading.Activities.Broker</PackageId>
+    <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
+    <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
+    <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
+    <Version>1.0.1</Version>
+    <LangVersion>7.3</LangVersion>
+  </PropertyGroup>
+  <PropertyGroup>
+    <NoWarn>1701;1702;1705;CA2007;0612;0618;1591</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Update="Dockerfile">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </None>
+  </ItemGroup>
+  <Target Name="CopySerilogConfig" AfterTargets="AfterBuild">
+    <Copy SourceFiles="appsettings.Serilog.json" DestinationFolder="$(OutDir)" />
+  </Target>
+  <Target Name="CopySerilogConfigOnPublish" AfterTargets="Publish">
+    <Copy SourceFiles="appsettings.Serilog.json" DestinationFolder="$(PublishDir)" />
+  </Target>
+  <ItemGroup>
+    <PackageReference Include="Lykke.Logs" Version="4.3.4" />
+    <PackageReference Include="Lykke.RabbitMqBroker" Version="7.0.1" />
+    <PackageReference Include="Lykke.SettingsReader" Version="2.4.0" />
+    <PackageReference Include="Lykke.SlackNotification.AzureQueue" Version="2.0.4" />
+    <PackageReference Include="Lykke.MarginTrading.BrokerBase" Version="1.2.3" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.1.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="2.1.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="2.1.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.1.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="2.1.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.1.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="2.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="2.1.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="2.1.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="2.1.0" />
+    <PackageReference Include="Microsoft.Extensions.PlatformAbstractions" Version="1.1.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Hosting" Version="2.1.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Server.Kestrel" Version="2.1.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\MarginTrading.Activities.Contracts\MarginTrading.Activities.Contracts.csproj" />
+    <ProjectReference Include="..\MarginTrading.Activities.Core\MarginTrading.Activities.Core.csproj" />
+    <ProjectReference Include="..\MarginTrading.Activities.Services\MarginTrading.Activities.Services.csproj" />
+    <ProjectReference Include="..\MarginTrading.Activities.SqlRepositories\MarginTrading.Activities.SqlRepositories.csproj" />
+  </ItemGroup>
+</Project>
