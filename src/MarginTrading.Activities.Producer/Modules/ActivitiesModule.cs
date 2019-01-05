@@ -5,9 +5,7 @@ using Lykke.Common;
 using Lykke.Common.Chaos;
 using Lykke.SettingsReader;
 using MarginTrading.Activities.Core.Repositories;
-using MarginTrading.Activities.Core.Services;
 using MarginTrading.Activities.Core.Settings;
-using MarginTrading.Activities.Services;
 using MarginTrading.Activities.SqlRepositories;
 using Microsoft.Extensions.Internal;
 
@@ -39,7 +37,6 @@ namespace MarginTrading.Activities.Producer.Modules
             
             builder.RegisterChaosKitty(_settings.CurrentValue.Activities.ChaosKitty);
 
-            RegisterServices(builder);
             RegisterRepositories(builder);
         }
 
@@ -56,14 +53,6 @@ namespace MarginTrading.Activities.Producer.Modules
                         _settings.CurrentValue.Activities.Db.DataConnString, _log))
                     .As<IActivitiesRepository>();
             }
-        }
-
-        private void RegisterServices(ContainerBuilder builder)
-        {
-            
-            builder.RegisterType<ConvertService>()
-                .As<IConvertService>()
-                .SingleInstance();
         }
     }
 }

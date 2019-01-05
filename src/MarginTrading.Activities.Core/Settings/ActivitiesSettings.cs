@@ -14,5 +14,7 @@ namespace MarginTrading.Activities.Core.Settings
         
         [Optional]
         public bool UseSerilog { get; set; }
+        
+        public CqrsSettings Cqrs { get; set; }
     }
 }
