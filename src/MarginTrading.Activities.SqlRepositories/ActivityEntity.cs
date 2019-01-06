@@ -17,5 +17,20 @@ namespace MarginTrading.Activities.SqlRepositories
         public ActivityType Event { get; set; }
         public string[] DescriptionAttributes { get; set; }
         public List<string> Ids { get; set; }
+
+        public static ActivityEntity Create(IActivity activity)
+        {
+            return new ActivityEntity
+            {
+                Id = activity.Id,
+                AccountId = activity.AccountId,
+                Instrument = activity.Instrument,
+                Timestamp = activity.Timestamp,
+                Category = activity.Category,
+                Event = activity.Event,
+                DescriptionAttributes = activity.DescriptionAttributes,
+                Ids = activity.Ids
+            };
+        }
     }
 }

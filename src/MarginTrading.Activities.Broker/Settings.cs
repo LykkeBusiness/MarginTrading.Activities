@@ -21,6 +21,6 @@ namespace MarginTrading.Activities.Broker
     [UsedImplicitly]
     public class RabbitMqQueues
     {
-        public RabbitMqQueueSettings ExecutionOrderBooks { get; set; }
+        public RabbitMqQueueSettings Activities { get; set; }
     }
 }

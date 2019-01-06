@@ -33,7 +33,7 @@ namespace MarginTrading.Activities.Broker
         }
 
         protected override BrokerSettingsBase Settings => _settings;
-        protected override string ExchangeName => _settings.RabbitMqQueues.ExecutionOrderBooks.ExchangeName;
+        protected override string ExchangeName => _settings.RabbitMqQueues.Activities.ExchangeName;
         protected override string RoutingKey => "ActivityContract";
         
         protected override Task HandleMessage(ActivityContract contract)

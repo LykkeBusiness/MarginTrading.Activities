@@ -38,9 +38,6 @@ INDEX IX_{0}_Base (AccountId, Instrument, Timestamp, Category, Event)
 
         private static readonly string GetFields = string.Join(",", Properties.Select(x => "@" + x.Name));
 
-        private static readonly string GetUpdateClause = string.Join(",",
-            Properties.Select(x => "[" + x.Name + "]=@" + x.Name));
-
         public ActivitiesRepository(string connectionString, ILog log)
         {
             _connectionString = connectionString;
@@ -57,29 +54,27 @@ INDEX IX_{0}_Base (AccountId, Instrument, Timestamp, Category, Event)
             }
         }
 
-        public async Task AddAsync(IActivity orderBook)
+        public async Task AddAsync(IActivity activity)
         {
-//            using (var conn = new SqlConnection(_connectionString))
-//            {
-//                try
-//                {
-//                    var entity = OrderExecutionOrderBookEntity.Create(orderBook);
-//                    var sql = $"insert into {TableName} ({GetColumns}) values ({GetFields})";
-//                    await conn.ExecuteAsync(sql, entity);
-//                }
-//                catch (Exception ex)
-//                {
-//                    var msg = $"Error {ex.Message} \n" +
-//                              $"Entity <{nameof(OrderExecutionOrderBookEntity)}>: \n" +
-//                              orderBook.ToJson();
-//                    
-//                    _log?.WriteWarning(nameof(ActivitiesRepository), nameof(AddAsync), msg);
-//                    
-//                    throw new Exception(msg);
-//                }
-//            }
+            using (var conn = new SqlConnection(_connectionString))
+            {
+                try
+                {
+                    var entity = ActivityEntity.Create(activity);
+                    var sql = $"insert into {TableName} ({GetColumns}) values ({GetFields})";
+                    await conn.ExecuteAsync(sql, entity);
+                }
+                catch (Exception ex)
+                {
+                    var msg = $"Error {ex.Message} \n" +
+                              $"Entity <{nameof(ActivityEntity)}>: \n" +
+                              activity.ToJson();
+                    
+                    _log?.WriteWarning(nameof(ActivitiesRepository), nameof(AddAsync), msg);
+                    
+                    throw new Exception(msg);
+                }
+            }
         }
-
-        
     }
 }
