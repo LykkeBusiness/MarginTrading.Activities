@@ -5,6 +5,6 @@ namespace MarginTrading.Activities.Core.Settings
     [UsedImplicitly]
     public class AppSettings
     {
-        public ActivitiesSettings Activities { get; set; }
+        public ActivitiesSettings ActivitiesProducer { get; set; }
     }
 }

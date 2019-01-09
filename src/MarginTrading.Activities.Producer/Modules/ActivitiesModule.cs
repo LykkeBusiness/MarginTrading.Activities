@@ -24,9 +24,9 @@ namespace MarginTrading.Activities.Producer.Modules
 
         protected override void Load(ContainerBuilder builder)
         {
-            builder.RegisterInstance(_settings.Nested(s => s.Activities)).SingleInstance();
-            builder.RegisterInstance(_settings.CurrentValue.Activities).SingleInstance();
-            builder.RegisterInstance(_settings.CurrentValue.Activities.Db).SingleInstance();
+            builder.RegisterInstance(_settings.Nested(s => s.ActivitiesProducer)).SingleInstance();
+            builder.RegisterInstance(_settings.CurrentValue.ActivitiesProducer).SingleInstance();
+            builder.RegisterInstance(_settings.CurrentValue.ActivitiesProducer.Db).SingleInstance();
             
             builder.RegisterInstance(_log).As<ILog>().SingleInstance();
             builder.RegisterType<SystemClock>().As<ISystemClock>().SingleInstance();
@@ -35,24 +35,7 @@ namespace MarginTrading.Activities.Producer.Modules
                 .As<IThreadSwitcher>()
                 .SingleInstance();
             
-            builder.RegisterChaosKitty(_settings.CurrentValue.Activities.ChaosKitty);
-
-            RegisterRepositories(builder);
-        }
-
-        private void RegisterRepositories(ContainerBuilder builder)
-        {
-            if (_settings.CurrentValue.Activities.Db.StorageMode == StorageMode.Azure)
-            {
-                throw new NotImplementedException("Azure repos are not implemented");
-                //todo implement azure repos before using
-            }
-            else if (_settings.CurrentValue.Activities.Db.StorageMode == StorageMode.SqlServer)
-            {
-                builder.RegisterInstance(new ActivitiesRepository(
-                        _settings.CurrentValue.Activities.Db.DataConnString, _log))
-                    .As<IActivitiesRepository>();
-            }
+            builder.RegisterChaosKitty(_settings.CurrentValue.ActivitiesProducer.ChaosKitty);
         }
     }
 }

@@ -13,7 +13,7 @@ using MarginTrading.Activities.Core.Repositories;
 
 namespace MarginTrading.Activities.Broker
 {
-    public class Application : BrokerApplicationBase<ActivityContract>
+    public class Application : BrokerApplicationBase<NewActivityEvent>
     {
         private readonly IActivitiesRepository _activitiesRepository;
         private readonly ILog _log;
@@ -34,12 +34,14 @@ namespace MarginTrading.Activities.Broker
 
         protected override BrokerSettingsBase Settings => _settings;
         protected override string ExchangeName => _settings.RabbitMqQueues.Activities.ExchangeName;
-        protected override string RoutingKey => "ActivityContract";
+        protected override string RoutingKey => "NewActivityEvent";
         
-        protected override Task HandleMessage(ActivityContract contract)
+        protected override Task HandleMessage(NewActivityEvent e)
         {
-            var activity = new Activity(contract.Id, contract.AccountId, contract.Instrument, contract.Timestamp,
-                contract.Event.ToType<ActivityType>(), contract.DescriptionAttributes, contract.Ids);
+            var contract = e.Activity;
+            
+            var activity = new Activity(contract.Id, contract.AccountId, contract.Instrument, contract.EventSourceId,
+                contract.Timestamp, contract.Event.ToType<ActivityType>(), contract.DescriptionAttributes, contract.RelatedIds);
 
             return Task.Run(async () =>
             {

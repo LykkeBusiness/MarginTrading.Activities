@@ -21,12 +21,13 @@ namespace MarginTrading.Activities.SqlRepositories
 [Id] [nvarchar](64) NOT NULL,
 [AccountId] [nvarchar](64) NOT NULL,
 [Instrument] [nvarchar](64) NOT NULL,
+[EventSourceId] [nvarchar](64) NOT NULL,
 [Timestamp] [datetime] NOT NULL,
 [Category] [nvarchar](64) NOT NULL,
 [Event] [nvarchar](64) NOT NULL,
 [DescriptionAttributes] [nvarchar](MAX) NOT NULL,
-[Ids] [nvarchar](MAX) NOT NULL,
-INDEX IX_{0}_Base (AccountId, Instrument, Timestamp, Category, Event)
+[RelatedIds] [nvarchar](MAX) NOT NULL,
+INDEX IX_{0}_Base (AccountId, Instrument, EventSourceId, Timestamp, Category, Event)
 );";
         
         private readonly string _connectionString;

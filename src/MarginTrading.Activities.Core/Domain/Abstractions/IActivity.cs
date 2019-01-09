@@ -10,6 +10,8 @@ namespace MarginTrading.Activities.Core.Domain.Abstractions
         string AccountId { get; }
 
         string Instrument { get; }
+        
+        string EventSourceId { get; }
 
         DateTime Timestamp { get; }
 
@@ -19,6 +21,6 @@ namespace MarginTrading.Activities.Core.Domain.Abstractions
 
         string[] DescriptionAttributes { get; }
 
-        List<string> Ids { get; }
+        string[] RelatedIds { get; }
     }
 }

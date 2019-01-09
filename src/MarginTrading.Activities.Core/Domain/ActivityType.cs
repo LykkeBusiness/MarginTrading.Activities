@@ -2,6 +2,8 @@ namespace MarginTrading.Activities.Core.Domain
 {
     public enum ActivityType
     {
+        None = 0,
+        
         //Order
         OrderAcceptance = 1010,
         OrderActivation = 1020,

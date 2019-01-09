@@ -1,4 +1,3 @@
-using System;
 using JetBrains.Annotations;
 using Lykke.SettingsReader.Attributes;
 
@@ -8,8 +7,6 @@ namespace MarginTrading.Activities.Core.Settings
     {
         [AmqpCheck]
         public string ConnectionString { get; set; }
-
-        public TimeSpan RetryDelay { get; set; }
 
         [Optional, CanBeNull]
         public string EnvironmentName { get; set; }

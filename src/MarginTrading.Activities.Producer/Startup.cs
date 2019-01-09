@@ -6,6 +6,7 @@ using Common.Log;
 using JetBrains.Annotations;
 using Lykke.Common.ApiLibrary.Middleware;
 using Lykke.Common.ApiLibrary.Swagger;
+using Lykke.Cqrs;
 using Lykke.Logs;
 using Lykke.Logs.MsSql;
 using Lykke.Logs.MsSql.Repositories;
@@ -15,6 +16,7 @@ using MarginTrading.Activities.Core.Settings;
 using MarginTrading.Activities.Producer.Infrastructure;
 using MarginTrading.Activities.Producer.Modules;
 using MarginTrading.Activities.Services;
+using MarginTrading.Activities.Services.Modules;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -67,6 +69,8 @@ namespace MarginTrading.Activities.Producer
                 Log = CreateLog(Configuration, services, appSettings);
 
                 builder.RegisterModule(new ActivitiesModule(appSettings, Log));
+                builder.RegisterModule(new CqrsModule(appSettings.CurrentValue.ActivitiesProducer.Cqrs, Log));
+                builder.RegisterModule(new ServicesModule(appSettings.CurrentValue.ActivitiesProducer, Log));
 
                 builder.Populate(services);
 
@@ -120,6 +124,7 @@ namespace MarginTrading.Activities.Producer
             try
             {   
                 Log?.WriteMonitorAsync("", "", "Started").Wait();
+                ApplicationContainer.Resolve<ICqrsEngine>().StartAll();
             }
             catch (Exception ex)
             {
@@ -182,18 +187,18 @@ namespace MarginTrading.Activities.Producer
 
             aggregateLogger.AddLog(consoleLogger);
 
-            if (settings.CurrentValue.Activities.UseSerilog)
+            if (settings.CurrentValue.ActivitiesProducer.UseSerilog)
             {
                 aggregateLogger.AddLog(new SerilogLogger(typeof(Startup).Assembly, configuration));
             }
-            else if (settings.CurrentValue.Activities.Db.StorageMode == StorageMode.SqlServer)
+            else if (settings.CurrentValue.ActivitiesProducer.Db.StorageMode == StorageMode.SqlServer)
             {
                 aggregateLogger.AddLog(new LogToSql(new SqlLogRepository(logName,
-                    settings.CurrentValue.Activities.Db.LogsConnString)));
+                    settings.CurrentValue.ActivitiesProducer.Db.LogsConnString)));
             }
-            else if (settings.CurrentValue.Activities.Db.StorageMode == StorageMode.Azure)
+            else if (settings.CurrentValue.ActivitiesProducer.Db.StorageMode == StorageMode.Azure)
             {
-                aggregateLogger.AddLog(services.UseLogToAzureStorage(settings.Nested(s => s.Activities.Db.LogsConnString),
+                aggregateLogger.AddLog(services.UseLogToAzureStorage(settings.Nested(s => s.ActivitiesProducer.Db.LogsConnString),
                     null, logName, consoleLogger));
             }
 

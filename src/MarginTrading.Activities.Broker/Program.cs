@@ -8,7 +8,7 @@ namespace MarginTrading.Activities.Broker
     {
         public static void Main(string[] args)
         {
-            RunOnPort(5081);
+            RunOnPort(5082);
         }
     }
 }

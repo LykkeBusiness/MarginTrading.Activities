@@ -8,6 +8,5 @@ namespace MarginTrading.Activities.Core.Settings
     {
         public StorageMode StorageMode { get; set; }
         public string LogsConnString { get; set; }
-        public string DataConnString { get; set; }
     }
 }

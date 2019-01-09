@@ -2,6 +2,8 @@ namespace Lykke.MarginTrading.Activities.Contracts.Models
 {
     public enum ActivityTypeContract
     {
+        None = 0,
+        
         //Order
         OrderAcceptance = 1010,
         OrderActivation = 1020,

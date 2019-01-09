@@ -2,6 +2,7 @@ namespace MarginTrading.Activities.Core.Domain
 {
     public enum ActivityCategory
     {
+        None = 0,
         Order = 1,
         Position = 2,
         Adjustment = 3,

@@ -6,7 +6,8 @@ namespace MarginTrading.Activities.Core.Domain
 {
     public class Activity : IActivity
     {
-        public Activity(string id, string accountId, string instrument, DateTime timestamp, ActivityType @event, string[] descriptionAttributes, List<string> ids)
+        public Activity(string id, string accountId, string instrument, string eventSourceId,
+            DateTime timestamp, ActivityType @event, string[] descriptionAttributes, string[] relatedIds)
         {
             Id = id;
             AccountId = accountId;
@@ -14,17 +15,19 @@ namespace MarginTrading.Activities.Core.Domain
             Timestamp = timestamp;
             Event = @event;
             DescriptionAttributes = descriptionAttributes;
-            Ids = ids;
+            RelatedIds = relatedIds;
+            EventSourceId = eventSourceId;
         }
 
         public string Id { get; }
         public string AccountId { get; }
         public string Instrument { get; }
+        public string EventSourceId { get; }
         public DateTime Timestamp { get; }
         
         public ActivityCategory Category => (ActivityCategory) ((int)Event / 1000);
         public ActivityType Event { get; }
         public string[] DescriptionAttributes { get; }
-        public List<string> Ids { get; }
+        public string[] RelatedIds { get; }
     }
 }
