@@ -11,6 +11,7 @@ using Lykke.Logs;
 using Lykke.Logs.MsSql;
 using Lykke.Logs.MsSql.Repositories;
 using Lykke.Logs.Serilog;
+using Lykke.MarginTrading.Activities.Contracts.Api;
 using Lykke.SettingsReader;
 using MarginTrading.Activities.Core.Settings;
 using MarginTrading.Activities.Producer.Infrastructure;
@@ -101,7 +102,8 @@ namespace MarginTrading.Activities.Producer
 #if DEBUG
                 app.UseLykkeMiddleware(ServiceName, ex => ex.ToString());
 #else
-                app.UseLykkeMiddleware(ServiceName, ex => new ErrorResponse {ErrorMessage = "Technical problem", Details = ex.Message});
+                app.UseLykkeMiddleware(ServiceName,
+                    ex => new ErrorResponse {ErrorMessage = "Technical problem", Details = ex.Message});
 #endif
                 
                 app.UseMvc();
