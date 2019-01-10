@@ -14,6 +14,7 @@ using MarginTrading.AccountsManagement.Contracts.Events;
 using MarginTrading.Activities.Core.Settings;
 using MarginTrading.Activities.Services.Abstractions;
 using MarginTrading.Activities.Services.Projections;
+using MarginTrading.SettingsService.Contracts.AssetPair;
 
 namespace MarginTrading.Activities.Services.Modules
 {
@@ -80,6 +81,7 @@ namespace MarginTrading.Activities.Services.Modules
             var contextRegistration = Register.BoundedContext(_settings.ContextNames.Activities);
 
             RegisterAccountsProjection(contextRegistration);
+            RegisterAssetPairsProjection(contextRegistration);
             
             contextRegistration.PublishingEvents(typeof(NewActivityEvent)).With(EventsRoute);
 
@@ -94,6 +96,17 @@ namespace MarginTrading.Activities.Services.Modules
                 .From(_settings.ContextNames.AccountsManagement).On(EventsRoute)
                 .WithProjection(
                     typeof(AccountsProjection), _settings.ContextNames.AccountsManagement);
+        }
+        
+        private void RegisterAssetPairsProjection(
+            IBoundedContextRegistration contextRegistration)
+        {
+            contextRegistration.ListeningEvents(
+                    typeof(AssetPairChangedEvent))
+                .From(_settings.ContextNames.SettingsService)
+                .On(EventsRoute)
+                .WithProjection(
+                    typeof(AssetPairProjection), _settings.ContextNames.SettingsService);
         }
     }
 }

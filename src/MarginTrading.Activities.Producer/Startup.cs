@@ -70,7 +70,7 @@ namespace MarginTrading.Activities.Producer
 
                 builder.RegisterModule(new ActivitiesModule(appSettings, Log));
                 builder.RegisterModule(new CqrsModule(appSettings.CurrentValue.ActivitiesProducer.Cqrs, Log));
-                builder.RegisterModule(new ServicesModule(appSettings.CurrentValue.ActivitiesProducer, Log));
+                builder.RegisterModule(new ServicesModule(appSettings.CurrentValue.ActivitiesProducer));
 
                 builder.Populate(services);
 
