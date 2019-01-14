@@ -6,8 +6,6 @@ namespace MarginTrading.Activities.Core.Settings
     {
         [Optional] public string AccountsManagement { get; set; } = nameof(AccountsManagement);
 
-        [Optional] public string TradingEngine { get; set; } = nameof(TradingEngine);
-        
         [Optional] public string SettingsService { get; set; } = nameof(SettingsService);
 
         [Optional] public string Activities { get; set; } = nameof(Activities);

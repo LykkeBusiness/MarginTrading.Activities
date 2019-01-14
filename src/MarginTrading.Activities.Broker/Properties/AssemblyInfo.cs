@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 // associated with an assembly.
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Lykke")]
-[assembly: AssemblyProduct("MarginTrading.ExecutionOrderBookBroker")]
+[assembly: AssemblyProduct("MarginTrading.Activities.Broker")]
 [assembly: AssemblyTrademark("")]
 
 // Setting ComVisible to false makes the types in this assembly not visible

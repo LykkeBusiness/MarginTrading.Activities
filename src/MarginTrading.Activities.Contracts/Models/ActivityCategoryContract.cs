@@ -1,5 +1,9 @@
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+
 namespace Lykke.MarginTrading.Activities.Contracts.Models
 {
+    [JsonConverter(typeof(StringEnumConverter))]
     public enum ActivityCategoryContract
     {
         None = 0,

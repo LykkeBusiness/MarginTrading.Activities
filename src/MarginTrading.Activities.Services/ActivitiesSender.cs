@@ -35,7 +35,7 @@ namespace MarginTrading.Activities.Services
         {
             try
             {
-                var e = new NewActivityEvent
+                var e = new ActivityEvent
                 {
                     Id = _identityGenerator.GenerateId(),
                     Timestamp = _dateService.Now(),

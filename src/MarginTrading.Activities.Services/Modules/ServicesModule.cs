@@ -13,9 +13,9 @@ namespace MarginTrading.Activities.Services.Modules
 {
     public class ServicesModule : Module
     {
-        private readonly ActivitiesSettings _settings;
+        private readonly AppSettings _settings;
 
-        public ServicesModule(ActivitiesSettings settings)
+        public ServicesModule(AppSettings settings)
         {
             _settings = settings;
         }
@@ -56,9 +56,9 @@ namespace MarginTrading.Activities.Services.Modules
             //External
             
             var settingsClientGenerator = HttpClientGenerator
-                .BuildForUrl(_settings.SettingsServiceClient.ServiceUrl)
+                .BuildForUrl(_settings.MarginTradingSettingsServiceClient.ServiceUrl)
                 .WithServiceName<LykkeErrorResponse>(
-                    $"MT Settings [{_settings.SettingsServiceClient.ServiceUrl}]")
+                    $"MT Settings [{_settings.MarginTradingSettingsServiceClient.ServiceUrl}]")
                 .WithRetriesStrategy(new LinearRetryStrategy(TimeSpan.FromMilliseconds(30), 3))
                 .Create();
 

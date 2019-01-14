@@ -4,7 +4,6 @@ using MessagePack;
 
 namespace Lykke.MarginTrading.Activities.Contracts.Models
 {
-    [UsedImplicitly]
     [MessagePackObject]
     public class ActivityContract
     {
