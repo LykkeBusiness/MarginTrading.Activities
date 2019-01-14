@@ -4,7 +4,7 @@ using MessagePack;
 namespace Lykke.MarginTrading.Activities.Contracts.Models
 {
     [MessagePackObject]
-    public class NewActivityEvent
+    public class ActivityEvent
     {
         [Key(0)]
         public string Id { get; set; }

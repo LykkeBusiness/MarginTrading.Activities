@@ -6,5 +6,7 @@ namespace MarginTrading.Activities.Core.Settings
     public class AppSettings
     {
         public ActivitiesSettings ActivitiesProducer { get; set; }
+        
+        public ServiceClientSettings MarginTradingSettingsServiceClient { get; set; }
     }
 }

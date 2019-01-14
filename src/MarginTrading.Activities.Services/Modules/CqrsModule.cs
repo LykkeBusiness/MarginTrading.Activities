@@ -83,7 +83,7 @@ namespace MarginTrading.Activities.Services.Modules
             RegisterAccountsProjection(contextRegistration);
             RegisterAssetPairsProjection(contextRegistration);
             
-            contextRegistration.PublishingEvents(typeof(NewActivityEvent)).With(EventsRoute);
+            contextRegistration.PublishingEvents(typeof(ActivityEvent)).With(EventsRoute);
 
             return contextRegistration;
         }

@@ -29,7 +29,6 @@ namespace MarginTrading.Activities.Producer.Modules
             builder.RegisterInstance(_settings.CurrentValue.ActivitiesProducer.Db).SingleInstance();
             
             builder.RegisterInstance(_log).As<ILog>().SingleInstance();
-            builder.RegisterType<SystemClock>().As<ISystemClock>().SingleInstance();
             
             builder.RegisterType<ThreadSwitcherToNewTask>()
                 .As<IThreadSwitcher>()
