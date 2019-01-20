@@ -1,10 +1,10 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using Common;
 using JetBrains.Annotations;
-using Lykke.Cqrs;
 using MarginTrading.AccountsManagement.Contracts.Events;
 using MarginTrading.AccountsManagement.Contracts.Models;
 using MarginTrading.Activities.Core.Domain;
-using MarginTrading.Activities.Core.Settings;
 using MarginTrading.Activities.Services.Abstractions;
 
 namespace MarginTrading.Activities.Services.Projections
@@ -24,38 +24,62 @@ namespace MarginTrading.Activities.Services.Projections
         [UsedImplicitly]
         public Task Handle(AccountChangedEvent e)
         {
-            var activityType = GetActivityType(e);
+            var activityTypes = GetActivityTypes(e);
 
-            if (activityType == null)
-                return Task.CompletedTask;
+            foreach (var activityType in activityTypes)
+            {
+                var activity = new Activity(
+                    _identityGenerator.GenerateId(),
+                    e.Account.Id,
+                    string.Empty,
+                    e.Account.Id,
+                    e.ChangeTimestamp,
+                    activityType,
+                    new string[0],
+                    new string[0]);
 
-            var activity = new Activity(
-                _identityGenerator.GenerateId(),
-                e.Account.Id,
-                string.Empty,
-                e.Account.Id,
-                e.ChangeTimestamp,
-                activityType.Value,
-                new string[0],
-                new string[0]);
-
-            _cqrsSender.PublishActivity(activity);
+                _cqrsSender.PublishActivity(activity);
+            }
             
             return Task.CompletedTask;
         }
 
-        private ActivityType? GetActivityType(AccountChangedEvent e)
+        private List<ActivityType> GetActivityTypes(AccountChangedEvent e)
         {
+            var activities = new List<ActivityType>();
+            
             switch (e.EventType)
             {
                 case AccountChangedEventTypeContract.Created:
-                    return ActivityType.AccountCreation;
+                    activities.Add(ActivityType.AccountCreation);
+                    break;
                 
                 case AccountChangedEventTypeContract.Updated:
-                    //todo: identify update type from activity info (to be added to event)
-                default:
-                    return null;
-            } 
+
+                    var currentAccountState = e.Account;
+                    var previousAccountState = e.ActivitiesMetadata.DeserializeJson<AccountChangeMetadata>()
+                        .PreviousAccountSnapshot;
+
+                    if (currentAccountState == null || previousAccountState == null)
+                        break;
+                    
+                    if(!previousAccountState.IsDisabled && currentAccountState.IsDisabled)
+                        activities.Add(ActivityType.AccountTradingDisabled);
+                    
+                    if(previousAccountState.IsDisabled && !currentAccountState.IsDisabled)
+                        activities.Add(ActivityType.AccountTradingEnabled);
+                    
+                    if(!previousAccountState.IsWithdrawalDisabled && currentAccountState.IsWithdrawalDisabled)
+                        activities.Add(ActivityType.AccountWithdrawalDisabled);
+                    
+                    if(previousAccountState.IsWithdrawalDisabled && !currentAccountState.IsWithdrawalDisabled)
+                        activities.Add(ActivityType.AccountWithdrawalEnabled);
+                    
+                    break;
+                
+            }
+
+            return activities;
         }
     }
 }
