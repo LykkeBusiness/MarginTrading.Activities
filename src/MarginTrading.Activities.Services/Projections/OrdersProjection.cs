@@ -11,6 +11,7 @@ using MarginTrading.Backend.Contracts.Activities;
 using MarginTrading.Backend.Contracts.Events;
 using MarginTrading.Backend.Contracts.Orders;
 using MarginTrading.Backend.Contracts.TradeMonitoring;
+using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using OrderStatusContract = MarginTrading.Backend.Contracts.Orders.OrderStatusContract;
 
@@ -200,11 +201,15 @@ namespace MarginTrading.Activities.Services.Projections
             }
             else
             {
-                result.AddRange(new[]
+
+                if (order.Status != OrderStatusContract.Rejected)
                 {
-                    order.ExpectedOpenPrice.ToUiString(assetPair?.Accuracy),
-                    assetPair?.QuoteAssetId
-                });
+                    result.AddRange(new[]
+                    {
+                        order.ExpectedOpenPrice.ToUiString(assetPair?.Accuracy),
+                        assetPair?.QuoteAssetId
+                    });
+                }
 
                 if (order.Status == OrderStatusContract.Executed)
                 {
@@ -221,6 +226,9 @@ namespace MarginTrading.Activities.Services.Projections
         
         private void HandleCancellationAndAdjustment(OrderHistoryEvent historyEvent, OrderContract order)
         {
+            if (string.IsNullOrEmpty(order.AdditionalInfo))
+                return;
+            
             var additionalAttributes = JsonConvert.DeserializeAnonymousType(
                 order.AdditionalInfo,
                 new
