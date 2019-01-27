@@ -13,6 +13,10 @@ namespace Lykke.MarginTrading.Activities.Contracts.Models
         OrderActivation = 1020,
         OrderAcceptanceAndActivation = 1030,
         OrderModification = 1040,
+        OrderModificationPrice = 1041,
+        OrderModificationVolume = 1042,
+        OrderModificationRelatedOrderRemoved = 1043,
+        OrderModificationValidity = 1044,
         OrderRejection = 1050,
         OrderRejectionBecauseShortDisabled = 1051,
         OrderRejectionBecauseMaxPositionLimit = 1052,
@@ -25,7 +29,7 @@ namespace Lykke.MarginTrading.Activities.Contracts.Models
         OrderCancellationBecauseConnectedOrderExecuted = 1073,
         OrderCancellationBecauseCorporateAction = 1074,
         OrderCancellationBecauseInstrumentInNotValid = 1075,
-        OrderCancellationBecauseAccountInNotValid = 1076,
+        OrderCancellationBecauseAccountIsNotValid = 1076,
         OrderAcceptanceAndExecution = 1080,
         OrderExecution = 1090,
      
@@ -47,11 +51,13 @@ namespace Lykke.MarginTrading.Activities.Contracts.Models
         
         //Account
         AccountCreation = 5010, 
-        AccountActivation = 5020,
-        AccountInactivation = 5030,
-        AccountReactivation = 5040,
-        AccountClosing = 5050,
-        AccountReopening = 5060,
+        AccountActivation = 5020, //???
+        AccountTradingDisabled = 5030,
+        AccountTradingEnabled = 5040,
+        AccountWithdrawalDisabled = 5050,
+        AccountWithdrawalEnabled = 5060,
+        AccountClosing = 5070,
+        AccountReopening = 5080,
         
         //Session
         SessionLogIn = 6010,
