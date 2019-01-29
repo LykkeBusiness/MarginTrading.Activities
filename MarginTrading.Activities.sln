@@ -1,0 +1,76 @@
+﻿Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution items", "Solution items", "{6CA74DE0-A357-4934-9D8B-FEA3F0A2D690}"
+	ProjectSection(SolutionItems) = preProject
+		.gitignore = .gitignore
+		README.md = README.md
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MarginTrading.Activities.Producer", "src\MarginTrading.Activities.Producer\MarginTrading.Activities.Producer.csproj", "{CCA3EBE8-B7B6-4635-BF84-EEB3E789962C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MarginTrading.Activities.Contracts", "src\MarginTrading.Activities.Contracts\MarginTrading.Activities.Contracts.csproj", "{3010F320-31E3-46F1-B57B-467B48D2B363}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MarginTrading.Activities.Tests", "tests\MarginTrading.Activities.Tests\MarginTrading.Activities.Tests.csproj", "{67B3E67F-91FC-4769-8864-7A7B251CC344}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MarginTrading.Activities.Core", "src\MarginTrading.Activities.Core\MarginTrading.Activities.Core.csproj", "{5C97C0FE-F0F2-42AE-8B0C-D0535153BF9F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "1. Core", "1. Core", "{5E40464C-697B-4A28-8E78-C2B62688484B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "2. Repositories", "2. Repositories", "{043865F3-09C2-4F61-B6FE-553C242681D5}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "3. Services", "3. Services", "{D8AE60E4-2F34-4D91-BCEF-553F27407592}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "4. Hosts", "4. Hosts", "{4B0988D8-CE04-44E6-98BE-0148018142BA}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "5. Tests", "5. Tests", "{026757F1-6500-409F-80B3-00D2B7A92D8B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MarginTrading.Activities.Services", "src\MarginTrading.Activities.Services\MarginTrading.Activities.Services.csproj", "{867D10A3-FFBF-406A-AA4B-D87CFEDCAD57}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MarginTrading.Activities.SqlRepositories", "src\MarginTrading.Activities.SqlRepositories\MarginTrading.Activities.SqlRepositories.csproj", "{7CDEF3CD-A18C-4551-9299-76F0F65C6AC7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MarginTrading.Activities.Broker", "src\MarginTrading.Activities.Broker\MarginTrading.Activities.Broker.csproj", "{AEB5B49E-3846-44EB-9863-BF89A3C3AAF5}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{CCA3EBE8-B7B6-4635-BF84-EEB3E789962C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CCA3EBE8-B7B6-4635-BF84-EEB3E789962C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CCA3EBE8-B7B6-4635-BF84-EEB3E789962C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CCA3EBE8-B7B6-4635-BF84-EEB3E789962C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3010F320-31E3-46F1-B57B-467B48D2B363}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3010F320-31E3-46F1-B57B-467B48D2B363}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3010F320-31E3-46F1-B57B-467B48D2B363}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3010F320-31E3-46F1-B57B-467B48D2B363}.Release|Any CPU.Build.0 = Release|Any CPU
+		{67B3E67F-91FC-4769-8864-7A7B251CC344}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{67B3E67F-91FC-4769-8864-7A7B251CC344}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{67B3E67F-91FC-4769-8864-7A7B251CC344}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{67B3E67F-91FC-4769-8864-7A7B251CC344}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5C97C0FE-F0F2-42AE-8B0C-D0535153BF9F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5C97C0FE-F0F2-42AE-8B0C-D0535153BF9F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5C97C0FE-F0F2-42AE-8B0C-D0535153BF9F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5C97C0FE-F0F2-42AE-8B0C-D0535153BF9F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{867D10A3-FFBF-406A-AA4B-D87CFEDCAD57}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{867D10A3-FFBF-406A-AA4B-D87CFEDCAD57}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{867D10A3-FFBF-406A-AA4B-D87CFEDCAD57}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{867D10A3-FFBF-406A-AA4B-D87CFEDCAD57}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7CDEF3CD-A18C-4551-9299-76F0F65C6AC7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7CDEF3CD-A18C-4551-9299-76F0F65C6AC7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7CDEF3CD-A18C-4551-9299-76F0F65C6AC7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7CDEF3CD-A18C-4551-9299-76F0F65C6AC7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AEB5B49E-3846-44EB-9863-BF89A3C3AAF5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AEB5B49E-3846-44EB-9863-BF89A3C3AAF5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AEB5B49E-3846-44EB-9863-BF89A3C3AAF5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AEB5B49E-3846-44EB-9863-BF89A3C3AAF5}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{5C97C0FE-F0F2-42AE-8B0C-D0535153BF9F} = {5E40464C-697B-4A28-8E78-C2B62688484B}
+		{CCA3EBE8-B7B6-4635-BF84-EEB3E789962C} = {4B0988D8-CE04-44E6-98BE-0148018142BA}
+		{3010F320-31E3-46F1-B57B-467B48D2B363} = {5E40464C-697B-4A28-8E78-C2B62688484B}
+		{67B3E67F-91FC-4769-8864-7A7B251CC344} = {026757F1-6500-409F-80B3-00D2B7A92D8B}
+		{867D10A3-FFBF-406A-AA4B-D87CFEDCAD57} = {D8AE60E4-2F34-4D91-BCEF-553F27407592}
+		{7CDEF3CD-A18C-4551-9299-76F0F65C6AC7} = {043865F3-09C2-4F61-B6FE-553C242681D5}
+		{AEB5B49E-3846-44EB-9863-BF89A3C3AAF5} = {4B0988D8-CE04-44E6-98BE-0148018142BA}
+	EndGlobalSection
+EndGlobal
