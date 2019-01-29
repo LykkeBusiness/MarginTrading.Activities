@@ -7,9 +7,11 @@ using Common.Log;
 using MarginTrading.Activities.Core.Domain;
 using MarginTrading.Activities.Core.Settings;
 using MarginTrading.Activities.Services.Abstractions;
+using MarginTrading.Backend.Contracts.Activities;
 using MarginTrading.Backend.Contracts.Events;
 using MarginTrading.Backend.Contracts.Orders;
 using MarginTrading.Backend.Contracts.TradeMonitoring;
+using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using OrderStatusContract = MarginTrading.Backend.Contracts.Orders.OrderStatusContract;
 
@@ -100,43 +102,23 @@ namespace MarginTrading.Activities.Services.Projections
                     break;
                 
                 case OrderHistoryTypeContract.Change:
-                    
-                    activityType = ActivityType.OrderModification;
+
                     relatedIds = new[] {order.Id};
-                    descriptionAttributes.AddRange(GetCommonDescriptionAttributesForOrder(order));
-                    descriptionAttributes.Add("previous value"); //TODO: get previous value from event
-                    descriptionAttributes.Add(order.ExpectedOpenPrice?.ToString());
                     
+                    descriptionAttributes.AddRange(GetCommonDescriptionAttributesForOrder(order));
+
+                    activityType = MapOrderChangeToActivityType(
+                        order,
+                        historyEvent.ActivitiesMetadata,
+                        descriptionAttributes);
+
                     break;
                 
                 case OrderHistoryTypeContract.Reject:
 
                     relatedIds = new[] {order.Id};
                     descriptionAttributes.AddRange(GetCommonDescriptionAttributesForOrder(order));
-
-                    switch (order.RejectReason)
-                    {
-                        case OrderRejectReasonContract.ShortPositionsDisabled :
-                            activityType = ActivityType.OrderRejectionBecauseShortDisabled;
-                            break;
-                        
-                        //TODO: this also can happen when volume is not valid because of min deal limit.. need clarification?
-                        case OrderRejectReasonContract.InvalidVolume:
-                            activityType = ActivityType.OrderRejectionBecauseMaxPositionLimit;
-                            break;
-                        
-                        case OrderRejectReasonContract.NotEnoughBalance:
-                            activityType = ActivityType.OrderRejectionBecauseNotSufficientCapital;
-                            break;
-                        
-                        case OrderRejectReasonContract.NoLiquidity:
-                            activityType = ActivityType.OrderRejectionBecauseNoLiquidity;
-                            break;
-                        
-                        default:
-                            activityType = ActivityType.OrderRejection;
-                            break;
-                    }
+                    activityType = MapRejectReasonToActivityType(order);
                     
                     break;
                 
@@ -144,8 +126,7 @@ namespace MarginTrading.Activities.Services.Projections
 
                     relatedIds = new[] {order.Id};
                     descriptionAttributes.AddRange(GetCommonDescriptionAttributesForOrder(order));
-                    //TODO: get cancellation reason from event
-                    activityType = ActivityType.OrderCancellation;
+                    activityType = MapOrderCancelToActivityType(historyEvent.ActivitiesMetadata);
                     
                     break;
                 
@@ -220,11 +201,15 @@ namespace MarginTrading.Activities.Services.Projections
             }
             else
             {
-                result.AddRange(new[]
+
+                if (order.Status != OrderStatusContract.Rejected)
                 {
-                    order.ExpectedOpenPrice.ToUiString(assetPair?.Accuracy),
-                    assetPair?.QuoteAssetId
-                });
+                    result.AddRange(new[]
+                    {
+                        order.ExpectedOpenPrice.ToUiString(assetPair?.Accuracy),
+                        assetPair?.QuoteAssetId
+                    });
+                }
 
                 if (order.Status == OrderStatusContract.Executed)
                 {
@@ -241,6 +226,9 @@ namespace MarginTrading.Activities.Services.Projections
         
         private void HandleCancellationAndAdjustment(OrderHistoryEvent historyEvent, OrderContract order)
         {
+            if (string.IsNullOrEmpty(order.AdditionalInfo))
+                return;
+            
             var additionalAttributes = JsonConvert.DeserializeAnonymousType(
                 order.AdditionalInfo,
                 new
@@ -294,6 +282,94 @@ namespace MarginTrading.Activities.Services.Projections
             );
 
             _cqrsSender.PublishActivity(activity);
+        }
+        
+        #endregion
+        
+        
+        #region Mappers
+        
+        private static ActivityType MapRejectReasonToActivityType(OrderContract order)
+        {
+            switch (order.RejectReason)
+            {
+                case OrderRejectReasonContract.ShortPositionsDisabled:
+                    return ActivityType.OrderRejectionBecauseShortDisabled;
+
+                //TODO: this also can happen when volume is not valid because of min deal limit.. need clarification?
+                case OrderRejectReasonContract.InvalidVolume:
+                    return ActivityType.OrderRejectionBecauseMaxPositionLimit;
+
+                case OrderRejectReasonContract.NotEnoughBalance:
+                    return ActivityType.OrderRejectionBecauseNotSufficientCapital;
+
+                case OrderRejectReasonContract.NoLiquidity:
+                    return ActivityType.OrderRejectionBecauseNoLiquidity;
+
+                default:
+                    return ActivityType.OrderRejection;
+            }
+        }
+        
+        private static ActivityType MapOrderChangeToActivityType(OrderContract order, 
+            string metadata, 
+            List<string> descriptionAttributes)
+        {
+            var metadataObject = metadata.DeserializeJson<OrderChangedMetadata>();
+            descriptionAttributes.Add(metadataObject.OldValue);
+
+            switch (metadataObject.UpdatedProperty)
+            {
+                case OrderChangedProperty.Price:
+                    descriptionAttributes.Add(order.ExpectedOpenPrice.ToString());
+                    return ActivityType.OrderModificationPrice;
+
+                case OrderChangedProperty.Volume:
+                    descriptionAttributes.Add(order.Volume.ToString());
+                    return ActivityType.OrderModificationVolume;
+
+                case OrderChangedProperty.Validity:
+                    descriptionAttributes.Add(GetValidity(order.ValidityTime));
+                    return ActivityType.OrderModificationValidity;
+
+                case OrderChangedProperty.RelatedOrderRemoved:
+                    return ActivityType.OrderModificationRelatedOrderRemoved;
+
+                default:
+                    return ActivityType.OrderModification;
+            }
+        }
+
+        private static ActivityType MapOrderCancelToActivityType(string metadata)
+        {
+            var metadataObject = metadata.DeserializeJson<OrderCancelledMetadata>();
+
+            switch (metadataObject.Reason)
+            {
+                case OrderCancellationReason.Expired:
+                    return ActivityType.OrderExpiry;
+                
+                case OrderCancellationReason.CorporateAction:
+                    return ActivityType.OrderCancellationBecauseCorporateAction;
+                
+                case OrderCancellationReason.AccountInactivated:
+                    return ActivityType.OrderCancellationBecauseAccountIsNotValid;
+                
+                case OrderCancellationReason.InstrumentInvalidated:
+                    return ActivityType.OrderCancellationBecauseInstrumentInNotValid;
+                
+                case OrderCancellationReason.BaseOrderCancelled:
+                    return ActivityType.OrderCancellationBecauseBaseOrderCancelled;
+                
+                case OrderCancellationReason.ParentPositionClosed:
+                    return ActivityType.OrderCancellationBecausePositionClosed;
+                
+                case OrderCancellationReason.ConnectedOrderExecuted:
+                    return ActivityType.OrderCancellationBecauseConnectedOrderExecuted;
+                
+                default:
+                    return ActivityType.OrderCancellation;
+            }
         }
         
         #endregion

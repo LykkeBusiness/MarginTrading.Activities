@@ -7,6 +7,7 @@ using Common.Log;
 using MarginTrading.Activities.Core.Domain;
 using MarginTrading.Activities.Core.Settings;
 using MarginTrading.Activities.Services.Abstractions;
+using MarginTrading.Backend.Contracts.Activities;
 using MarginTrading.Backend.Contracts.Events;
 using MarginTrading.Backend.Contracts.Orders;
 using MarginTrading.Backend.Contracts.Positions;
@@ -85,7 +86,10 @@ namespace MarginTrading.Activities.Services.Projections
             {
                 case PositionHistoryTypeContract.Open:
 
-                    activityType = ActivityType.PositionOpening;
+                    var metadata = historyEvent.ActivitiesMetadata.DeserializeJson<PositionOpenMetadata>();
+                    activityType = metadata.ExistingPositionIncreased
+                        ? ActivityType.PositionIncrease
+                        : ActivityType.PositionOpening;
                     relatedIds = new[] {position.OpenTradeId, position.OpenTradeId, position.Id};
                     descriptionAttributes = new[]
                     {
