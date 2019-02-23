@@ -59,46 +59,44 @@ Settings schema for producer:
 
 ```json
 {
+  "ActivitiesProducer": 
   {
-    "ActivitiesProducer": 
+    "UseSerilog": false,
+    "Cqrs": 
     {
-      "UseSerilog": false,
-      "Cqrs": 
+      "ConnectionString": "rabbit mq connection",
+      "EnvironmentName": "dev"
+    },
+    "Db": 
+    {
+      "StorageMode": "SqlServer",
+      "LogsConnString": "sql connection string"
+    },
+    "Consumers": 
+    {
+      "Orders": 
       {
         "ConnectionString": "rabbit mq connection",
-        "EnvironmentName": "dev"
+        "ExchangeName": "lykke.mt.orderhistory",
+        "ConsumerCount": 10
       },
-      "Db": 
+      "Positions": 
       {
-        "StorageMode": "SqlServer",
-        "LogsConnString": "sql connection string"
+        "ConnectionString": "rabbit mq connection",
+        "ExchangeName": "lykke.mt.position.history",
+        "ConsumerCount": 10
       },
-      "Consumers": 
+      "MarginControl": 
       {
-        "Orders": 
-        {
-          "ConnectionString": "rabbit mq connection",
-          "ExchangeName": "lykke.mt.orderhistory",
-          "ConsumerCount": 10
-        },
-        "Positions": 
-        {
-          "ConnectionString": "rabbit mq connection",
-          "ExchangeName": "lykke.mt.position.history",
-          "ConsumerCount": 10
-        },
-        "MarginControl": 
-        {
-          "ConnectionString": "rabbit mq connection",
-          "ExchangeName": "lykke.mt.account.marginevents",
-          "ConsumerCount": 10
-        }
+        "ConnectionString": "rabbit mq connection",
+        "ExchangeName": "lykke.mt.account.marginevents",
+        "ConsumerCount": 10
       }
-    },
-    "MarginTradingSettingsServiceClient": 
-      {
-        "ServiceUrl": "http://mt-settings-service.mt.svc.cluster.local"
-      }
+    }
+  },
+  "MarginTradingSettingsServiceClient": 
+  {
+    "ServiceUrl": "http://mt-settings-service.mt.svc.cluster.local"
   }
 }
 ```
