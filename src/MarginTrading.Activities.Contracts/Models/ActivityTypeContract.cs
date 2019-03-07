@@ -62,7 +62,9 @@ namespace Lykke.MarginTrading.Activities.Contracts.Models
         //Session
         SessionLogIn = 6010,
         SessionSupportLogIn = 6011,
-        SessionTermination = 6020,
+        SessionTimeOutTermination = 6020,
+        SessionDifferentDeviceTermination = 6021,
+        SessionManualTermination = 6022,
         SessionSignOut = 6030,
         SessionSupportSignOut = 6031,
         SessionSwitchedToOnBehalfTrading = 6040,

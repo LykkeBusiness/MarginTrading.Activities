@@ -53,6 +53,10 @@ namespace MarginTrading.Activities.Services.Modules
                 .As<IStartable>()
                 .SingleInstance();
             
+            builder.RegisterType<SessionActivityProjection>()
+                .As<IStartable>()
+                .SingleInstance();
+            
             //External
             
             var settingsClientGenerator = HttpClientGenerator
