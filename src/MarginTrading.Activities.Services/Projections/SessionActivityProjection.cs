@@ -37,7 +37,7 @@ namespace MarginTrading.Activities.Services.Projections
             _rabbitMqSubscriberService.Subscribe(_settings.Consumers.SessionActivity,
                 true,
                 HandleSessionActivityEvent,
-                _rabbitMqSubscriberService.GetJsonDeserializer<SessionActivity>());
+                _rabbitMqSubscriberService.GetMsgPackDeserializer<SessionActivity>());
         }
 
         private Task HandleSessionActivityEvent(SessionActivity sessionEvent)
