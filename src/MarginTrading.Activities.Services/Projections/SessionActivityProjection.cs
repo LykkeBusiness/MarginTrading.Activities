@@ -59,15 +59,15 @@ namespace MarginTrading.Activities.Services.Projections
                     break;
                 case SessionActivityType.TimeOut:
                     activityType = ActivityType.SessionTimeOutTermination;
-                    descriptionAttributes.AddRange(GetDescriptionForTermination(sessionEvent, "Inactivity period expiration"));
+                    descriptionAttributes.AddRange(GetDescriptionForTermination(sessionEvent));
                     break;
                 case SessionActivityType.DifferentDeviceTermination:
                     activityType = ActivityType.SessionDifferentDeviceTermination;
-                    descriptionAttributes.AddRange(GetDescriptionForTermination(sessionEvent, "Log in from a different device"));
+                    descriptionAttributes.AddRange(GetDescriptionForTermination(sessionEvent));
                     break;
                 case SessionActivityType.ManualTermination:
                     activityType = ActivityType.SessionManualTermination;
-                    descriptionAttributes.AddRange(GetDescriptionForTermination(sessionEvent, "Manual termination"));
+                    descriptionAttributes.AddRange(GetDescriptionForTermination(sessionEvent));
                     break;
                 default:
                     return Task.CompletedTask;
@@ -89,11 +89,11 @@ namespace MarginTrading.Activities.Services.Projections
             return Task.CompletedTask;
         }
 
-        private IEnumerable<string> GetDescriptionForTermination(SessionActivity sessionEvent, string reason)
+        private IEnumerable<string> GetDescriptionForTermination(SessionActivity sessionEvent)
         {
             return new []
             {
-                sessionEvent.SessionId.ToString(), sessionEvent.UserName, reason,
+                sessionEvent.SessionId.ToString(), sessionEvent.UserName,
             };
         }
 
