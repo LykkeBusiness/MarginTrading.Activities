@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Autofac;
 using Axle.Contracts;
@@ -43,25 +44,30 @@ namespace MarginTrading.Activities.Services.Projections
         private Task HandleSessionActivityEvent(SessionActivity sessionEvent)
         {
             var activityType = ActivityType.None;
-            var descriptionAttributes = new string[0];
+            var descriptionAttributes = new List<string>();
             var relatedIds = new string[0];
             
             switch (sessionEvent.Type)
             {
                 case SessionActivityType.Login:
                     activityType = ActivityType.SessionLogIn;
+                    descriptionAttributes.AddRange(GetDescriptionForLogInLogOut(sessionEvent));
                     break;
                 case SessionActivityType.SignOut:
                     activityType = ActivityType.SessionSignOut;
+                    descriptionAttributes.AddRange(GetDescriptionForLogInLogOut(sessionEvent));
                     break;
                 case SessionActivityType.TimeOut:
                     activityType = ActivityType.SessionTimeOutTermination;
+                    descriptionAttributes.AddRange(GetDescriptionForTermination(sessionEvent, "Inactivity period expiration"));
                     break;
                 case SessionActivityType.DifferentDeviceTermination:
                     activityType = ActivityType.SessionDifferentDeviceTermination;
+                    descriptionAttributes.AddRange(GetDescriptionForTermination(sessionEvent, "Log in from a different device"));
                     break;
                 case SessionActivityType.ManualTermination:
                     activityType = ActivityType.SessionManualTermination;
+                    descriptionAttributes.AddRange(GetDescriptionForTermination(sessionEvent, "Manual termination"));
                     break;
                 default:
                     return Task.CompletedTask;
@@ -74,13 +80,29 @@ namespace MarginTrading.Activities.Services.Projections
                 sessionEvent.SessionId.ToString(),
                 _dateService.Now(),
                 activityType,
-                descriptionAttributes,
+                descriptionAttributes.ToArray(),
                 relatedIds
             );
 
             _cqrsSender.PublishActivity(activity);
             
             return Task.CompletedTask;
+        }
+
+        private IEnumerable<string> GetDescriptionForTermination(SessionActivity sessionEvent, string reason)
+        {
+            return new []
+            {
+                sessionEvent.SessionId.ToString(), sessionEvent.UserName, reason,
+            };
+        }
+
+        private IEnumerable<string> GetDescriptionForLogInLogOut(SessionActivity sessionEvent)
+        {
+            return new []
+            {
+                sessionEvent.UserName, sessionEvent.AccountId, sessionEvent.SessionId.ToString(),
+            };
         }
     }
 }
