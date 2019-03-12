@@ -18,6 +18,8 @@ namespace MarginTrading.Activities.Core.Domain
         OrderRejectionBecauseMaxPositionLimit = 1052,
         OrderRejectionBecauseNotSufficientCapital = 1053,
         OrderRejectionBecauseNoLiquidity = 1054,
+        OrderRejectionBecauseMinOrderSizeLimit = 1055,
+        OrderRejectionBecauseMaxOrderSizeLimit = 1056,
         OrderExpiry = 1060,
         OrderCancellation = 1070,
         OrderCancellationBecauseBaseOrderCancelled = 1071,

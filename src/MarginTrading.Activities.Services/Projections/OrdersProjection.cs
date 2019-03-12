@@ -293,11 +293,13 @@ namespace MarginTrading.Activities.Services.Projections
         {
             switch (order.RejectReason)
             {
+                case OrderRejectReasonContract.InvalidVolume:
+                    return ActivityType.OrderRejection; //any other
+                
                 case OrderRejectReasonContract.ShortPositionsDisabled:
                     return ActivityType.OrderRejectionBecauseShortDisabled;
-
-                //TODO: this also can happen when volume is not valid because of min deal limit.. need clarification?
-                case OrderRejectReasonContract.InvalidVolume:
+                
+                case OrderRejectReasonContract.MaxPositionLimit:
                     return ActivityType.OrderRejectionBecauseMaxPositionLimit;
 
                 case OrderRejectReasonContract.NotEnoughBalance:
@@ -306,6 +308,12 @@ namespace MarginTrading.Activities.Services.Projections
                 case OrderRejectReasonContract.NoLiquidity:
                     return ActivityType.OrderRejectionBecauseNoLiquidity;
 
+                case OrderRejectReasonContract.MinOrderSizeLimit:
+                    return ActivityType.OrderRejectionBecauseMinOrderSizeLimit;
+
+                case OrderRejectReasonContract.MaxOrderSizeLimit:
+                    return ActivityType.OrderRejectionBecauseMaxOrderSizeLimit;
+                
                 default:
                     return ActivityType.OrderRejection;
             }
@@ -346,25 +354,25 @@ namespace MarginTrading.Activities.Services.Projections
 
             switch (metadataObject.Reason)
             {
-                case OrderCancellationReason.Expired:
+                case OrderCancellationReasonContract.Expired:
                     return ActivityType.OrderExpiry;
                 
-                case OrderCancellationReason.CorporateAction:
+                case OrderCancellationReasonContract.CorporateAction:
                     return ActivityType.OrderCancellationBecauseCorporateAction;
                 
-                case OrderCancellationReason.AccountInactivated:
+                case OrderCancellationReasonContract.AccountInactivated:
                     return ActivityType.OrderCancellationBecauseAccountIsNotValid;
                 
-                case OrderCancellationReason.InstrumentInvalidated:
+                case OrderCancellationReasonContract.InstrumentInvalidated:
                     return ActivityType.OrderCancellationBecauseInstrumentInNotValid;
                 
-                case OrderCancellationReason.BaseOrderCancelled:
+                case OrderCancellationReasonContract.BaseOrderCancelled:
                     return ActivityType.OrderCancellationBecauseBaseOrderCancelled;
                 
-                case OrderCancellationReason.ParentPositionClosed:
+                case OrderCancellationReasonContract.ParentPositionClosed:
                     return ActivityType.OrderCancellationBecausePositionClosed;
                 
-                case OrderCancellationReason.ConnectedOrderExecuted:
+                case OrderCancellationReasonContract.ConnectedOrderExecuted:
                     return ActivityType.OrderCancellationBecauseConnectedOrderExecuted;
                 
                 default:
