@@ -11,6 +11,7 @@ using MarginTrading.Backend.Contracts.Activities;
 using MarginTrading.Backend.Contracts.Events;
 using MarginTrading.Backend.Contracts.Orders;
 using MarginTrading.Backend.Contracts.TradeMonitoring;
+using MarginTrading.SettingsService.Contracts.AssetPair;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using OrderStatusContract = MarginTrading.Backend.Contracts.Orders.OrderStatusContract;
@@ -178,23 +179,32 @@ namespace MarginTrading.Activities.Services.Projections
 
         private List<string> GetCommonDescriptionAttributesForOrder(OrderContract order)
         {
-            var assetPair = _assetPairsCacheService.TryGetAssetPair(order.AssetPairId);
+            return GetCommonDescriptionAttributesForOrder(_assetPairsCacheService.TryGetAssetPair, 
+                order.AssetPairId, order.Direction, order.Type, order.Volume, order.Status, order.ExecutionPrice,
+                order.ExpectedOpenPrice);
+        }
+        
+        public static List<string> GetCommonDescriptionAttributesForOrder(Func<string, AssetPairContract> getAssetPair, 
+            string assetPairId, OrderDirectionContract direction, OrderTypeContract type, decimal? volume, 
+            OrderStatusContract status, decimal? executionPrice, decimal? expectedOpenPrice)
+        {
+            var assetPair = getAssetPair(assetPairId);
 
             var result = new List<string>
             {
-                order.Direction.ToString(),
-                order.Type.ToString(),
-                order.Volume.ToUiString(0),
-                assetPair?.Name ?? order.AssetPairId,
+                direction.ToString(),
+                type.ToString(),
+                volume.ToUiString(0),
+                assetPair?.Name ?? assetPairId,
             };
 
-            if (order.Type == OrderTypeContract.Market)
+            if (type == OrderTypeContract.Market)
             {
-                if (order.Status == OrderStatusContract.Executed)
+                if (status == OrderStatusContract.Executed)
                 {
                     result.AddRange(new[]
                     {
-                        order.ExecutionPrice.ToUiString(assetPair?.Accuracy),
+                        executionPrice.ToUiString(assetPair?.Accuracy),
                         assetPair?.QuoteAssetId
                     });
                 }
@@ -202,20 +212,20 @@ namespace MarginTrading.Activities.Services.Projections
             else
             {
 
-                if (order.Status != OrderStatusContract.Rejected)
+                if (status != OrderStatusContract.Rejected)
                 {
                     result.AddRange(new[]
                     {
-                        order.ExpectedOpenPrice.ToUiString(assetPair?.Accuracy),
+                        expectedOpenPrice.ToUiString(assetPair?.Accuracy),
                         assetPair?.QuoteAssetId
                     });
                 }
 
-                if (order.Status == OrderStatusContract.Executed)
+                if (status == OrderStatusContract.Executed)
                 {
                     result.AddRange(new[]
                     {
-                        order.ExecutionPrice.ToUiString(assetPair?.Accuracy),
+                        executionPrice.ToUiString(assetPair?.Accuracy),
                         assetPair?.QuoteAssetId
                     });
                 }
