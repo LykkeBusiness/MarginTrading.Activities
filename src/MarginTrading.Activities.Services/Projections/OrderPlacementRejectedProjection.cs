@@ -57,7 +57,7 @@ namespace MarginTrading.Activities.Services.Projections
                 eventSourceId: @event.CorrelationId,
                 @event.EventTimestamp,
                 MapType(@event.RejectReason),
-                descriptionAttributes: commonDescriptionAttributes.Append(@event.RejectReasonText).ToArray(),
+                descriptionAttributes: commonDescriptionAttributes.ToArray(),
                 relatedIds: Array.Empty<string>()));
         }
 
