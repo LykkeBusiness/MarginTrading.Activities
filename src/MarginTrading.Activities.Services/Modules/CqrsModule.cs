@@ -116,7 +116,7 @@ namespace MarginTrading.Activities.Services.Modules
         {
             contextRegistration.ListeningEvents(
                     typeof(OrderPlacementRejectedEvent))
-                .From(_settings.ContextNames.SettingsService)
+                .From(_settings.ContextNames.TradingEngine)
                 .On(EventsRoute)
                 .WithProjection(
                     typeof(OrderPlacementRejectedProjection), _settings.ContextNames.TradingEngine);
