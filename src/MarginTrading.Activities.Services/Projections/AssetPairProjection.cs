@@ -8,7 +8,7 @@ namespace MarginTrading.Activities.Services.Projections
 {
     /// <summary>
     /// Listens to <see cref="AssetPairChangedEvent"/>s and builds a projection inside of the
-    /// <see cref="IAssetPairsCache"/>
+    /// <see cref="IAssetPairsCacheService"/>
     /// </summary>
     [UsedImplicitly]
     public class AssetPairProjection
