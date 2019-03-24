@@ -77,7 +77,8 @@ namespace MarginTrading.Activities.Services.Projections
             }
 
             var assetPair = _assetPairsCacheService.TryGetAssetPair(position.AssetPairId);
-            
+
+            var eventSourceId = position.Id;
             var activityType = ActivityType.None;
             var descriptionAttributes = new string[0];
             var relatedIds = new string[0];
@@ -104,6 +105,7 @@ namespace MarginTrading.Activities.Services.Projections
                 
                 case PositionHistoryTypeContract.Close:
 
+                    eventSourceId = deal.DealId;
                     activityType = ActivityType.PositionClosing;
                     relatedIds = new[] {deal.CloseTradeId, deal.CloseTradeId, position.Id, deal.DealId};
                     descriptionAttributes = new[]
@@ -118,6 +120,7 @@ namespace MarginTrading.Activities.Services.Projections
                 
                 case PositionHistoryTypeContract.PartiallyClose:
 
+                    eventSourceId = deal.DealId;
                     activityType = ActivityType.PositionPartialClosing;
                     relatedIds = new[] {deal.CloseTradeId, deal.CloseTradeId, position.Id, deal.DealId};
                     descriptionAttributes = new[]
@@ -138,7 +141,7 @@ namespace MarginTrading.Activities.Services.Projections
                 _identityGenerator.GenerateId(),
                 position.AccountId,
                 position.AssetPairId,
-                position.Id,
+                eventSourceId,
                 historyEvent.Timestamp,
                 activityType,
                 descriptionAttributes,

@@ -14,6 +14,7 @@ using MarginTrading.AccountsManagement.Contracts.Events;
 using MarginTrading.Activities.Core.Settings;
 using MarginTrading.Activities.Services.Abstractions;
 using MarginTrading.Activities.Services.Projections;
+using MarginTrading.Backend.Contracts.Events;
 using MarginTrading.SettingsService.Contracts.AssetPair;
 
 namespace MarginTrading.Activities.Services.Modules
@@ -82,6 +83,7 @@ namespace MarginTrading.Activities.Services.Modules
 
             RegisterAccountsProjection(contextRegistration);
             RegisterAssetPairsProjection(contextRegistration);
+            RegisterOrderPlacementRejectedProjection(contextRegistration);
             
             contextRegistration.PublishingEvents(typeof(ActivityEvent)).With(EventsRoute);
 
@@ -107,6 +109,17 @@ namespace MarginTrading.Activities.Services.Modules
                 .On(EventsRoute)
                 .WithProjection(
                     typeof(AssetPairProjection), _settings.ContextNames.SettingsService);
+        }
+        
+        private void RegisterOrderPlacementRejectedProjection(
+            IBoundedContextRegistration contextRegistration)
+        {
+            contextRegistration.ListeningEvents(
+                    typeof(OrderPlacementRejectedEvent))
+                .From(_settings.ContextNames.TradingEngine)
+                .On(EventsRoute)
+                .WithProjection(
+                    typeof(OrderPlacementRejectedProjection), _settings.ContextNames.TradingEngine);
         }
     }
 }
