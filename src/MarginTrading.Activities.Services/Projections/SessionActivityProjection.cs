@@ -69,6 +69,14 @@ namespace MarginTrading.Activities.Services.Projections
                     activityType = ActivityType.SessionManualTermination;
                     descriptionAttributes.AddRange(GetDescriptionForTermination(sessionEvent));
                     break;
+                case SessionActivityType.OnBehalfSupportConnected:
+                    activityType = ActivityType.SessionConnectedByOnBehalfSupport;
+                    descriptionAttributes.AddRange(GetDescriptionForOnBehalfSupport(sessionEvent));
+                    break;
+                case SessionActivityType.OnBehalfSupportDisconnected:
+                    activityType = ActivityType.SessionDisconnectedByOnBehalfSupport;
+                    descriptionAttributes.AddRange(GetDescriptionForOnBehalfSupport(sessionEvent));
+                    break;
                 default:
                     return Task.CompletedTask;
             }
@@ -89,7 +97,7 @@ namespace MarginTrading.Activities.Services.Projections
             return Task.CompletedTask;
         }
 
-        private IEnumerable<string> GetDescriptionForTermination(SessionActivity sessionEvent)
+        private static IEnumerable<string> GetDescriptionForTermination(SessionActivity sessionEvent)
         {
             return new []
             {
@@ -97,11 +105,19 @@ namespace MarginTrading.Activities.Services.Projections
             };
         }
 
-        private IEnumerable<string> GetDescriptionForLogInLogOut(SessionActivity sessionEvent)
+        private static IEnumerable<string> GetDescriptionForLogInLogOut(SessionActivity sessionEvent)
         {
             return new []
             {
                 sessionEvent.UserName, sessionEvent.AccountId, sessionEvent.SessionId.ToString(),
+            };
+        }
+
+        private static IEnumerable<string> GetDescriptionForOnBehalfSupport(SessionActivity sessionEvent)
+        {
+            return new []
+            {
+                sessionEvent.AccountId, sessionEvent.UserName,
             };
         }
     }
