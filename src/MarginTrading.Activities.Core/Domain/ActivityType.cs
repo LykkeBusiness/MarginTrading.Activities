@@ -13,6 +13,7 @@ namespace MarginTrading.Activities.Core.Domain
         OrderModificationVolume = 1042,
         OrderModificationRelatedOrderRemoved = 1043,
         OrderModificationValidity = 1044,
+        OrderModificationForceOpen = 1045,
         OrderRejection = 1050,
         OrderRejectionBecauseShortDisabled = 1051,
         OrderRejectionBecauseMaxPositionLimit = 1052,
