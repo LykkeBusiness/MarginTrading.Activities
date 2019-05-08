@@ -113,6 +113,9 @@ namespace MarginTrading.Activities.Services.Projections
                         historyEvent.ActivitiesMetadata,
                         descriptionAttributes);
 
+                    if (activityType == ActivityType.None)
+                        return Task.CompletedTask;
+
                     break;
                 
                 case OrderHistoryTypeContract.Reject:
@@ -352,6 +355,9 @@ namespace MarginTrading.Activities.Services.Projections
 
                 case OrderChangedProperty.RelatedOrderRemoved:
                     return ActivityType.OrderModificationRelatedOrderRemoved;
+
+                case OrderChangedProperty.None:
+                    return ActivityType.None;
 
                 default:
                     return ActivityType.OrderModification;
