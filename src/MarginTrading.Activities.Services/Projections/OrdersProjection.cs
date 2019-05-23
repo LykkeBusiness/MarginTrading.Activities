@@ -113,6 +113,9 @@ namespace MarginTrading.Activities.Services.Projections
                         historyEvent.ActivitiesMetadata,
                         descriptionAttributes);
 
+                    if (activityType == ActivityType.None)
+                        return Task.CompletedTask;
+
                     break;
                 
                 case OrderHistoryTypeContract.Reject:
@@ -357,6 +360,10 @@ namespace MarginTrading.Activities.Services.Projections
                     descriptionAttributes.Add(order.ForceOpen.ToString());
                     return ActivityType.OrderModificationForceOpen;
                 
+
+                case OrderChangedProperty.None:
+                    return ActivityType.None;
+
                 default:
                     return ActivityType.OrderModification;
             }
