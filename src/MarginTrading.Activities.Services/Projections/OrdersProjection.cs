@@ -360,6 +360,7 @@ namespace MarginTrading.Activities.Services.Projections
                     descriptionAttributes.Add(order.ForceOpen.ToString());
                     return ActivityType.OrderModificationForceOpen;
                 
+
                 case OrderChangedProperty.None:
                     return ActivityType.None;
 
