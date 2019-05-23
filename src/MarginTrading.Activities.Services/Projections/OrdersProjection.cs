@@ -352,7 +352,11 @@ namespace MarginTrading.Activities.Services.Projections
 
                 case OrderChangedProperty.RelatedOrderRemoved:
                     return ActivityType.OrderModificationRelatedOrderRemoved;
-
+                
+                case OrderChangedProperty.ForceOpen:
+                    descriptionAttributes.Add(order.ForceOpen.ToString());
+                    return ActivityType.OrderModificationForceOpen;
+                
                 default:
                     return ActivityType.OrderModification;
             }
