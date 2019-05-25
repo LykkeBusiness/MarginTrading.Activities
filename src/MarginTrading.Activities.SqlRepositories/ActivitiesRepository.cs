@@ -18,13 +18,13 @@ namespace MarginTrading.Activities.SqlRepositories
 
         private const string CreateTableScript = "CREATE TABLE [{0}](" +
                                                  @"[OID] [bigint] NOT NULL IDENTITY (1,1),
-[Id] [nvarchar](64) NOT NULL,
-[AccountId] [nvarchar](64) NOT NULL,
-[Instrument] [nvarchar](64) NOT NULL,
-[EventSourceId] [nvarchar](64) NOT NULL,
+[Id] [nvarchar](128) NOT NULL,
+[AccountId] [nvarchar](128) NOT NULL,
+[Instrument] [nvarchar](128) NOT NULL,
+[EventSourceId] [nvarchar](128) NOT NULL,
 [Timestamp] [datetime] NOT NULL,
-[Category] [nvarchar](64) NOT NULL,
-[Event] [nvarchar](64) NOT NULL,
+[Category] [nvarchar](128) NOT NULL,
+[Event] [nvarchar](128) NOT NULL,
 [DescriptionAttributes] [nvarchar](MAX) NOT NULL,
 [RelatedIds] [nvarchar](MAX) NOT NULL,
 INDEX IX_{0}_Base (AccountId, Instrument, EventSourceId, Timestamp, Category, Event)
