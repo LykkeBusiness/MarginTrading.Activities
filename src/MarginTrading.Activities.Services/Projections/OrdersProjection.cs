@@ -241,15 +241,23 @@ namespace MarginTrading.Activities.Services.Projections
         {
             if (string.IsNullOrEmpty(order.AdditionalInfo))
                 return;
-            
-            var additionalAttributes = JsonConvert.DeserializeAnonymousType(
-                order.AdditionalInfo,
-                new
-                {
-                    TargetTradeId = "",
-                    IsCancellationTrade = false,
-                    IsAdjustmentTrade = false
-                });
+
+            var additionalAttributes = new
+            {
+                TargetTradeId = "",
+                IsCancellationTrade = false,
+                IsAdjustmentTrade = false
+            };
+            try
+            {
+                additionalAttributes = JsonConvert.DeserializeAnonymousType(
+                    order.AdditionalInfo,
+                    additionalAttributes);
+            }
+            catch (Exception exception)
+            {
+                throw new Exception($"Failed to parse AdditionalInfo from order: [{order.ToJson()}]", exception);
+            }
 
             if (additionalAttributes.IsCancellationTrade)
             {
