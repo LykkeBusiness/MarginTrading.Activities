@@ -1,3 +1,5 @@
+// Copyright (c) 2019 Lykke Corp.
+
 using MarginTrading.SettingsService.Contracts.AssetPair;
 
 namespace MarginTrading.Activities.Services.Abstractions

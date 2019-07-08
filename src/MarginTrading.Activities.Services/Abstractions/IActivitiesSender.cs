@@ -1,3 +1,5 @@
+// Copyright (c) 2019 Lykke Corp.
+
 using Lykke.MarginTrading.Activities.Contracts.Models;
 using MarginTrading.Activities.Core.Domain.Abstractions;
 

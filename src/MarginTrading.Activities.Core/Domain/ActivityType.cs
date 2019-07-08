@@ -1,3 +1,5 @@
+// Copyright (c) 2019 Lykke Corp.
+
 namespace MarginTrading.Activities.Core.Domain
 {
     public enum ActivityType
