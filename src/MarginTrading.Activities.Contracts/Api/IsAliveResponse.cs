@@ -1,4 +1,6 @@
-﻿namespace Lykke.MarginTrading.Activities.Contracts.Api
+﻿// Copyright (c) 2019 Lykke Corp.
+
+namespace Lykke.MarginTrading.Activities.Contracts.Api
 {
     public class IsAliveResponse
     {
