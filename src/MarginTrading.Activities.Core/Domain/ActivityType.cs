@@ -47,8 +47,8 @@ namespace MarginTrading.Activities.Core.Domain
         AdjustmentTrade = 3020,
         
         //MarginControl
-        MarginСall1 = 4010,
-        MarginСall2 = 4020,
+        MarginCall1 = 4010,
+        MarginCall2 = 4020,
         Liquidation = 4030,
         
         //Account
