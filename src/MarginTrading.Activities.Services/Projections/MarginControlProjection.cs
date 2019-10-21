@@ -57,13 +57,13 @@ namespace MarginTrading.Activities.Services.Projections
             {
                 case MarginEventTypeContract.MarginCall1:
 
-                    activityType = ActivityType.MarginСall1;
+                    activityType = ActivityType.MarginCall1;
                     
                     break;
                 
                 case MarginEventTypeContract.MarginCall2:
 
-                    activityType = ActivityType.MarginСall2;
+                    activityType = ActivityType.MarginCall2;
                     
                     break;
                 
