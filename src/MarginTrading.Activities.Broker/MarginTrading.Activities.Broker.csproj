@@ -1,13 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
     <AssemblyName>MarginTrading.Activities.Broker</AssemblyName>
     <OutputType>Exe</OutputType>
     <PackageId>MarginTrading.Activities.Broker</PackageId>
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
-    <Version>1.4.0</Version>
+    <Version>1.4.1</Version>
     <LangVersion>7.3</LangVersion>
   </PropertyGroup>
   <PropertyGroup>
