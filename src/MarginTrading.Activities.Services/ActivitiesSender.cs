@@ -16,7 +16,9 @@ namespace MarginTrading.Activities.Services
 {
     public class ActivitiesSender : IActivitiesSender
     {
-        [NotNull] public ICqrsEngine CqrsEngine { get; set; }//property injection
+        // ReSharper disable once MemberCanBePrivate.Global
+        // ReSharper disable once UnusedAutoPropertyAccessor.Global
+        public ICqrsEngine CqrsEngine { get; set; }//property injection
         [NotNull] private readonly CqrsContextNamesSettings _cqrsContextNamesSettings;
         private readonly ILog _log;
         private readonly IDateService _dateService;
@@ -38,23 +40,28 @@ namespace MarginTrading.Activities.Services
         {
             try
             {
-                var e = new ActivityEvent
+                var id = _identityGenerator.GenerateId();
+                var now = _dateService.Now();
+                var activityCategory = activity.Category.ToType<ActivityCategoryContract>();
+                var activityType = activity.Event.ToType<ActivityTypeContract>();
+                
+                var @event = new ActivityEvent
                 {
-                    Id = _identityGenerator.GenerateId(),
-                    Timestamp = _dateService.Now(),
+                    Id = id,
+                    Timestamp = now,
                     Activity = new ActivityContract(
                         activity.Id,
                         activity.AccountId,
                         activity.Instrument,
                         activity.EventSourceId,
                         activity.Timestamp,
-                        activity.Category.ToType<ActivityCategoryContract>(),
-                        activity.Event.ToType<ActivityTypeContract>(),
+                        activityCategory,
+                        activityType,
                         activity.DescriptionAttributes,
                         activity.RelatedIds)
                 };
                 
-                CqrsEngine.PublishEvent(e, _cqrsContextNamesSettings.Activities);
+                CqrsEngine.PublishEvent(@event, _cqrsContextNamesSettings.Activities);
             }
             catch (Exception ex)
             {
