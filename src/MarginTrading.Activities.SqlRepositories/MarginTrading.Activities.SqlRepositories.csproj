@@ -4,7 +4,7 @@
         <TargetFramework>netcoreapp2.2</TargetFramework>
         <AssemblyName>MarginTrading.Activities.SqlRepositories</AssemblyName>
         <RootNamespace>MarginTrading.Activities.SqlRepositories</RootNamespace>
-        <Version>1.4.3</Version>
+        <Version>1.4.4</Version>
         <LangVersion>7.3</LangVersion>
     </PropertyGroup>
     <PropertyGroup>
