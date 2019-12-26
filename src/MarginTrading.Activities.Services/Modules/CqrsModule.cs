@@ -8,6 +8,7 @@ using Common.Log;
 using Lykke.Cqrs;
 using Lykke.Cqrs.Configuration;
 using Lykke.Cqrs.Configuration.BoundedContext;
+using Lykke.Cqrs.Middleware.Logging;
 using Lykke.MarginTrading.Activities.Contracts.Models;
 using Lykke.Messaging;
 using Lykke.Messaging.Contract;
@@ -74,10 +75,16 @@ namespace MarginTrading.Activities.Services.Modules
             {
                 Register.DefaultEndpointResolver(rabbitMqConventionEndpointResolver),
                 RegisterContext(),
+                Register.CommandInterceptors(new DefaultCommandLoggingInterceptor(_log)),
+                Register.EventInterceptors(new DefaultEventLoggingInterceptor(_log))
             };
 
-            return new CqrsEngine(_log, ctx.Resolve<IDependencyResolver>(), messagingEngine,
+            var engine = new CqrsEngine(_log, ctx.Resolve<IDependencyResolver>(), messagingEngine,
                 new DefaultEndpointProvider(), true, registrations.ToArray());
+            
+            engine.StartPublishers();
+
+            return engine;
         }
 
         private IRegistration RegisterContext()
