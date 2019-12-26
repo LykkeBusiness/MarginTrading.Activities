@@ -127,7 +127,11 @@ namespace MarginTrading.Activities.Producer
         private Task StartApplication()
         {
             try
-            {   
+            {
+                var cqrsEngine = ApplicationContainer.Resolve<ICqrsEngine>();
+                cqrsEngine.StartSubscribers();
+                cqrsEngine.StartProcesses();
+
                 Log?.WriteMonitorAsync("", "", "Started").Wait();
                 ApplicationContainer.Resolve<ICqrsEngine>().StartAll();
             }
