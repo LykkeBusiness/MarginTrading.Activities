@@ -60,11 +60,13 @@ INDEX IX_{0}_Base (AccountId, Instrument, EventSourceId, Timestamp, Category, Ev
 
         public async Task AddAsync(IActivity activity)
         {
+            ActivityEntity entity = null;
+            
             using (var conn = new SqlConnection(_connectionString))
             {
                 try
                 {
-                    var entity = ActivityEntity.Create(activity);
+                    entity = ActivityEntity.Create(activity);
                     var sql = $"insert into {TableName} ({GetColumns}) values ({GetFields})";
                     await conn.ExecuteAsync(sql, entity);
                 }
@@ -72,7 +74,7 @@ INDEX IX_{0}_Base (AccountId, Instrument, EventSourceId, Timestamp, Category, Ev
                 {
                     var msg = $"Error {ex.Message} \n" +
                               $"Entity <{nameof(ActivityEntity)}>: \n" +
-                              activity.ToJson();
+                              entity?.ToJson() ?? "Entity is empty";
                     
                     _log?.WriteWarning(nameof(ActivitiesRepository), nameof(AddAsync), msg);
                     
