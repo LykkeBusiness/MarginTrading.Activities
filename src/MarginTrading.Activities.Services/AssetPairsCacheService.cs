@@ -14,16 +14,20 @@ namespace MarginTrading.Activities.Services
     public class AssetPairsCacheService : IAssetPairsCacheService, IStartable
     {
         private readonly ReaderWriterLockSlim _readerWriterLockSlim = new ReaderWriterLockSlim();
-        
-        private Dictionary<string, AssetPairContract> _assetPairs = new Dictionary<string, AssetPairContract>();
-        
-        private readonly IAssetPairsApi _assetPairsApi;
 
-        public AssetPairsCacheService(IAssetPairsApi assetPairsApi)
+        private Dictionary<string, AssetPairContract> _assetPairs = new Dictionary<string, AssetPairContract>();
+
+        private readonly IAssetPairsApi _assetPairsApi;
+        private readonly IAssetsApi _assetsApi;
+
+        public AssetPairsCacheService(
+            IAssetPairsApi assetPairsApi,
+            IAssetsApi assetsApi)
         {
             _assetPairsApi = assetPairsApi;
+            _assetsApi = assetsApi;
         }
-        
+
         public AssetPairContract TryGetAssetPair(string assetPairId)
         {
             _readerWriterLockSlim.EnterReadLock();
@@ -39,13 +43,18 @@ namespace MarginTrading.Activities.Services
                 _readerWriterLockSlim.ExitReadLock();
             }
         }
-        
+
         public void AddOrUpdate(AssetPairContract assetPair)
         {
             _readerWriterLockSlim.EnterWriteLock();
 
             try
             {
+                var asset = _assetsApi.Get(assetPair.Id).GetAwaiter().GetResult();
+                if (asset != null)
+                {
+                    assetPair.Name = asset.Name;
+                }
                 _assetPairs[assetPair.Id] = assetPair;
             }
             finally
@@ -75,6 +84,16 @@ namespace MarginTrading.Activities.Services
             try
             {
                 _assetPairs = _assetPairsApi.List().GetAwaiter().GetResult().ToDictionary(a => a.Id);
+
+                var assets = _assetsApi.List().GetAwaiter().GetResult();
+                foreach (KeyValuePair<string, AssetPairContract> assetPair in _assetPairs)
+                {
+                    var asset = assets.FirstOrDefault(x => x.Id == assetPair.Key);
+                    if (asset != null)
+                    {
+                        assetPair.Value.Name = asset.Name;
+                    }
+                }
             }
             finally
             {

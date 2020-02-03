@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using Autofac;
 using Common;
 using Common.Log;
-using MarginTrading.Activities.Core.Caches;
 using MarginTrading.Activities.Core.Domain;
 using MarginTrading.Activities.Core.Settings;
 using MarginTrading.Activities.Services.Abstractions;
@@ -24,15 +23,13 @@ namespace MarginTrading.Activities.Services.Projections
         private readonly IIdentityGenerator _identityGenerator;
         private readonly ILog _log;
         private readonly IAssetPairsCacheService _assetPairsCacheService;
-        private readonly IAssetsCache _assetsCache;
 
         public PositionsProjection(IRabbitMqSubscriberService rabbitMqSubscriberService,
             ActivitiesSettings settings,
             IActivitiesSender cqrsSender,
             IIdentityGenerator identityGenerator,
             ILog log,
-            IAssetPairsCacheService assetPairsCacheService,
-            IAssetsCache assetsCache)
+            IAssetPairsCacheService assetPairsCacheService)
         {
             _rabbitMqSubscriberService = rabbitMqSubscriberService;
             _settings = settings;
@@ -40,7 +37,6 @@ namespace MarginTrading.Activities.Services.Projections
             _identityGenerator = identityGenerator;
             _log = log;
             _assetPairsCacheService = assetPairsCacheService;
-            _assetsCache = assetsCache;
         }
 
         public void Start()
@@ -79,7 +75,7 @@ namespace MarginTrading.Activities.Services.Projections
                 return Task.CompletedTask;
             }
 
-            var asset = _assetsCache.GetAsset(position.AssetPairId);
+            var assetPair = _assetPairsCacheService.TryGetAssetPair(position.AssetPairId);
 
             var eventSourceId = position.Id;
             var activityType = ActivityType.None;
@@ -90,7 +86,6 @@ namespace MarginTrading.Activities.Services.Projections
             {
                 case PositionHistoryTypeContract.Open:
 
-                    var assetPair = _assetPairsCacheService.TryGetAssetPair(position.AssetPairId);
                     var metadata = historyEvent.ActivitiesMetadata.DeserializeJson<PositionOpenMetadata>();
                     activityType = metadata.ExistingPositionIncreased
                         ? ActivityType.PositionIncrease
@@ -99,9 +94,9 @@ namespace MarginTrading.Activities.Services.Projections
                     descriptionAttributes = new[]
                     {
                         position.Direction.ToString(),
-                        position.Volume.ToUiString(asset?.Accuracy),
-                        asset?.Name ?? position.AssetPairId,
-                        position.OpenPrice.ToUiString(asset?.Accuracy),
+                        position.Volume.ToUiString(assetPair?.Accuracy),
+                        assetPair?.Name ?? position.AssetPairId,
+                        position.OpenPrice.ToUiString(assetPair?.Accuracy),
                         assetPair?.QuoteAssetId
                     };
 
@@ -115,9 +110,9 @@ namespace MarginTrading.Activities.Services.Projections
                     descriptionAttributes = new[]
                     {
                         position.Direction.ToString(),
-                        deal.Volume.ToUiString(asset?.Accuracy),
-                        asset?.Name ?? position.AssetPairId,
-                        deal.Fpl.ToUiString(asset?.Accuracy)
+                        deal.Volume.ToUiString(assetPair?.Accuracy),
+                        assetPair?.Name ?? position.AssetPairId,
+                        deal.Fpl.ToUiString(assetPair?.Accuracy)
                     };
 
                     break;
@@ -130,9 +125,9 @@ namespace MarginTrading.Activities.Services.Projections
                     descriptionAttributes = new[]
                     {
                         position.Direction.ToString(),
-                        deal.Volume.ToUiString(asset?.Accuracy),
-                        asset?.Name ?? position.AssetPairId,
-                        deal.Fpl.ToUiString(asset?.Accuracy)
+                        deal.Volume.ToUiString(assetPair?.Accuracy),
+                        assetPair?.Name ?? position.AssetPairId,
+                        deal.Fpl.ToUiString(assetPair?.Accuracy)
                     };
 
                     break;
