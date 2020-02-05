@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Autofac;
 using Common;
 using Common.Log;
+using MarginTrading.Activities.Core.Caches;
 using MarginTrading.Activities.Core.Domain;
 using MarginTrading.Activities.Core.Settings;
 using MarginTrading.Activities.Services.Abstractions;
@@ -28,13 +29,15 @@ namespace MarginTrading.Activities.Services.Projections
         private readonly IIdentityGenerator _identityGenerator;
         private readonly ILog _log;
         private readonly IAssetPairsCacheService _assetPairsCacheService;
+        private readonly IAssetsCache _assetsCache;
 
         public OrdersProjection(IRabbitMqSubscriberService rabbitMqSubscriberService,
             ActivitiesSettings settings,
             IActivitiesSender cqrsSender,
             IIdentityGenerator identityGenerator,
             ILog log,
-            IAssetPairsCacheService assetPairsCacheService)
+            IAssetPairsCacheService assetPairsCacheService,
+            IAssetsCache assetsCache)
         {
             _rabbitMqSubscriberService = rabbitMqSubscriberService;
             _settings = settings;
@@ -42,6 +45,7 @@ namespace MarginTrading.Activities.Services.Projections
             _identityGenerator = identityGenerator;
             _log = log;
             _assetPairsCacheService = assetPairsCacheService;
+            _assetsCache = assetsCache;
         }
 
         public void Start()
@@ -185,16 +189,17 @@ namespace MarginTrading.Activities.Services.Projections
         private List<string> GetCommonDescriptionAttributesForOrder(OrderContract order)
         {
             return GetCommonDescriptionAttributesForOrder(
-                _assetPairsCacheService.TryGetAssetPair,
+                _assetsCache.GetAsset, _assetPairsCacheService.TryGetAssetPair,
                 order.AssetPairId, order.Direction, order.Type, order.Volume, order.Status, order.ExecutionPrice,
                 order.ExpectedOpenPrice);
         }
 
         public static List<string> GetCommonDescriptionAttributesForOrder(
-            Func<string, AssetPairContract> getAssetPair,
+            Func<string, Asset> getAssetFunc, Func<string, AssetPairContract> getAssetPair,
             string assetPairId, OrderDirectionContract direction, OrderTypeContract type, decimal? volume,
             OrderStatusContract status, decimal? executionPrice, decimal? expectedOpenPrice)
         {
+            var asset = getAssetFunc(assetPairId);
             var assetPair = getAssetPair(assetPairId);
 
             var result = new List<string>
@@ -202,7 +207,7 @@ namespace MarginTrading.Activities.Services.Projections
                 direction.ToString(),
                 type.ToString(),
                 volume.ToUiString(0),
-                assetPair?.Name ?? assetPairId,
+                asset?.Name ?? assetPairId,
             };
 
             if (type == OrderTypeContract.Market)
@@ -211,7 +216,7 @@ namespace MarginTrading.Activities.Services.Projections
                 {
                     result.AddRange(new[]
                     {
-                        executionPrice.ToUiString(assetPair?.Accuracy),
+                        executionPrice.ToUiString(asset?.Accuracy),
                         assetPair?.QuoteAssetId
                     });
                 }
@@ -223,7 +228,7 @@ namespace MarginTrading.Activities.Services.Projections
                 {
                     result.AddRange(new[]
                     {
-                        expectedOpenPrice.ToUiString(assetPair?.Accuracy),
+                        expectedOpenPrice.ToUiString(asset?.Accuracy),
                         assetPair?.QuoteAssetId
                     });
                 }
@@ -232,7 +237,7 @@ namespace MarginTrading.Activities.Services.Projections
                 {
                     result.AddRange(new[]
                     {
-                        executionPrice.ToUiString(assetPair?.Accuracy),
+                        executionPrice.ToUiString(asset?.Accuracy),
                         assetPair?.QuoteAssetId
                     });
                 }
