@@ -7,10 +7,8 @@ using Lykke.HttpClientGenerator;
 using Lykke.HttpClientGenerator.Retries;
 using Lykke.MarginTrading.Activities.Contracts.Models;
 using Lykke.Snow.Common.Startup;
-using MarginTrading.Activities.Core.Caches;
 using MarginTrading.Activities.Core.Settings;
 using MarginTrading.Activities.Services.Abstractions;
-using MarginTrading.Activities.Services.Caches;
 using MarginTrading.Activities.Services.Projections;
 using MarginTrading.SettingsService.Contracts;
 
@@ -43,14 +41,9 @@ namespace MarginTrading.Activities.Services.Modules
                 .As<IAssetPairsCacheService>()
                 .As<IStartable>()
                 .SingleInstance();
-
-            builder.RegisterType<AssetsCache>()
-                .As<IAssetsCache>()
-                .As<IStartable>()
-                .SingleInstance();
-
+            
             //Projections
-
+            
             builder.RegisterType<OrdersProjection>()
                 .As<IStartable>()
                 .SingleInstance();
@@ -83,10 +76,6 @@ namespace MarginTrading.Activities.Services.Modules
 
             builder.RegisterInstance(settingsClientGeneratorBuilder.Create().Generate<IAssetPairsApi>())
                 .As<IAssetPairsApi>()
-                .SingleInstance();
-
-            builder.RegisterInstance(settingsClientGeneratorBuilder.Create().Generate<IAssetsApi>())
-                .As<IAssetsApi>()
                 .SingleInstance();
         }
     }

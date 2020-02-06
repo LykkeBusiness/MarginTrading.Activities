@@ -7,7 +7,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Common.Log;
 using JetBrains.Annotations;
-using MarginTrading.Activities.Core.Caches;
 using MarginTrading.Activities.Core.Domain;
 using MarginTrading.Activities.Services.Abstractions;
 using MarginTrading.Backend.Contracts.Events;
@@ -26,20 +25,17 @@ namespace MarginTrading.Activities.Services.Projections
         private readonly IActivitiesSender _cqrsSender;
         private readonly IIdentityGenerator _identityGenerator;
         private readonly ILog _log;
-        private readonly IAssetsCache _assetsCache;
 
         public OrderPlacementRejectedProjection(
             IAssetPairsCacheService assetPairsCacheService,
             IActivitiesSender cqrsSender,
             IIdentityGenerator identityGenerator,
-            ILog log,
-            IAssetsCache assetsCache)
+            ILog log)
         {
             _assetPairsCacheService = assetPairsCacheService;
             _cqrsSender = cqrsSender;
             _identityGenerator = identityGenerator;
             _log = log;
-            _assetsCache = assetsCache;
         }
 
         [UsedImplicitly]
@@ -51,10 +47,10 @@ namespace MarginTrading.Activities.Services.Projections
                     new Exception("OrderPlacementRejectedEvent have null OrderPlaceRequest."));
                 return;
             }
-
+            
             var commonDescriptionAttributes = OrdersProjection.GetCommonDescriptionAttributesForOrder(
-                _assetsCache.GetAsset, _assetPairsCacheService.TryGetAssetPair, @event.OrderPlaceRequest.InstrumentId,
-                @event.OrderPlaceRequest.Direction, @event.OrderPlaceRequest.Type, @event.OrderPlaceRequest.Volume,
+                _assetPairsCacheService.TryGetAssetPair, @event.OrderPlaceRequest.InstrumentId, 
+                @event.OrderPlaceRequest.Direction, @event.OrderPlaceRequest.Type, @event.OrderPlaceRequest.Volume, 
                 OrderStatusContract.Rejected, null, null);
 
             _cqrsSender.PublishActivity(new Activity(
