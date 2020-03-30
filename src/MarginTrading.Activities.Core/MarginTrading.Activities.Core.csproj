@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <LangVersion>7.1</LangVersion>
-    <Version>1.4.9</Version>
+    <Version>1.4.10</Version>
   </PropertyGroup>
   <PropertyGroup>
     <NoWarn>1701;1702;1705;CA2007;0612;0618;1591</NoWarn>
@@ -11,8 +11,8 @@
     <PackageReference Include="AutoMapper" Version="7.0.1" />
     <PackageReference Include="JetBrains.Annotations" Version="11.1.0" />
     <PackageReference Include="Lykke.SettingsReader" Version="5.2.0" />
-    <PackageReference Include="Lykke.Common" Version="7.3.1" />
-    <PackageReference Include="Lykke.RabbitMqBroker" Version="7.8.1" />
+    <PackageReference Include="Lykke.Common" Version="7.5.0" />
+    <PackageReference Include="Lykke.RabbitMqBroker" Version="7.13.1" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
     <PackageReference Include="StackExchange.Redis" Version="1.2.6" />
   </ItemGroup>
