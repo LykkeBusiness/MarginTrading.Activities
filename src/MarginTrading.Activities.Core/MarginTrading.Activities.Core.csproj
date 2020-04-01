@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <LangVersion>7.1</LangVersion>
+    <LangVersion>latest</LangVersion>
     <Version>1.4.10</Version>
   </PropertyGroup>
   <PropertyGroup>
@@ -13,7 +13,7 @@
     <PackageReference Include="Lykke.SettingsReader" Version="5.2.0" />
     <PackageReference Include="Lykke.Common" Version="7.5.0" />
     <PackageReference Include="Lykke.RabbitMqBroker" Version="7.13.1" />
-    <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
     <PackageReference Include="StackExchange.Redis" Version="1.2.6" />
   </ItemGroup>
 </Project>

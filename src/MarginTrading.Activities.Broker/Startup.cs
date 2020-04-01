@@ -24,7 +24,7 @@ namespace MarginTrading.Activities.Broker
 
         protected override string ApplicationName => "ActivitiesBroker";
 
-        protected override void RegisterCustomServices(IServiceCollection services, ContainerBuilder builder, 
+        protected override void RegisterCustomServices(ContainerBuilder builder, 
             IReloadingManager<Settings> settings, ILog log)
         {
             builder.RegisterType<Application>().As<IBrokerApplication>().SingleInstance();
