@@ -143,7 +143,7 @@ namespace MarginTrading.Activities.Producer
                 var cqrsEngine = ApplicationContainer.Resolve<ICqrsEngine>();
                 cqrsEngine.StartSubscribers();
                 cqrsEngine.StartProcesses();
-                
+
                 Program.AppHost.WriteLogs(Environment, LogLocator.Log);
                 
                 Log?.WriteMonitorAsync("", "", "Started").Wait();
