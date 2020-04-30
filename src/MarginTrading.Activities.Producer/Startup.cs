@@ -37,10 +37,10 @@ namespace MarginTrading.Activities.Producer
     [UsedImplicitly]
     public class Startup
     {
+        private IReloadingManager<AppSettings> _mtSettingsManager;
         public static string ServiceName { get; } = PlatformServices.Default.Application.ApplicationName;
-
         private IHostingEnvironment Environment { get; }
-        private IContainer ApplicationContainer { get; set; }
+        private ILifetimeScope ApplicationContainer { get; set; }
         private IConfigurationRoot Configuration { get; }
         [CanBeNull] private ILog Log { get; set; }
         
@@ -54,12 +54,13 @@ namespace MarginTrading.Activities.Producer
             Environment = env;
         }
 
-        public IServiceProvider ConfigureServices(IServiceCollection services)
+        public void ConfigureServices(IServiceCollection services)
         {
             try
             {
-                services.AddMvc()
-                    .AddJsonOptions(options =>
+                services
+                    .AddControllers()
+                    .AddNewtonsoftJson(options =>
                     {
                         options.SerializerSettings.ContractResolver = new DefaultContractResolver();
                         options.SerializerSettings.Converters.Add(new StringEnumConverter());
@@ -72,17 +73,9 @@ namespace MarginTrading.Activities.Producer
                 });
 
                 var builder = new ContainerBuilder();
-                var appSettings = Configuration.LoadSettings<AppSettings>();
-                Log = CreateLog(Configuration, services, appSettings);
+                _mtSettingsManager = Configuration.LoadSettings<AppSettings>();
+                Log = CreateLog(Configuration, services, _mtSettingsManager);
                 services.AddSingleton<ILoggerFactory>(x => new WebHostLoggerFactory(Log));
-                builder.RegisterModule(new ActivitiesModule(appSettings, Log));
-                builder.RegisterModule(new CqrsModule(appSettings.CurrentValue.ActivitiesProducer.Cqrs, Log));
-                builder.RegisterModule(new ServicesModule(appSettings.CurrentValue));
-
-                builder.Populate(services);
-
-                ApplicationContainer = builder.Build();
-                return new AutofacServiceProvider(ApplicationContainer);
             }
             catch (Exception ex)
             {
@@ -91,11 +84,20 @@ namespace MarginTrading.Activities.Producer
             }
         }
 
+        public void ConfigureContainer(ContainerBuilder builder)
+        {
+            builder.RegisterModule(new ActivitiesModule(_mtSettingsManager, Log));
+            builder.RegisterModule(new CqrsModule(_mtSettingsManager.CurrentValue.ActivitiesProducer.Cqrs, Log));
+            builder.RegisterModule(new ServicesModule(_mtSettingsManager.CurrentValue));
+        }
+
         [UsedImplicitly]
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, IApplicationLifetime appLifetime)
         {
             try
             {
+                ApplicationContainer = app.ApplicationServices.GetAutofacRoot();
+                
                 if (env.IsDevelopment())
                 {
                     app.UseDeveloperExceptionPage();
@@ -112,7 +114,14 @@ namespace MarginTrading.Activities.Producer
                     ex => new ErrorResponse {ErrorMessage = "Technical problem", Details = ex.Message});
 #endif
                 
-                app.UseMvc();
+                
+                app.UseRouting();
+                app.UseAuthentication();
+                app.UseAuthorization();
+                app.UseEndpoints(endpoints =>
+                {
+                    endpoints.MapControllers();
+                });
                 app.UseSwagger();
                 app.UseSwaggerUI(a => a.SwaggerEndpoint("/swagger/v1/swagger.json", "Main Swagger"));
 
@@ -134,8 +143,8 @@ namespace MarginTrading.Activities.Producer
                 var cqrsEngine = ApplicationContainer.Resolve<ICqrsEngine>();
                 cqrsEngine.StartSubscribers();
                 cqrsEngine.StartProcesses();
-                
-                Program.Host.WriteLogsAsync(Environment, LogLocator.Log).Wait();
+
+                Program.AppHost.WriteLogs(Environment, LogLocator.Log);
                 
                 Log?.WriteMonitorAsync("", "", "Started").Wait();
             }
