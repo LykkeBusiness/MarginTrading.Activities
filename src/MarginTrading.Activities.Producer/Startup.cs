@@ -14,10 +14,8 @@ using Lykke.Logs;
 using Lykke.Logs.MsSql;
 using Lykke.Logs.MsSql.Repositories;
 using Lykke.Logs.Serilog;
-using Lykke.MarginTrading.Activities.Contracts.Api;
 using Lykke.SettingsReader;
 using Lykke.Snow.Common.Startup.Hosting;
-using Lykke.Snow.Common.Startup.Log;
 using MarginTrading.Activities.Core.Settings;
 using MarginTrading.Activities.Producer.Infrastructure;
 using MarginTrading.Activities.Producer.Modules;
@@ -27,7 +25,6 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.PlatformAbstractions;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
@@ -42,8 +39,7 @@ namespace MarginTrading.Activities.Producer
         private IHostingEnvironment Environment { get; }
         private ILifetimeScope ApplicationContainer { get; set; }
         private IConfigurationRoot Configuration { get; }
-        [CanBeNull] private ILog Log { get; set; }
-        
+
         public Startup(IHostingEnvironment env)
         {
             Configuration = new ConfigurationBuilder()
@@ -72,22 +68,21 @@ namespace MarginTrading.Activities.Producer
                     options.OperationFilter<CustomOperationIdOperationFilter>();
                 });
 
-                var builder = new ContainerBuilder();
                 _mtSettingsManager = Configuration.LoadSettings<AppSettings>();
-                Log = CreateLog(Configuration, services, _mtSettingsManager);
-                services.AddSingleton<ILoggerFactory>(x => new WebHostLoggerFactory(Log));
+                LogLocator.Log = CreateLog(Configuration, services, _mtSettingsManager);
             }
             catch (Exception ex)
             {
-                Log?.WriteFatalErrorAsync(nameof(Startup), nameof(ConfigureServices), "", ex).Wait();
+                LogLocator.Log?.WriteFatalErrorAsync(nameof(Startup), nameof(ConfigureServices), "", ex).Wait();
                 throw;
             }
         }
 
+        [UsedImplicitly]
         public void ConfigureContainer(ContainerBuilder builder)
         {
-            builder.RegisterModule(new ActivitiesModule(_mtSettingsManager, Log));
-            builder.RegisterModule(new CqrsModule(_mtSettingsManager.CurrentValue.ActivitiesProducer.Cqrs, Log));
+            builder.RegisterModule(new ActivitiesModule(_mtSettingsManager, LogLocator.Log));
+            builder.RegisterModule(new CqrsModule(_mtSettingsManager.CurrentValue.ActivitiesProducer.Cqrs, LogLocator.Log));
             builder.RegisterModule(new ServicesModule(_mtSettingsManager.CurrentValue));
         }
 
@@ -131,12 +126,12 @@ namespace MarginTrading.Activities.Producer
             }
             catch (Exception ex)
             {
-                Log?.WriteFatalErrorAsync(nameof(Startup), nameof(ConfigureServices), "", ex).Wait();
+                LogLocator.Log?.WriteFatalErrorAsync(nameof(Startup), nameof(ConfigureServices), "", ex).Wait();
                 throw;
             }
         }
 
-        private Task StartApplication()
+        private async Task StartApplication()
         {
             try
             {
@@ -146,15 +141,13 @@ namespace MarginTrading.Activities.Producer
 
                 Program.AppHost.WriteLogs(Environment, LogLocator.Log);
                 
-                Log?.WriteMonitorAsync("", "", "Started").Wait();
+                await LogLocator.Log.WriteMonitorAsync("", "", "Started");
             }
             catch (Exception ex)
             {
-                Log?.WriteFatalErrorAsync(nameof(Startup), nameof(StartApplication), "", ex).Wait();
+                await LogLocator.Log.WriteFatalErrorAsync(nameof(Startup), nameof(StartApplication), "", ex);
                 throw;
             }
-            
-            return Task.CompletedTask;
         }
 
         private async Task StopApplication()
@@ -165,11 +158,8 @@ namespace MarginTrading.Activities.Producer
             }
             catch (Exception ex)
             {
-                if (Log != null)
-                {
-                    await Log.WriteFatalErrorAsync(nameof(Startup), nameof(StopApplication), "", ex);
-                }
-
+                await LogLocator.Log.WriteFatalErrorAsync(nameof(Startup), nameof(StopApplication), "", ex);
+                
                 throw;
             }
         }
@@ -178,22 +168,13 @@ namespace MarginTrading.Activities.Producer
         {
             try
             {
-                // NOTE: Service can't receive and process requests here, so you can destroy all resources
-
-                if (Log != null)
-                {
-                    await Log.WriteMonitorAsync("", "", "Terminating");
-                }
-
+                await LogLocator.Log.WriteMonitorAsync("", "", "Terminating");
                 ApplicationContainer.Dispose();
             }
             catch (Exception ex)
             {
-                if (Log != null)
-                {
-                    await Log.WriteFatalErrorAsync(nameof(Startup), nameof(CleanUp), "", ex);
-                    (Log as IDisposable)?.Dispose();
-                }
+                await LogLocator.Log.WriteFatalErrorAsync(nameof(Startup), nameof(CleanUp), "", ex);
+                (LogLocator.Log as IDisposable)?.Dispose();
 
                 throw;
             }
@@ -224,8 +205,6 @@ namespace MarginTrading.Activities.Producer
                     null, logName, consoleLogger));
             }
 
-            LogLocator.Log = aggregateLogger;
-            
             return aggregateLogger;
         }
     }

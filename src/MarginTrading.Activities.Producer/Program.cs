@@ -6,8 +6,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Autofac.Extensions.DependencyInjection;
 using JetBrains.Annotations;
+using Lykke.Common.Log;
 using MarginTrading.Activities.Services;
-using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
@@ -60,9 +60,18 @@ namespace MarginTrading.Activities.Producer
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine($"Error: {e.Message}{Environment.NewLine}{e.StackTrace}{Environment.NewLine}Restarting...");
-                    LogLocator.Log?.WriteFatalErrorAsync(
-                        $"MT {nameof(Activities)}", "Restart host", $"Attempts left: {restartAttemptsLeft}", e);
+                    var message = $"{e.Message}{Environment.NewLine}{e.StackTrace}{Environment.NewLine}Restarting...";
+                    var context = $"Attempts left: {restartAttemptsLeft}";
+
+                    if (LogLocator.Log != null)
+                    {
+                        LogLocator.Log.Critical(e, message, context);
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Fatal Error: {message}");
+                    }
+                    
                     restartAttemptsLeft--;
                     Thread.Sleep(restartAttemptsInterval);
                 }

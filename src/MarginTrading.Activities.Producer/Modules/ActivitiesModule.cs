@@ -1,16 +1,14 @@
 ﻿// Copyright (c) 2019 Lykke Corp.
 // See the LICENSE file in the project root for more information.
 
-using System;
 using Autofac;
 using Common.Log;
 using Lykke.Common;
 using Lykke.Common.Chaos;
 using Lykke.SettingsReader;
-using MarginTrading.Activities.Core.Repositories;
 using MarginTrading.Activities.Core.Settings;
-using MarginTrading.Activities.SqlRepositories;
-using Microsoft.Extensions.Internal;
+using MarginTrading.Activities.Services;
+using MarginTrading.Activities.Services.Abstractions;
 
 namespace MarginTrading.Activities.Producer.Modules
 {
@@ -32,6 +30,11 @@ namespace MarginTrading.Activities.Producer.Modules
             builder.RegisterInstance(_settings.CurrentValue.ActivitiesProducer.Db).SingleInstance();
             
             builder.RegisterInstance(_log).As<ILog>().SingleInstance();
+            
+            builder.RegisterType<ActivitiesSender>()
+                .WithParameter(TypedParameter.From(_settings.CurrentValue.ActivitiesProducer.Cqrs.ContextNames.Activities))
+                .As<IActivitiesSender>()
+                .SingleInstance();
             
             builder.RegisterType<ThreadSwitcherToNewTask>()
                 .As<IThreadSwitcher>()
