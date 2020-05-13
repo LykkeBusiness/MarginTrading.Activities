@@ -16,7 +16,6 @@ using Lykke.Messaging.RabbitMq;
 using Lykke.Messaging.Serialization;
 using MarginTrading.AccountsManagement.Contracts.Events;
 using MarginTrading.Activities.Core.Settings;
-using MarginTrading.Activities.Services.Abstractions;
 using MarginTrading.Activities.Services.Projections;
 using MarginTrading.Backend.Contracts.Events;
 using MarginTrading.SettingsService.Contracts.AssetPair;
@@ -37,11 +36,8 @@ namespace MarginTrading.Activities.Services.Modules
 
         protected override void Load(ContainerBuilder builder)
         {
-            builder.RegisterInstance(_settings.ContextNames).AsSelf().SingleInstance();
-            builder.Register(context => new AutofacDependencyResolver(context)).As<IDependencyResolver>()
-                .SingleInstance();
-            builder.RegisterType<ActivitiesSender>().As<IActivitiesSender>()
-                .PropertiesAutowired(PropertyWiringOptions.AllowCircularDependencies)
+            builder.Register(context => new AutofacDependencyResolver(context))
+                .As<IDependencyResolver>()
                 .SingleInstance();
 
             var rabbitMqSettings = new RabbitMQ.Client.ConnectionFactory
