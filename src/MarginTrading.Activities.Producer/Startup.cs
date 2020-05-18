@@ -14,9 +14,9 @@ using Lykke.Logs;
 using Lykke.Logs.MsSql;
 using Lykke.Logs.MsSql.Repositories;
 using Lykke.Logs.Serilog;
-using Lykke.MarginTrading.Activities.Contracts.Api;
 using Lykke.SettingsReader;
 using Lykke.Snow.Common.Startup.Hosting;
+using Lykke.Snow.Common.Startup.Log;
 using MarginTrading.Activities.Core.Settings;
 using MarginTrading.Activities.Producer.Infrastructure;
 using MarginTrading.Activities.Producer.Modules;
@@ -26,6 +26,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.PlatformAbstractions;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
@@ -71,6 +72,7 @@ namespace MarginTrading.Activities.Producer
 
                 _mtSettingsManager = Configuration.LoadSettings<AppSettings>();
                 LogLocator.Log = CreateLog(Configuration, services, _mtSettingsManager);
+                services.AddSingleton<ILoggerFactory>(x => new WebHostLoggerFactory(LogLocator.Log));
             }
             catch (Exception ex)
             {
