@@ -21,6 +21,8 @@ namespace MarginTrading.Activities.Services
         private readonly IComponentContext _componentContext;
         private readonly ILog _log;
 
+        private ICqrsEngine CqrsEngine => _componentContext.Resolve<ICqrsEngine>();
+
         public ActivitiesSender(
             IDateService dateService,
             IIdentityGenerator identityGenerator, 
@@ -60,9 +62,7 @@ namespace MarginTrading.Activities.Services
                         activity.RelatedIds)
                 };
 
-                var cqrsEngine = _componentContext.Resolve<ICqrsEngine>();
-                
-                cqrsEngine.PublishEvent(@event, _activities);
+                CqrsEngine.PublishEvent(@event, _activities);
             }
             catch (Exception ex)
             {
