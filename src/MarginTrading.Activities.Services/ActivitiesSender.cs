@@ -18,7 +18,7 @@ namespace MarginTrading.Activities.Services
         private readonly IDateService _dateService;
         private readonly IIdentityGenerator _identityGenerator;
         private readonly string _activities;
-        private readonly ICqrsEngine _cqrsEngine;
+        private readonly IComponentContext _componentContext;
         private readonly ILog _log;
 
         public ActivitiesSender(
@@ -32,7 +32,7 @@ namespace MarginTrading.Activities.Services
             _activities = activities ?? throw new ArgumentNullException(nameof(activities));
             _dateService = dateService;
             _identityGenerator = identityGenerator;
-            _cqrsEngine = componentContext.Resolve<ICqrsEngine>();
+            _componentContext = componentContext;
         }
         
         public void PublishActivity(IActivity activity)
@@ -59,8 +59,10 @@ namespace MarginTrading.Activities.Services
                         activity.DescriptionAttributes,
                         activity.RelatedIds)
                 };
+
+                var cqrsEngine = _componentContext.Resolve<ICqrsEngine>();
                 
-                _cqrsEngine.PublishEvent(@event, _activities);
+                cqrsEngine.PublishEvent(@event, _activities);
             }
             catch (Exception ex)
             {
