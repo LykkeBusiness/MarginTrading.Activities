@@ -21,7 +21,20 @@ namespace MarginTrading.Activities.Services
         private readonly IComponentContext _componentContext;
         private readonly ILog _log;
 
-        private ICqrsEngine CqrsEngine => _componentContext.Resolve<ICqrsEngine>();
+        private ICqrsEngine _cqrsEngine;
+        private ICqrsEngine CqrsEngine
+        {
+            get
+            {
+                if (_cqrsEngine != null)
+                {
+                    return _cqrsEngine;
+                }
+
+                _cqrsEngine = _componentContext.Resolve<ICqrsEngine>();
+                return _cqrsEngine;
+            }
+        }
 
         public ActivitiesSender(
             IDateService dateService,
