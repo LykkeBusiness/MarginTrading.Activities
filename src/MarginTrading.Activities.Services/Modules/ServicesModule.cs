@@ -6,7 +6,6 @@ using Autofac;
 using Lykke.HttpClientGenerator;
 using Lykke.HttpClientGenerator.Retries;
 using Lykke.MarginTrading.Activities.Contracts.Models;
-using Lykke.Snow.Common.Startup;
 using MarginTrading.Activities.Core.Settings;
 using MarginTrading.Activities.Services.Abstractions;
 using MarginTrading.Activities.Services.Projections;
@@ -64,8 +63,7 @@ namespace MarginTrading.Activities.Services.Modules
             
             var settingsClientGeneratorBuilder = HttpClientGenerator
                 .BuildForUrl(_settings.MarginTradingSettingsServiceClient.ServiceUrl)
-                .WithServiceName<LykkeErrorResponse>(
-                    $"MT Settings [{_settings.MarginTradingSettingsServiceClient.ServiceUrl}]")
+                .WithServiceName<LykkeErrorResponse>($"MT Settings [{_settings.MarginTradingSettingsServiceClient.ServiceUrl}]")
                 .WithRetriesStrategy(new LinearRetryStrategy(TimeSpan.FromMilliseconds(30), 3));
 
             if (!string.IsNullOrWhiteSpace(_settings.MarginTradingSettingsServiceClient.ApiKey))
