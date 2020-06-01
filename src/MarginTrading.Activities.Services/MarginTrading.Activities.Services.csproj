@@ -18,8 +18,8 @@
     <PackageReference Include="Lykke.MarginTrading.SettingsService.Contracts" Version="1.1.15" />
     <PackageReference Include="Lykke.Messaging" Version="6.3.1" />
     <PackageReference Include="Lykke.Messaging.RabbitMq" Version="2.2.2" />
-    <PackageReference Include="Microsoft.ApplicationInsights.DependencyCollector" Version="2.13.1" />
-    <PackageReference Include="morelinq" Version="2.10.0" />
+    <PackageReference Include="Microsoft.ApplicationInsights.DependencyCollector" Version="2.14.0" />
+    <PackageReference Include="morelinq" Version="3.3.2" />
     <PackageReference Include="System.ValueTuple" Version="4.5.0" />
     <PackageReference Include="StackExchange.Redis" Version="1.2.6" />
   </ItemGroup>
