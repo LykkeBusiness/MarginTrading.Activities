@@ -10,15 +10,14 @@ using Lykke.MarginTrading.BrokerBase.Settings;
 using Lykke.SettingsReader;
 using MarginTrading.Activities.Core.Repositories;
 using MarginTrading.Activities.SqlRepositories;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 namespace MarginTrading.Activities.Broker
 {
     [UsedImplicitly]
     public class Startup : BrokerStartupBase<DefaultBrokerApplicationSettings<Settings>, Settings>
     {
-        public Startup(IHostingEnvironment env) : base(env)
+        public Startup(IHostEnvironment env) : base(env)
         {
         }
 
