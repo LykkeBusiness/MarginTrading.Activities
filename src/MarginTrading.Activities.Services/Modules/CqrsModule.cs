@@ -37,7 +37,11 @@ namespace MarginTrading.Activities.Services.Modules
 
         protected override void Load(ContainerBuilder builder)
         {
-            builder.Register(context => new AutofacDependencyResolver(context))
+            builder.Register(ctx =>
+                {
+                    var context = ctx.Resolve<IComponentContext>();
+                    return new AutofacDependencyResolver(context);
+                })
                 .As<IDependencyResolver>()
                 .SingleInstance();
 
