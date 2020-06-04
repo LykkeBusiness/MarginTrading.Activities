@@ -59,7 +59,11 @@ namespace MarginTrading.Activities.Services.Modules
             builder.RegisterAssemblyTypes(GetType().Assembly).Where(t =>
                 new[] {"Saga", "CommandsHandler", "Projection"}.Any(ending => t.Name.EndsWith(ending))).AsSelf();
 
-            builder.Register(ctx => CreateEngine(ctx, messagingEngine)).As<ICqrsEngine>().SingleInstance();
+            builder.Register(ctx =>
+            {
+                var context = ctx.Resolve<IComponentContext>();
+                return CreateEngine(context, messagingEngine);
+            }).As<ICqrsEngine>().SingleInstance();
         }
 
         private CqrsEngine CreateEngine(IComponentContext ctx, IMessagingEngine messagingEngine)
