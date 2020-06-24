@@ -22,6 +22,7 @@ using MarginTrading.Activities.Core.Settings;
 using MarginTrading.Activities.Producer.Infrastructure;
 using MarginTrading.Activities.Producer.Modules;
 using MarginTrading.Activities.Services;
+using MarginTrading.Activities.Services.Abstractions;
 using MarginTrading.Activities.Services.Modules;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -30,6 +31,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.PlatformAbstractions;
+using MoreLinq;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 using IApplicationLifetime = Microsoft.AspNetCore.Hosting.IApplicationLifetime;
@@ -143,9 +145,14 @@ namespace MarginTrading.Activities.Producer
             try
             {
                 var cqrsEngine = ApplicationContainer.Resolve<ICqrsEngine>();
+                
                 cqrsEngine.StartSubscribers();
+                
+                var customSubscribers = ApplicationContainer.Resolve<ISubscriber[]>();
+                customSubscribers.ForEach(s => s.Start());
+                
                 cqrsEngine.StartProcesses();
-
+                
                 Program.AppHost.WriteLogs(Environment, LogLocator.Log);
                 
                 await LogLocator.Log.WriteMonitorAsync("", "", "Started");

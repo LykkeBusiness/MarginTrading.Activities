@@ -44,19 +44,19 @@ namespace MarginTrading.Activities.Services.Modules
             //Projections
             
             builder.RegisterType<OrdersProjection>()
-                .As<IStartable>()
+                .As<ISubscriber>()
                 .SingleInstance();
                 
             builder.RegisterType<PositionsProjection>()
-                .As<IStartable>()
+                .As<ISubscriber>()
                 .SingleInstance();
             
             builder.RegisterType<MarginControlProjection>()
-                .As<IStartable>()
+                .As<ISubscriber>()
                 .SingleInstance();
             
             builder.RegisterType<SessionActivityProjection>()
-                .As<IStartable>()
+                .As<ISubscriber>()
                 .SingleInstance();
             
             //External

@@ -29,8 +29,6 @@ namespace MarginTrading.Activities.Services.Modules
         private readonly CqrsSettings _settings;
         private readonly ILog _log;
 
-        private static readonly object Lock = new object();
-
         public CqrsModule(CqrsSettings settings, ILog log)
         {
             _settings = settings;
@@ -77,27 +75,24 @@ namespace MarginTrading.Activities.Services.Modules
 
         private CqrsEngine CreateEngine(IComponentContext ctx, IMessagingEngine messagingEngine)
         {
-            lock (Lock)
+            var rabbitMqConventionEndpointResolver =
+                new RabbitMqConventionEndpointResolver("RabbitMq", SerializationFormat.MessagePack,
+                    environment: _settings.EnvironmentName);
+
+            var registrations = new List<IRegistration>
             {
-                var rabbitMqConventionEndpointResolver =
-                    new RabbitMqConventionEndpointResolver("RabbitMq", SerializationFormat.MessagePack,
-                        environment: _settings.EnvironmentName);
+                Register.DefaultEndpointResolver(rabbitMqConventionEndpointResolver),
+                RegisterContext(),
+                Register.CommandInterceptors(new DefaultCommandLoggingInterceptor(_log)),
+                Register.EventInterceptors(new DefaultEventLoggingInterceptor(_log))
+            };
 
-                var registrations = new List<IRegistration>
-                {
-                    Register.DefaultEndpointResolver(rabbitMqConventionEndpointResolver),
-                    RegisterContext(),
-                    Register.CommandInterceptors(new DefaultCommandLoggingInterceptor(_log)),
-                    Register.EventInterceptors(new DefaultEventLoggingInterceptor(_log))
-                };
+            var engine = new CqrsEngine(_log, ctx.Resolve<IDependencyResolver>(), messagingEngine,
+                new DefaultEndpointProvider(), true, registrations.ToArray());
 
-                var engine = new CqrsEngine(_log, ctx.Resolve<IDependencyResolver>(), messagingEngine,
-                    new DefaultEndpointProvider(), true, registrations.ToArray());
+            engine.StartPublishers();
 
-                engine.StartPublishers();
-
-                return engine;
-            }
+            return engine;
         }
 
         private IRegistration RegisterContext()
