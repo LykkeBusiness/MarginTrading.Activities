@@ -21,17 +21,25 @@ namespace MarginTrading.Activities.Services
         private readonly IComponentContext _componentContext;
         private readonly ILog _log;
 
-        private ICqrsEngine _cqrsEngine;
+        private static readonly object Lock = new object();
+
+        private static ICqrsEngine _cqrsEngine;
+
         private ICqrsEngine CqrsEngine
         {
             get
             {
-                if (_cqrsEngine != null)
+                if (_cqrsEngine == null)
                 {
-                    return _cqrsEngine;
+                    lock (Lock)
+                    {
+                        if (_cqrsEngine == null)
+                        {
+                            _cqrsEngine = _componentContext.Resolve<ICqrsEngine>();
+                        }
+                    }
                 }
 
-                _cqrsEngine = _componentContext.Resolve<ICqrsEngine>();
                 return _cqrsEngine;
             }
         }

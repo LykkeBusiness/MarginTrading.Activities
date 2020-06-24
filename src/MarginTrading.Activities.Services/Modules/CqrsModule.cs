@@ -29,6 +29,8 @@ namespace MarginTrading.Activities.Services.Modules
         private readonly CqrsSettings _settings;
         private readonly ILog _log;
 
+        private static readonly object Lock = new object();
+
         public CqrsModule(CqrsSettings settings, ILog log)
         {
             _settings = settings;
@@ -64,32 +66,38 @@ namespace MarginTrading.Activities.Services.Modules
                 new[] {"Saga", "CommandsHandler", "Projection"}.Any(ending => t.Name.EndsWith(ending))).AsSelf();
 
             builder.Register(ctx =>
-            {
-                var context = ctx.Resolve<IComponentContext>();
-                return CreateEngine(context, messagingEngine);
-            }).As<ICqrsEngine>().SingleInstance();
+                {
+                    var context = ctx.Resolve<IComponentContext>();
+                    return CreateEngine(context, messagingEngine);
+                })
+                .As<ICqrsEngine>()
+                .AutoActivate()
+                .SingleInstance();
         }
 
         private CqrsEngine CreateEngine(IComponentContext ctx, IMessagingEngine messagingEngine)
         {
-            var rabbitMqConventionEndpointResolver =
-                new RabbitMqConventionEndpointResolver("RabbitMq", SerializationFormat.MessagePack,
-                    environment: _settings.EnvironmentName);
-
-            var registrations = new List<IRegistration>
+            lock (Lock)
             {
-                Register.DefaultEndpointResolver(rabbitMqConventionEndpointResolver),
-                RegisterContext(),
-                Register.CommandInterceptors(new DefaultCommandLoggingInterceptor(_log)),
-                Register.EventInterceptors(new DefaultEventLoggingInterceptor(_log))
-            };
+                var rabbitMqConventionEndpointResolver =
+                    new RabbitMqConventionEndpointResolver("RabbitMq", SerializationFormat.MessagePack,
+                        environment: _settings.EnvironmentName);
 
-            var engine = new CqrsEngine(_log, ctx.Resolve<IDependencyResolver>(), messagingEngine,
-                new DefaultEndpointProvider(), true, registrations.ToArray());
-            
-            engine.StartPublishers();
+                var registrations = new List<IRegistration>
+                {
+                    Register.DefaultEndpointResolver(rabbitMqConventionEndpointResolver),
+                    RegisterContext(),
+                    Register.CommandInterceptors(new DefaultCommandLoggingInterceptor(_log)),
+                    Register.EventInterceptors(new DefaultEventLoggingInterceptor(_log))
+                };
 
-            return engine;
+                var engine = new CqrsEngine(_log, ctx.Resolve<IDependencyResolver>(), messagingEngine,
+                    new DefaultEndpointProvider(), true, registrations.ToArray());
+
+                engine.StartPublishers();
+
+                return engine;
+            }
         }
 
         private IRegistration RegisterContext()
