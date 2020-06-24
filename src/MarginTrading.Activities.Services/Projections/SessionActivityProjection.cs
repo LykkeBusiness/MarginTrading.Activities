@@ -12,7 +12,7 @@ using MarginTrading.Activities.Services.Abstractions;
 
 namespace MarginTrading.Activities.Services.Projections
 {
-    public class SessionActivityProjection : IStartable
+    public class SessionActivityProjection : ISubscriber
     {
         private readonly IRabbitMqSubscriberService _rabbitMqSubscriberService;
         private readonly ActivitiesSettings _settings;

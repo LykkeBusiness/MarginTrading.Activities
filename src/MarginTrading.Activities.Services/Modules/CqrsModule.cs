@@ -64,10 +64,13 @@ namespace MarginTrading.Activities.Services.Modules
                 new[] {"Saga", "CommandsHandler", "Projection"}.Any(ending => t.Name.EndsWith(ending))).AsSelf();
 
             builder.Register(ctx =>
-            {
-                var context = ctx.Resolve<IComponentContext>();
-                return CreateEngine(context, messagingEngine);
-            }).As<ICqrsEngine>().SingleInstance();
+                {
+                    var context = ctx.Resolve<IComponentContext>();
+                    return CreateEngine(context, messagingEngine);
+                })
+                .As<ICqrsEngine>()
+                .AutoActivate()
+                .SingleInstance();
         }
 
         private CqrsEngine CreateEngine(IComponentContext ctx, IMessagingEngine messagingEngine)
@@ -86,7 +89,7 @@ namespace MarginTrading.Activities.Services.Modules
 
             var engine = new CqrsEngine(_log, ctx.Resolve<IDependencyResolver>(), messagingEngine,
                 new DefaultEndpointProvider(), true, registrations.ToArray());
-            
+
             engine.StartPublishers();
 
             return engine;

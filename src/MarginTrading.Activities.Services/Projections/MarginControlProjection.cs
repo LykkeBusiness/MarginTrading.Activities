@@ -18,7 +18,7 @@ using OrderStatusContract = MarginTrading.Backend.Contracts.Orders.OrderStatusCo
 
 namespace MarginTrading.Activities.Services.Projections
 {
-    public class MarginControlProjection : IStartable
+    public class MarginControlProjection : ISubscriber
     {
         private readonly IRabbitMqSubscriberService _rabbitMqSubscriberService;
         private readonly ActivitiesSettings _settings;
