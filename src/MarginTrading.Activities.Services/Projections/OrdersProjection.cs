@@ -14,7 +14,7 @@ using MarginTrading.Backend.Contracts.Activities;
 using MarginTrading.Backend.Contracts.Events;
 using MarginTrading.Backend.Contracts.Orders;
 using MarginTrading.Backend.Contracts.TradeMonitoring;
-using MarginTrading.SettingsService.Contracts.AssetPair;
+using MarginTrading.AssetService.Contracts.AssetPair;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using OrderStatusContract = MarginTrading.Backend.Contracts.Orders.OrderStatusContract;

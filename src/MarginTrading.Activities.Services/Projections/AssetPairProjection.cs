@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Common.Log;
 using JetBrains.Annotations;
 using MarginTrading.Activities.Services.Abstractions;
-using MarginTrading.SettingsService.Contracts.AssetPair;
+using MarginTrading.AssetService.Contracts.AssetPair;
 
 namespace MarginTrading.Activities.Services.Projections
 {

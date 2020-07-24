@@ -19,7 +19,7 @@ using MarginTrading.AccountsManagement.Contracts.Events;
 using MarginTrading.Activities.Core.Settings;
 using MarginTrading.Activities.Services.Projections;
 using MarginTrading.Backend.Contracts.Events;
-using MarginTrading.SettingsService.Contracts.AssetPair;
+using MarginTrading.AssetService.Contracts.AssetPair;
 
 namespace MarginTrading.Activities.Services.Modules
 {
