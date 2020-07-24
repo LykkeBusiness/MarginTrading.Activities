@@ -6,8 +6,8 @@ using System.Linq;
 using System.Threading;
 using Autofac;
 using MarginTrading.Activities.Services.Abstractions;
-using MarginTrading.SettingsService.Contracts;
-using MarginTrading.SettingsService.Contracts.AssetPair;
+using MarginTrading.AssetService.Contracts;
+using MarginTrading.AssetService.Contracts.AssetPair;
 
 namespace MarginTrading.Activities.Services
 {

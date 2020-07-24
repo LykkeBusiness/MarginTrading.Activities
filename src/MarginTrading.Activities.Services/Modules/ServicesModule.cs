@@ -9,7 +9,7 @@ using Lykke.MarginTrading.Activities.Contracts.Models;
 using MarginTrading.Activities.Core.Settings;
 using MarginTrading.Activities.Services.Abstractions;
 using MarginTrading.Activities.Services.Projections;
-using MarginTrading.SettingsService.Contracts;
+using MarginTrading.AssetService.Contracts;
 
 namespace MarginTrading.Activities.Services.Modules
 {
@@ -62,14 +62,14 @@ namespace MarginTrading.Activities.Services.Modules
             //External
             
             var settingsClientGeneratorBuilder = HttpClientGenerator
-                .BuildForUrl(_settings.MarginTradingSettingsServiceClient.ServiceUrl)
-                .WithServiceName<LykkeErrorResponse>($"MT Settings [{_settings.MarginTradingSettingsServiceClient.ServiceUrl}]")
+                .BuildForUrl(_settings.MarginTradingAssetServiceClient.ServiceUrl)
+                .WithServiceName<LykkeErrorResponse>($"MT Settings [{_settings.MarginTradingAssetServiceClient.ServiceUrl}]")
                 .WithRetriesStrategy(new LinearRetryStrategy(TimeSpan.FromMilliseconds(30), 3));
 
-            if (!string.IsNullOrWhiteSpace(_settings.MarginTradingSettingsServiceClient.ApiKey))
+            if (!string.IsNullOrWhiteSpace(_settings.MarginTradingAssetServiceClient.ApiKey))
             {
                 settingsClientGeneratorBuilder = settingsClientGeneratorBuilder
-                    .WithApiKey(_settings.MarginTradingSettingsServiceClient.ApiKey);
+                    .WithApiKey(_settings.MarginTradingAssetServiceClient.ApiKey);
             }
 
             builder.RegisterInstance(settingsClientGeneratorBuilder.Create().Generate<IAssetPairsApi>())
