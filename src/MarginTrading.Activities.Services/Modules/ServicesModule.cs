@@ -62,14 +62,14 @@ namespace MarginTrading.Activities.Services.Modules
             //External
             
             var settingsClientGeneratorBuilder = HttpClientGenerator
-                .BuildForUrl(_settings.MarginTradingAssetServiceClient.ServiceUrl)
-                .WithServiceName<LykkeErrorResponse>($"MT Settings [{_settings.MarginTradingAssetServiceClient.ServiceUrl}]")
+                .BuildForUrl(_settings.MarginTradingSettingsServiceClient.ServiceUrl)
+                .WithServiceName<LykkeErrorResponse>($"MT Settings [{_settings.MarginTradingSettingsServiceClient.ServiceUrl}]")
                 .WithRetriesStrategy(new LinearRetryStrategy(TimeSpan.FromMilliseconds(30), 3));
 
-            if (!string.IsNullOrWhiteSpace(_settings.MarginTradingAssetServiceClient.ApiKey))
+            if (!string.IsNullOrWhiteSpace(_settings.MarginTradingSettingsServiceClient.ApiKey))
             {
                 settingsClientGeneratorBuilder = settingsClientGeneratorBuilder
-                    .WithApiKey(_settings.MarginTradingAssetServiceClient.ApiKey);
+                    .WithApiKey(_settings.MarginTradingSettingsServiceClient.ApiKey);
             }
 
             builder.RegisterInstance(settingsClientGeneratorBuilder.Create().Generate<IAssetPairsApi>())
