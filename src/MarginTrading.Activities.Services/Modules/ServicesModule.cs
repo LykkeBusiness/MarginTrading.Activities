@@ -9,7 +9,7 @@ using Lykke.MarginTrading.Activities.Contracts.Models;
 using MarginTrading.Activities.Core.Settings;
 using MarginTrading.Activities.Services.Abstractions;
 using MarginTrading.Activities.Services.Projections;
-using MarginTrading.SettingsService.Contracts;
+using MarginTrading.AssetService.Contracts;
 
 namespace MarginTrading.Activities.Services.Modules
 {
