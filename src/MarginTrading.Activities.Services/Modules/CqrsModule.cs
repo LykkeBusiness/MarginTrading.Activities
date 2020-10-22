@@ -20,6 +20,7 @@ using MarginTrading.Activities.Core.Settings;
 using MarginTrading.Activities.Services.Projections;
 using MarginTrading.Backend.Contracts.Events;
 using MarginTrading.AssetService.Contracts.AssetPair;
+using MarginTrading.AssetService.Contracts.Products;
 
 namespace MarginTrading.Activities.Services.Modules
 {
@@ -122,11 +123,11 @@ namespace MarginTrading.Activities.Services.Modules
             IBoundedContextRegistration contextRegistration)
         {
             contextRegistration.ListeningEvents(
-                    typeof(AssetPairChangedEvent))
+                    typeof(ProductChangedEvent))
                 .From(_settings.ContextNames.SettingsService)
-                .On(EventsRoute)
+                .On(nameof(ProductChangedEvent))
                 .WithProjection(
-                    typeof(AssetPairProjection), _settings.ContextNames.SettingsService);
+                    typeof(ProductChangedProjection), _settings.ContextNames.SettingsService);
         }
         
         private void RegisterOrderPlacementRejectedProjection(
