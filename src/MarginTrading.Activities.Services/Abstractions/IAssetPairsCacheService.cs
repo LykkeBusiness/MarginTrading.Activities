@@ -1,6 +1,7 @@
 // Copyright (c) 2019 Lykke Corp.
 // See the LICENSE file in the project root for more information.
 
+using System;
 using MarginTrading.AssetService.Contracts.AssetPair;
 
 namespace MarginTrading.Activities.Services.Abstractions
@@ -13,5 +14,7 @@ namespace MarginTrading.Activities.Services.Abstractions
         void AddOrUpdate(AssetPairContract assetPair);
 
         void Remove(string assetPairId);
+
+        DateTime InitTimestamp { get; }
     }
 }

@@ -21,5 +21,7 @@ namespace MarginTrading.Activities.Core.Settings
         public CqrsSettings Cqrs { get; set; }
         
         public ConsumersSettings Consumers { get; set; }
+
+        public DefaultLegalEntitySettings LegalEntitySettings { get; set; }
     }
 }
