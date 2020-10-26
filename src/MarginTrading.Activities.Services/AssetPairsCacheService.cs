@@ -1,6 +1,7 @@
 // Copyright (c) 2019 Lykke Corp.
 // See the LICENSE file in the project root for more information.
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -18,6 +19,8 @@ namespace MarginTrading.Activities.Services
         private Dictionary<string, AssetPairContract> _assetPairs = new Dictionary<string, AssetPairContract>();
         
         private readonly IAssetPairsApi _assetPairsApi;
+
+        public DateTime InitTimestamp { get; private set; }
 
         public AssetPairsCacheService(IAssetPairsApi assetPairsApi)
         {
@@ -68,6 +71,7 @@ namespace MarginTrading.Activities.Services
             }
         }
 
+
         public void Start()
         {
             _readerWriterLockSlim.EnterWriteLock();
@@ -75,6 +79,7 @@ namespace MarginTrading.Activities.Services
             try
             {
                 _assetPairs = _assetPairsApi.List().GetAwaiter().GetResult().ToDictionary(a => a.Id);
+                InitTimestamp = DateTime.UtcNow;
             }
             finally
             {

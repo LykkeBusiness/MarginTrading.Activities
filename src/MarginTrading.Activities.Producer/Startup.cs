@@ -90,6 +90,7 @@ namespace MarginTrading.Activities.Producer
         [UsedImplicitly]
         public void ConfigureContainer(ContainerBuilder builder)
         {
+            builder.RegisterModule(new SettingsModule(_mtSettingsManager.CurrentValue));
             builder.RegisterModule(new ActivitiesModule(_mtSettingsManager, LogLocator.Log));
             builder.RegisterModule(new CqrsModule(_mtSettingsManager.CurrentValue.ActivitiesProducer.Cqrs, LogLocator.Log));
             builder.RegisterModule(new ServicesModule(_mtSettingsManager.CurrentValue));
