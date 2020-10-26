@@ -22,6 +22,7 @@ namespace MarginTrading.Activities.Core.Settings
         
         public ConsumersSettings Consumers { get; set; }
 
-        public DefaultLegalEntitySettings LegalEntitySettings { get; set; }
+        [Optional]
+        public DefaultLegalEntitySettings LegalEntitySettings { get; set; } = new DefaultLegalEntitySettings();
     }
 }
