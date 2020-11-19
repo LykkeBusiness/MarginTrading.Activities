@@ -1,6 +1,7 @@
 // Copyright (c) 2019 Lykke Corp.
 // See the LICENSE file in the project root for more information.
 
+using System;
 using System.Threading.Tasks;
 using Common.Log;
 using JetBrains.Annotations;
@@ -35,15 +36,27 @@ namespace MarginTrading.Activities.Services.Projections
         }
 
         [UsedImplicitly]
-        public Task Handle(ProductChangedEvent @event)
+        public async Task Handle(ProductChangedEvent @event)
         {
             //deduplication is not required, it's ok if an object is updated multiple times
+            switch (@event.ChangeType)
+            {
+                case ChangeType.Creation:
+                case ChangeType.Edition:
+                    if (!@event.NewValue.IsStarted) return;
+                    break;
+                case ChangeType.Deletion:
+                    if (!@event.OldValue.IsStarted) return;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
 
             if (@event.Timestamp < _assetPairsCache.InitTimestamp)
             {
                 _log.WriteInfo(nameof(ProductChangedProjection), nameof(Handle),
                     $"Product changed event with eventId: {@event.EventId}, will be ignored cause event Timestamp is before cache init timestamp:{_assetPairsCache.InitTimestamp}");
-                return Task.CompletedTask;
+                return;
             }
 
             if (@event.ChangeType == ChangeType.Deletion)
@@ -54,8 +67,6 @@ namespace MarginTrading.Activities.Services.Projections
             {
                 _assetPairsCache.AddOrUpdate(Map(@event.NewValue, _legalEntitySettings.DefaultLegalEntity));
             }
-
-            return Task.CompletedTask;
         }
 
         private static AssetPairContract Map(ProductContract product, string legalEntity)
