@@ -11,5 +11,7 @@ namespace MarginTrading.Activities.Core.Settings
         public ActivitiesSettings ActivitiesProducer { get; set; }
         
         public ServiceClientSettings MarginTradingSettingsServiceClient { get; set; }
+
+        public ServiceClientSettings MarginTradingAccountManagementServiceClient { get; set; }
     }
 }
