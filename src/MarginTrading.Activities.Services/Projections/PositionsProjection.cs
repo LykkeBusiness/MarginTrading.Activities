@@ -116,7 +116,8 @@ namespace MarginTrading.Activities.Services.Projections
                         position.Direction.ToString(),
                         deal.Volume.ToUiString(assetPair?.Accuracy),
                         assetPair?.Name ?? position.AssetPairId,
-                        deal.Fpl.ToUiString(assetPair?.Accuracy)
+                        deal.Fpl.ToUiString(assetPair?.Accuracy),
+                        position.AccountAssetId
                     };
                     
                     break;
@@ -131,7 +132,8 @@ namespace MarginTrading.Activities.Services.Projections
                         position.Direction.ToString(),
                         deal.Volume.ToUiString(assetPair?.Accuracy),
                         assetPair?.Name ?? position.AssetPairId,
-                        deal.Fpl.ToUiString(assetPair?.Accuracy)
+                        deal.Fpl.ToUiString(assetPair?.Accuracy),
+                        position.AccountAssetId
                     };
                     
                     break;
