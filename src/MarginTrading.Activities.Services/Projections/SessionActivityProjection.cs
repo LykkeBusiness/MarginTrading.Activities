@@ -19,6 +19,7 @@ namespace MarginTrading.Activities.Services.Projections
         private readonly IActivitiesSender _cqrsSender;
         private readonly IIdentityGenerator _identityGenerator;
         private readonly IDateService _dateService;
+        private readonly IAccountsService _accountsService;
         private readonly ILog _log;
         
         public SessionActivityProjection(IRabbitMqSubscriberService rabbitMqSubscriberService,
@@ -26,6 +27,7 @@ namespace MarginTrading.Activities.Services.Projections
             IActivitiesSender cqrsSender,
             IIdentityGenerator identityGenerator,
             IDateService dateService,
+            IAccountsService accountsService,
             ILog log)
         {
             _rabbitMqSubscriberService = rabbitMqSubscriberService;
@@ -33,6 +35,7 @@ namespace MarginTrading.Activities.Services.Projections
             _cqrsSender = cqrsSender;
             _identityGenerator = identityGenerator;
             _dateService = dateService;
+            _accountsService = accountsService;
             _log = log;
         }
         
@@ -44,21 +47,22 @@ namespace MarginTrading.Activities.Services.Projections
                 _rabbitMqSubscriberService.GetMsgPackDeserializer<SessionActivity>());
         }
 
-        private Task HandleSessionActivityEvent(SessionActivity sessionEvent)
+        private async Task HandleSessionActivityEvent(SessionActivity sessionEvent)
         {
             var activityType = ActivityType.None;
             var descriptionAttributes = new List<string>();
             var relatedIds = new string[0];
-            
+            var accountName = await _accountsService.GetAccountNameByAccountId(sessionEvent.AccountId);
+
             switch (sessionEvent.Type)
             {
                 case SessionActivityType.Login:
                     activityType = ActivityType.SessionLogIn;
-                    descriptionAttributes.AddRange(GetDescriptionForLogInLogOut(sessionEvent));
+                    descriptionAttributes.AddRange(GetDescriptionForLogInLogOut(sessionEvent, accountName));
                     break;
                 case SessionActivityType.SignOut:
                     activityType = ActivityType.SessionSignOut;
-                    descriptionAttributes.AddRange(GetDescriptionForLogInLogOut(sessionEvent));
+                    descriptionAttributes.AddRange(GetDescriptionForLogInLogOut(sessionEvent, accountName));
                     break;
                 case SessionActivityType.TimeOut:
                     activityType = ActivityType.SessionTimeOutTermination;
@@ -74,14 +78,14 @@ namespace MarginTrading.Activities.Services.Projections
                     break;
                 case SessionActivityType.OnBehalfSupportConnected:
                     activityType = ActivityType.SessionConnectedByOnBehalfSupport;
-                    descriptionAttributes.AddRange(GetDescriptionForOnBehalfSupport(sessionEvent));
+                    descriptionAttributes.AddRange(GetDescriptionForOnBehalfSupport(sessionEvent, accountName));
                     break;
                 case SessionActivityType.OnBehalfSupportDisconnected:
                     activityType = ActivityType.SessionDisconnectedByOnBehalfSupport;
-                    descriptionAttributes.AddRange(GetDescriptionForOnBehalfSupport(sessionEvent));
+                    descriptionAttributes.AddRange(GetDescriptionForOnBehalfSupport(sessionEvent, accountName));
                     break;
                 default:
-                    return Task.CompletedTask;
+                    return;
             }
 
             var activity = new Activity(
@@ -96,8 +100,6 @@ namespace MarginTrading.Activities.Services.Projections
             );
 
             _cqrsSender.PublishActivity(activity);
-            
-            return Task.CompletedTask;
         }
 
         private static IEnumerable<string> GetDescriptionForTermination(SessionActivity sessionEvent)
@@ -108,19 +110,21 @@ namespace MarginTrading.Activities.Services.Projections
             };
         }
 
-        private static IEnumerable<string> GetDescriptionForLogInLogOut(SessionActivity sessionEvent)
+        private static IEnumerable<string> GetDescriptionForLogInLogOut(SessionActivity sessionEvent, string accountName)
         {
+            var accountId = string.IsNullOrEmpty(accountName) ? sessionEvent.AccountId : accountName;
             return new []
             {
-                sessionEvent.UserName, sessionEvent.AccountId, sessionEvent.SessionId.ToString(),
+                sessionEvent.UserName, accountId, sessionEvent.SessionId.ToString(),
             };
         }
 
-        private static IEnumerable<string> GetDescriptionForOnBehalfSupport(SessionActivity sessionEvent)
+        private static IEnumerable<string> GetDescriptionForOnBehalfSupport(SessionActivity sessionEvent, string accountName)
         {
+            var accountId = string.IsNullOrEmpty(accountName) ? sessionEvent.AccountId : accountName;
             return new []
             {
-                sessionEvent.AccountId, sessionEvent.UserName,
+                accountId, sessionEvent.UserName,
             };
         }
     }

@@ -6,6 +6,7 @@ using Autofac;
 using Lykke.HttpClientGenerator;
 using Lykke.HttpClientGenerator.Retries;
 using Lykke.MarginTrading.Activities.Contracts.Models;
+using MarginTrading.AccountsManagement.Contracts;
 using MarginTrading.Activities.Core.Settings;
 using MarginTrading.Activities.Services.Abstractions;
 using MarginTrading.Activities.Services.Projections;
@@ -40,9 +41,13 @@ namespace MarginTrading.Activities.Services.Modules
                 .As<IAssetPairsCacheService>()
                 .As<IStartable>()
                 .SingleInstance();
-            
+
+            builder.RegisterType<AccountService>()
+                .As<IAccountsService>()
+                .SingleInstance();
+
             //Projections
-            
+
             builder.RegisterType<OrdersProjection>()
                 .As<ISubscriber>()
                 .SingleInstance();
@@ -74,6 +79,21 @@ namespace MarginTrading.Activities.Services.Modules
 
             builder.RegisterInstance(settingsClientGeneratorBuilder.Create().Generate<IAssetPairsApi>())
                 .As<IAssetPairsApi>()
+                .SingleInstance();
+
+            var accountManagementGeneratorBuilder = HttpClientGenerator
+                .BuildForUrl(_settings.MarginTradingAccountManagementServiceClient.ServiceUrl)
+                .WithServiceName<LykkeErrorResponse>($"MT Settings [{_settings.MarginTradingAccountManagementServiceClient.ServiceUrl}]")
+                .WithRetriesStrategy(new LinearRetryStrategy(TimeSpan.FromMilliseconds(30), 3));
+
+            if (!string.IsNullOrWhiteSpace(_settings.MarginTradingAccountManagementServiceClient.ApiKey))
+            {
+                accountManagementGeneratorBuilder = accountManagementGeneratorBuilder
+                    .WithApiKey(_settings.MarginTradingAccountManagementServiceClient.ApiKey);
+            }
+
+            builder.RegisterInstance(accountManagementGeneratorBuilder.Create().Generate<IAccountsApi>())
+                .As<IAccountsApi>()
                 .SingleInstance();
         }
     }
