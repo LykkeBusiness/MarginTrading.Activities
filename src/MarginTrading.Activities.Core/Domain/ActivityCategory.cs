@@ -12,6 +12,7 @@ namespace MarginTrading.Activities.Core.Domain
         MarginControl = 4,
         Account = 5,
         Session = 6,
-        Settings = 7
+        Settings = 7,
+        CloseAll = 8
     }
 }
