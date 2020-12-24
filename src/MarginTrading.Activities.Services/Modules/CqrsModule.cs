@@ -21,6 +21,7 @@ using MarginTrading.Activities.Services.Projections;
 using MarginTrading.Backend.Contracts.Events;
 using MarginTrading.AssetService.Contracts.AssetPair;
 using MarginTrading.AssetService.Contracts.Products;
+using MarginTrading.Backend.Contracts.Workflow.Liquidation.Events;
 
 namespace MarginTrading.Activities.Services.Modules
 {
@@ -102,7 +103,7 @@ namespace MarginTrading.Activities.Services.Modules
 
             RegisterAccountsProjection(contextRegistration);
             RegisterAssetPairsProjection(contextRegistration);
-            RegisterOrderPlacementRejectedProjection(contextRegistration);
+            RegisterTradingEngineProjections(contextRegistration);
             
             contextRegistration.PublishingEvents(typeof(ActivityEvent)).With(EventsRoute);
 
@@ -130,7 +131,7 @@ namespace MarginTrading.Activities.Services.Modules
                     typeof(ProductChangedProjection), _settings.ContextNames.SettingsService);
         }
         
-        private void RegisterOrderPlacementRejectedProjection(
+        private void RegisterTradingEngineProjections(
             IBoundedContextRegistration contextRegistration)
         {
             contextRegistration.ListeningEvents(
@@ -139,6 +140,16 @@ namespace MarginTrading.Activities.Services.Modules
                 .On(EventsRoute)
                 .WithProjection(
                     typeof(OrderPlacementRejectedProjection), _settings.ContextNames.TradingEngine);
+            
+            contextRegistration.ListeningEvents(
+                    typeof(LiquidationStartedEvent),
+                    typeof(LiquidationResumedEvent),
+                    typeof(LiquidationFailedEvent),
+                    typeof(LiquidationFinishedEvent))
+                .From(_settings.ContextNames.TradingEngine)
+                .On(EventsRoute)
+                .WithProjection(
+                    typeof(LiquidationProjection), _settings.ContextNames.TradingEngine);
         }
     }
 }

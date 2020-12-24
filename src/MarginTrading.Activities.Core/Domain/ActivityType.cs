@@ -120,6 +120,10 @@ namespace MarginTrading.Activities.Core.Domain
         SettingsChangedTabRenamedClosedPositions = 7088,
         SettingsChangedTabRenamedWatchlists = 7089,
 
-
+        //Close All
+        CloseAllStarted = 8000,
+        CloseAllFailed = 8001,
+        CloseAllRestarted = 8002,
+        CloseAllFinished = 8003
     }
 }
