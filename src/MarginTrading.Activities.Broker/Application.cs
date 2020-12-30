@@ -39,25 +39,23 @@ namespace MarginTrading.Activities.Broker
         protected override string ExchangeName => _settings.RabbitMqQueues.Activities.ExchangeName;
         public override string RoutingKey => nameof(ActivityEvent);
         
-        protected override Task HandleMessage(ActivityEvent e)
+        protected override async Task HandleMessage(ActivityEvent e)
         {
             var contract = e.Activity;
             
             var activity = new Activity(contract.Id, contract.AccountId, contract.Instrument, contract.EventSourceId,
                 contract.Timestamp, contract.Event.ToType<ActivityType>(), contract.DescriptionAttributes, contract.RelatedIds);
 
-            return Task.Run(async () =>
+            try
             {
-                try
-                {
-                    await _activitiesRepository.AddAsync(activity);
-                }
-                catch (Exception ex)
-                {
-                    await _log.WriteErrorAsync(nameof(Broker), nameof(HandleMessage),
-                        activity.ToJson(), ex);
-                }
-            });
+                await _activitiesRepository.AddAsync(activity);
+            }
+            catch (Exception ex)
+            {
+                await _log.WriteErrorAsync(nameof(Broker), nameof(HandleMessage),
+                    activity.ToJson(), ex);
+                throw;
+            }
         }
     }
 }
