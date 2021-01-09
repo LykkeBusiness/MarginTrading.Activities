@@ -8,6 +8,6 @@ namespace MarginTrading.Activities.Core.Repositories
 {
     public interface IActivitiesRepository
     {
-        Task AddAsync(IActivity activity);
+        Task InsertIfNotExist(IActivity activity);
     }
 }
