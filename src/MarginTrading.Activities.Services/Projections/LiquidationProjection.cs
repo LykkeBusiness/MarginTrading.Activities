@@ -11,20 +11,24 @@ namespace MarginTrading.Activities.Services.Projections
     {
         private readonly IActivitiesSender _publisher;
         private readonly IIdentityGenerator _identityGenerator;
+        private readonly IAccountsService _accountsService;
 
-        public LiquidationProjection(IActivitiesSender publisher, IIdentityGenerator identityGenerator)
+        public LiquidationProjection(IActivitiesSender publisher, IIdentityGenerator identityGenerator, IAccountsService accountsService)
         {
             _publisher = publisher;
             _identityGenerator = identityGenerator;
+            _accountsService = accountsService;
         }
         
-        public Task Handle(LiquidationStartedEvent @event)
+        public async Task Handle(LiquidationStartedEvent @event)
         {
             if (@event.LiquidationType != LiquidationTypeContract.Forced)
             {
-                return Task.CompletedTask;
+                return;
             }
 
+            var accountName = await _accountsService.GetAccountNameByAccountId(@event.AccountId);
+            
             var activityId = _identityGenerator.GenerateId();
             var activity = new Activity(id: activityId,
                 accountId: @event.AccountId,
@@ -32,12 +36,10 @@ namespace MarginTrading.Activities.Services.Projections
                 eventSourceId: @event.OperationId,
                 @event.CreationTime,
                 @event: ActivityType.CloseAllStarted,
-                descriptionAttributes: Array.Empty<string>(),
+                descriptionAttributes: new [] { accountName },
                 relatedIds: Array.Empty<string>());
 
             _publisher.PublishActivity(activity);
-
-            return Task.CompletedTask;
         }
 
         public Task Handle(LiquidationResumedEvent @event)
