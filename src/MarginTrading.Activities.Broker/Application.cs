@@ -44,7 +44,7 @@ namespace MarginTrading.Activities.Broker
             var contract = e.Activity;
             if (string.IsNullOrEmpty(contract.Id))
             {
-                throw new ArgumentException("Id is empty", nameof(contract.Id));
+                throw new ArgumentException($"Id is empty for {e.ToJson()}", nameof(contract.Id));
             }
             
             var activity = new Activity(contract.Id, contract.AccountId, contract.Instrument, contract.EventSourceId,
