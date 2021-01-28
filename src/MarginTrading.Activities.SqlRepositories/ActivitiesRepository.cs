@@ -30,7 +30,8 @@ namespace MarginTrading.Activities.SqlRepositories
 [Event] [nvarchar](128) NOT NULL,
 [DescriptionAttributes] [nvarchar](MAX) NOT NULL,
 [RelatedIds] [nvarchar](MAX) NOT NULL,
-INDEX IX_{0}_Base (AccountId, Instrument, EventSourceId, Timestamp, Category, Event)
+INDEX IX_{0}_Base (AccountId, Instrument, EventSourceId, Timestamp, Category, Event),
+INDEX IX_{0}_Id UNIQUE (Id)
 );";
         
         private readonly string _connectionString;
@@ -52,33 +53,33 @@ INDEX IX_{0}_Base (AccountId, Instrument, EventSourceId, Timestamp, Category, Ev
                 try { conn.CreateTableIfDoesntExists(CreateTableScript, TableName); }
                 catch (Exception ex)
                 {
-                    _log?.WriteErrorAsync(TableName, "CreateTableIfDoesntExists", null, ex);
+                    _log.WriteError("CreateTableIfDoesntExists", $"Exception while table {TableName} creation", ex);
                     throw;
                 }
             }
         }
 
-        public async Task AddAsync(IActivity activity)
+        public async Task InsertIfNotExist(IActivity activity)
         {
-            ActivityEntity entity = null;
-            
             using (var conn = new SqlConnection(_connectionString))
             {
-                try
+                var entity = ActivityEntity.Create(activity);
+                var sql = @$"
+begin
+    if not exists(select 1 from {TableName} where Id = @{nameof(ActivityEntity.Id)})
+    begin
+        insert into {TableName} ({GetColumns}) values ({GetFields})
+    end
+end
+";
+                var rowsAffected = await conn.ExecuteAsync(sql, entity);
+                if (rowsAffected != 1)
                 {
-                    entity = ActivityEntity.Create(activity);
-                    var sql = $"insert into {TableName} ({GetColumns}) values ({GetFields})";
-                    await conn.ExecuteAsync(sql, entity);
-                }
-                catch (Exception ex)
-                {
-                    var msg = $"Error {ex.Message} \n" +
-                              $"Entity <{nameof(ActivityEntity)}>: \n" +
-                              entity?.ToJson() ?? "Entity is empty";
-                    
-                    _log?.WriteWarning(nameof(ActivitiesRepository), nameof(AddAsync), msg);
-                    
-                    throw new Exception(msg);
+                    await _log.WriteWarningAsync(
+                        nameof(ActivitiesRepository),
+                        nameof(InsertIfNotExist),
+                        $"Activity {entity.ToJson()} not inserted in db, " +
+                        $"because row with Id {entity.Id} already exists");
                 }
             }
         }

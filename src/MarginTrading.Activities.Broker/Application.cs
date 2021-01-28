@@ -42,13 +42,17 @@ namespace MarginTrading.Activities.Broker
         protected override async Task HandleMessage(ActivityEvent e)
         {
             var contract = e.Activity;
+            if (string.IsNullOrEmpty(contract.Id))
+            {
+                throw new ArgumentException("Id is empty", nameof(contract.Id));
+            }
             
             var activity = new Activity(contract.Id, contract.AccountId, contract.Instrument, contract.EventSourceId,
                 contract.Timestamp, contract.Event.ToType<ActivityType>(), contract.DescriptionAttributes, contract.RelatedIds);
 
             try
             {
-                await _activitiesRepository.AddAsync(activity);
+                await _activitiesRepository.InsertIfNotExist(activity);
             }
             catch (Exception ex)
             {
