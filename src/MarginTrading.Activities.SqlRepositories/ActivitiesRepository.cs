@@ -23,7 +23,7 @@ namespace MarginTrading.Activities.SqlRepositories
                                                  @"[OID] [bigint] NOT NULL IDENTITY (1,1),
 [Id] [nvarchar](128) NOT NULL,
 [AccountId] [nvarchar](128) NOT NULL,
-[Instrument] [nvarchar](128) NOT NULL,
+[Instrument] [nvarchar](128) NULL,
 [EventSourceId] [nvarchar](128) NOT NULL,
 [Timestamp] [datetime] NOT NULL,
 [Category] [nvarchar](128) NOT NULL,
