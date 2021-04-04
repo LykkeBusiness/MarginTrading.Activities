@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <Version>2.4.0</Version>
+    <Version>2.4.1</Version>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <PropertyGroup>
@@ -13,7 +13,7 @@
     <PackageReference Include="Lykke.Cqrs" Version="9.0.1" />
     <PackageReference Include="Lykke.HttpClientGenerator" Version="3.0.0" />
     <PackageReference Include="Lykke.Logs" Version="7.4.0" />
-    <PackageReference Include="Lykke.MarginTrading.AccountsManagement.Contracts" Version="1.21.0" />
+    <PackageReference Include="Lykke.MarginTrading.AccountsManagement.Contracts" Version="6.1.0" />
     <PackageReference Include="Lykke.MarginTrading.BackendSnow.Contracts" Version="1.21.0" />
     <PackageReference Include="Lykke.MarginTrading.AssetService.Contracts" Version="4.11.0" />
     <PackageReference Include="Lykke.Messaging" Version="6.3.1" />

@@ -7,6 +7,7 @@ using Common;
 using JetBrains.Annotations;
 using MarginTrading.AccountsManagement.Contracts.Events;
 using MarginTrading.AccountsManagement.Contracts.Models;
+using MarginTrading.AccountsManagement.Contracts.Models.AdditionalInfo;
 using MarginTrading.Activities.Core.Domain;
 using MarginTrading.Activities.Services.Abstractions;
 
@@ -38,13 +39,26 @@ namespace MarginTrading.Activities.Services.Projections
                     e.Account.Id,
                     e.ChangeTimestamp,
                     activityType,
-                    new string[0],
+                    GetDescriptionAttributes(activityType, e),
                     new string[0]);
 
                 _cqrsSender.PublishActivity(activity);
             }
             
             return Task.CompletedTask;
+        }
+
+        private string[] GetDescriptionAttributes(ActivityType activityType, AccountChangedEvent e)
+        {
+            switch (activityType)
+            {
+                case ActivityType.AccountComplexityWarningEnabled:
+                    return new[] { e.Account.Id };
+                case ActivityType.AccountComplexityWarningDisabled:
+                    return new[] { e.Account.Id, e.ActivitiesMetadata?.DeserializeJson<AccountChangeMetadata>()?.OrderId };
+                
+                default: return new string[0];
+            }
         }
 
         private List<ActivityType> GetActivityTypes(AccountChangedEvent e)
@@ -66,6 +80,9 @@ namespace MarginTrading.Activities.Services.Projections
                     if (currentAccountState == null || previousAccountState == null)
                         break;
                     
+                    var shouldShowProductComplexityWarning = (e.Account.AdditionalInfo?.DeserializeJson<AccountAdditionalInfo>().ShouldShowProductComplexityWarning).GetValueOrDefault();
+                    var previousShouldShowProductComplexityWarning = (previousAccountState.AdditionalInfo?.DeserializeJson<AccountAdditionalInfo>().ShouldShowProductComplexityWarning).GetValueOrDefault();
+
                     if(!previousAccountState.IsDisabled && currentAccountState.IsDisabled)
                         activities.Add(ActivityType.AccountTradingDisabled);
                     
@@ -77,6 +94,16 @@ namespace MarginTrading.Activities.Services.Projections
                     
                     if(previousAccountState.IsWithdrawalDisabled && !currentAccountState.IsWithdrawalDisabled)
                         activities.Add(ActivityType.AccountWithdrawalEnabled);
+
+                    if (!previousShouldShowProductComplexityWarning && shouldShowProductComplexityWarning)
+                    {
+                        activities.Add(ActivityType.AccountComplexityWarningEnabled);
+                    }
+                    
+                    if (previousShouldShowProductComplexityWarning && !shouldShowProductComplexityWarning)
+                    {
+                        activities.Add(ActivityType.AccountComplexityWarningDisabled);
+                    }
                     
                     break;
                 
