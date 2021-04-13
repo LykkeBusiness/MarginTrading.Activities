@@ -64,6 +64,8 @@ namespace Lykke.MarginTrading.Activities.Contracts.Models
         AccountWithdrawalEnabled = 5060,
         AccountClosing = 5070,
         AccountReopening = 5080,
+        AccountComplexityWarningEnabled = 5090,
+        AccountComplexityWarningDisabled = 5100,
         
         //Session
         SessionLogIn = 6010,
