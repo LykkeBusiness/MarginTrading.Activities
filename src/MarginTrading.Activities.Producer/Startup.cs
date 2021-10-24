@@ -16,6 +16,7 @@ using Lykke.Logs.MsSql.Repositories;
 using Lykke.Logs.Serilog;
 using Lykke.MarginTrading.Activities.Contracts.Api;
 using Lykke.SettingsReader;
+using Lykke.Snow.Common.Correlation;
 using Lykke.Snow.Common.Startup.Hosting;
 using Lykke.Snow.Common.Startup.Log;
 using MarginTrading.Activities.Core.Settings;
@@ -79,6 +80,7 @@ namespace MarginTrading.Activities.Producer
                 _mtSettingsManager = Configuration.LoadSettings<AppSettings>();
                 LogLocator.Log = CreateLog(Configuration, services, _mtSettingsManager);
                 services.AddSingleton<ILoggerFactory>(x => new WebHostLoggerFactory(LogLocator.Log));
+                services.AddCorrelation();
             }
             catch (Exception ex)
             {
@@ -112,6 +114,7 @@ namespace MarginTrading.Activities.Producer
                     app.UseHsts();
                 }
 
+                app.UseCorrelation();
 #if DEBUG
                 app.UseLykkeMiddleware(ServiceName, ex => ex.ToString());
 #else

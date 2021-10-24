@@ -43,6 +43,8 @@ namespace MarginTrading.Activities.SqlRepositories
         string[] IActivity.RelatedIds => string.IsNullOrEmpty(RelatedIds)
             ? new string[0]
             : RelatedIds.DeserializeJson<string[]>();
+        
+        public string CorrelationId { get; set; }
 
         public static ActivityEntity Create(IActivity activity)
         {
@@ -56,7 +58,8 @@ namespace MarginTrading.Activities.SqlRepositories
                 Category = activity.Category.ToString(),
                 Event = activity.Event.ToString(),
                 DescriptionAttributes = activity.DescriptionAttributes.ToJson(),
-                RelatedIds = activity.RelatedIds.ToJson()
+                RelatedIds = activity.RelatedIds.ToJson(),
+                CorrelationId = activity.CorrelationId
             };
         }
     }

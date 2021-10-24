@@ -4,6 +4,7 @@
 using System;
 using System.Threading.Tasks;
 using Lykke.RabbitMqBroker.Subscriber;
+using Lykke.RabbitMqBroker.Subscriber.Deserializers;
 using MarginTrading.Activities.Core.Settings;
 
 namespace MarginTrading.Activities.Services.Abstractions
