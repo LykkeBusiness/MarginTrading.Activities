@@ -25,5 +25,6 @@ namespace MarginTrading.Activities.Core.Domain.Abstractions
         string[] DescriptionAttributes { get; }
 
         string[] RelatedIds { get; }
+        string CorrelationId { get; }
     }
 }

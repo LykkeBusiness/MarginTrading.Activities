@@ -10,10 +10,14 @@ using Common;
 using Common.Log;
 using Lykke.RabbitMqBroker;
 using Lykke.RabbitMqBroker.Subscriber;
+using Lykke.RabbitMqBroker.Subscriber.Deserializers;
+using Lykke.RabbitMqBroker.Subscriber.Middleware.ErrorHandling;
+using Lykke.Snow.Common.Correlation.RabbitMq;
 using MarginTrading.Activities.Core;
 using MarginTrading.Activities.Core.Extensions;
 using MarginTrading.Activities.Core.Settings;
 using MarginTrading.Activities.Services.Abstractions;
+using Microsoft.Extensions.Logging;
 
 namespace MarginTrading.Activities.Services
 {
@@ -21,14 +25,22 @@ namespace MarginTrading.Activities.Services
     {
         private readonly ILog _logger;
         private readonly string _env;
+        private readonly ILoggerFactory _loggerFactory;
+        private readonly RabbitMqCorrelationManager _correlationManager;
 
-        private readonly ConcurrentDictionary<(RabbitMqSubscriptionSettings, int), IStopable> _subscribers =
-            new ConcurrentDictionary<(RabbitMqSubscriptionSettings, int), IStopable>(new SubscriptionSettingsWithNumberEqualityComparer());
+        private readonly ConcurrentDictionary<(RabbitMqSubscriptionSettings, int), IStartStop> _subscribers =
+            new ConcurrentDictionary<(RabbitMqSubscriptionSettings, int), IStartStop>(new SubscriptionSettingsWithNumberEqualityComparer());
 
-        public RabbitMqSubscriberService(ILog logger, ActivitiesSettings settings)
+        public RabbitMqSubscriberService(
+            ILog logger,
+            ILoggerFactory loggerFactory,
+            RabbitMqCorrelationManager correlationManager,
+            ActivitiesSettings settings)
         {
             _logger = logger;
             _env = settings.Cqrs.EnvironmentName;
+            _loggerFactory = loggerFactory;
+            _correlationManager = correlationManager;
         }
 
         public void Dispose()
@@ -62,11 +74,14 @@ namespace MarginTrading.Activities.Services
                     IsDurable = isDurable,
                 };
                 
-                var rabbitMqSubscriber = new RabbitMqSubscriber<TMessage>(subscriptionSettings,
-                        new DefaultErrorHandlingStrategy(_logger, subscriptionSettings))
+                var rabbitMqSubscriber = new RabbitMqSubscriber<TMessage>(
+                        _loggerFactory.CreateLogger<RabbitMqSubscriber<TMessage>>(),
+                        subscriptionSettings)
                     .SetMessageDeserializer(deserializer)
                     .Subscribe(handler)
-                    .SetLogger(_logger);
+                    .UseMiddleware(new ExceptionSwallowMiddleware<TMessage>(
+                        _loggerFactory.CreateLogger<ExceptionSwallowMiddleware<TMessage>>()))
+                    .SetReadHeadersAction(_correlationManager.FetchCorrelationIfExists);
 
                 if (!_subscribers.TryAdd((subscriptionSettings, consumerNumber), rabbitMqSubscriber))
                 {
