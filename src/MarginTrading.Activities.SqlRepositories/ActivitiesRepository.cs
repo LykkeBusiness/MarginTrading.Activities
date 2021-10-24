@@ -33,6 +33,17 @@ namespace MarginTrading.Activities.SqlRepositories
 INDEX IX_{0}_Base (AccountId, Instrument, EventSourceId, Timestamp, Category, Event),
 INDEX IX_{0}_Id UNIQUE (Id)
 );";
+
+        private const string AddCorrelationIdScript = @"IF NOT EXISTS (
+SELECT * 
+    FROM   sys.columns 
+    WHERE  object_id = OBJECT_ID(N'[dbo].[Activities]') 
+AND name = 'CorrelationId'
+    )
+BEGIN
+    ALTER TABLE [dbo].[Activities]
+ADD CorrelationId nvarchar(250) NULL;
+END";
         
         private readonly string _connectionString;
         private readonly ILog _log;
@@ -55,6 +66,22 @@ INDEX IX_{0}_Id UNIQUE (Id)
                 {
                     _log.WriteError("CreateTableIfDoesntExists", $"Exception while table {TableName} creation", ex);
                     throw;
+                }
+            }
+            
+            using (var connection = new SqlConnection(connectionString)) {
+                connection.Open();
+                using (var command = new SqlCommand(AddCorrelationIdScript)) {
+                    command.Connection = connection;
+                    try
+                    {
+                        command.ExecuteNonQuery();
+                    }
+                    catch (Exception ex)
+                    {
+                        _log.WriteError("AddCorrelationIdScript", $"Exception while adding CorrelationId column", ex);
+                        throw;
+                    }
                 }
             }
         }
