@@ -25,7 +25,6 @@ namespace MarginTrading.Activities.Broker
         private readonly IActivitiesRepository _activitiesRepository;
         private readonly ILog _log;
         private readonly Settings _settings;
-        private readonly RabbitMqCorrelationManager _correlationManager;
         private readonly CorrelationContextAccessor _correlationContextAccessor;
 
         public Application(
@@ -37,17 +36,13 @@ namespace MarginTrading.Activities.Broker
             ILoggerFactory loggerFactory,
             RabbitMqCorrelationManager correlationManager,
             CorrelationContextAccessor correlationContextAccessor) 
-        : base(loggerFactory, logger, slackNotificationsSender, applicationInfo, MessageFormat.MessagePack)
+        : base(correlationManager, loggerFactory, logger, slackNotificationsSender, applicationInfo, MessageFormat.MessagePack)
         {
             _activitiesRepository = activitiesRepository;
             _log = logger;
             _settings = settings;
-            _correlationManager = correlationManager;
             _correlationContextAccessor = correlationContextAccessor;
         }
-        
-        protected override Action<IDictionary<string, object>> ReadHeadersAction =>
-            _correlationManager.FetchCorrelationIfExists;
 
         protected override BrokerSettingsBase Settings => _settings;
         protected override string ExchangeName => _settings.RabbitMqQueues.Activities.ExchangeName;

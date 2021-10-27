@@ -24,17 +24,6 @@ namespace MarginTrading.Activities.Broker
         {
         }
         
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            base.ConfigureServices(services);
-            services.AddCorrelation();
-        }
-
-        public override void Configure(IApplicationBuilder app, IHostEnvironment env, IHostApplicationLifetime appLifetime)
-        {
-            base.Configure(app, env, appLifetime);
-            app.UseCorrelation();
-        } 
         protected override string ApplicationName => "ActivitiesBroker";
 
         protected override void RegisterCustomServices(ContainerBuilder builder, 
