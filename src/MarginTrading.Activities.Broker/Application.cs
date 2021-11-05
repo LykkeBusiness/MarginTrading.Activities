@@ -2,6 +2,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Common;
 using Common.Log;
@@ -10,9 +11,12 @@ using Lykke.MarginTrading.BrokerBase;
 using Lykke.MarginTrading.BrokerBase.Models;
 using Lykke.MarginTrading.BrokerBase.Settings;
 using Lykke.SlackNotifications;
+using Lykke.Snow.Common.Correlation;
+using Lykke.Snow.Common.Correlation.RabbitMq;
 using MarginTrading.Activities.Core.Domain;
 using MarginTrading.Activities.Core.Extensions;
 using MarginTrading.Activities.Core.Repositories;
+using Microsoft.Extensions.Logging;
 
 namespace MarginTrading.Activities.Broker
 {
@@ -21,18 +25,23 @@ namespace MarginTrading.Activities.Broker
         private readonly IActivitiesRepository _activitiesRepository;
         private readonly ILog _log;
         private readonly Settings _settings;
+        private readonly CorrelationContextAccessor _correlationContextAccessor;
 
         public Application(
             IActivitiesRepository activitiesRepository,
             ILog logger,
             Settings settings, 
             CurrentApplicationInfo applicationInfo,
-            ISlackNotificationsSender slackNotificationsSender) 
-        : base(logger, slackNotificationsSender, applicationInfo, MessageFormat.MessagePack)
+            ISlackNotificationsSender slackNotificationsSender,
+            ILoggerFactory loggerFactory,
+            RabbitMqCorrelationManager correlationManager,
+            CorrelationContextAccessor correlationContextAccessor) 
+        : base(correlationManager, loggerFactory, logger, slackNotificationsSender, applicationInfo, MessageFormat.MessagePack)
         {
             _activitiesRepository = activitiesRepository;
             _log = logger;
             _settings = settings;
+            _correlationContextAccessor = correlationContextAccessor;
         }
 
         protected override BrokerSettingsBase Settings => _settings;
@@ -41,6 +50,15 @@ namespace MarginTrading.Activities.Broker
         
         protected override async Task HandleMessage(ActivityEvent e)
         {
+            var correlationId = _correlationContextAccessor.CorrelationContext?.CorrelationId;
+            if (string.IsNullOrWhiteSpace(correlationId))
+            {
+                await _log.WriteMonitorAsync(
+                    nameof(HandleMessage), 
+                    nameof(ActivityEvent),
+                    $"Correlation id is empty for activity {e.Id}");
+            }
+            
             var contract = e.Activity;
             if (string.IsNullOrEmpty(contract.Id))
             {
@@ -48,7 +66,7 @@ namespace MarginTrading.Activities.Broker
             }
             
             var activity = new Activity(contract.Id, contract.AccountId, contract.Instrument, contract.EventSourceId,
-                contract.Timestamp, contract.Event.ToType<ActivityType>(), contract.DescriptionAttributes, contract.RelatedIds);
+                contract.Timestamp, contract.Event.ToType<ActivityType>(), contract.DescriptionAttributes, contract.RelatedIds, correlationId);
 
             try
             {

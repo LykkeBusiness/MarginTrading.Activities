@@ -10,7 +10,8 @@ namespace MarginTrading.Activities.Core.Domain
     public class Activity : IActivity
     {
         public Activity(string id, string accountId, string instrument, string eventSourceId,
-            DateTime timestamp, ActivityType @event, string[] descriptionAttributes, string[] relatedIds)
+            DateTime timestamp, ActivityType @event, string[] descriptionAttributes, string[] relatedIds,
+            string correlationId = null)
         {
             Id = id;
             AccountId = accountId;
@@ -20,6 +21,7 @@ namespace MarginTrading.Activities.Core.Domain
             DescriptionAttributes = descriptionAttributes;
             RelatedIds = relatedIds;
             EventSourceId = eventSourceId;
+            CorrelationId = correlationId;
         }
 
         public string Id { get; }
@@ -32,5 +34,6 @@ namespace MarginTrading.Activities.Core.Domain
         public ActivityType Event { get; }
         public string[] DescriptionAttributes { get; }
         public string[] RelatedIds { get; }
+        public string CorrelationId { get; }
     }
 }

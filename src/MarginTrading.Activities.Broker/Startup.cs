@@ -8,8 +8,11 @@ using Lykke.MarginTrading.BrokerBase;
 using Lykke.MarginTrading.BrokerBase.Models;
 using Lykke.MarginTrading.BrokerBase.Settings;
 using Lykke.SettingsReader;
+using Lykke.Snow.Common.Correlation;
 using MarginTrading.Activities.Core.Repositories;
 using MarginTrading.Activities.SqlRepositories;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
 namespace MarginTrading.Activities.Broker
@@ -20,7 +23,7 @@ namespace MarginTrading.Activities.Broker
         public Startup(IHostEnvironment env) : base(env)
         {
         }
-
+        
         protected override string ApplicationName => "ActivitiesBroker";
 
         protected override void RegisterCustomServices(ContainerBuilder builder, 
