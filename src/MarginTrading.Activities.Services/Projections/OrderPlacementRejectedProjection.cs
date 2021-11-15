@@ -57,7 +57,7 @@ namespace MarginTrading.Activities.Services.Projections
                 _identityGenerator.GenerateId(),
                 @event.OrderPlaceRequest.AccountId,
                 @event.OrderPlaceRequest.InstrumentId,
-                eventSourceId: @event.CorrelationId,
+                eventSourceId: @event.CorrelationId ?? _identityGenerator.GenerateId(),
                 @event.EventTimestamp,
                 MapType(@event.RejectReason),
                 descriptionAttributes: commonDescriptionAttributes.ToArray(),
