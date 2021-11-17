@@ -44,6 +44,12 @@ BEGIN
     ALTER TABLE [dbo].[Activities]
 ADD CorrelationId nvarchar(250) NULL;
 END";
+
+        private const string AlterAccountIdScript = @"
+BEGIN
+    ALTER TABLE [dbo].[Activities]
+    ALTER COLUMN AccountId [nvarchar](128) NULL;
+END";
         
         private readonly string _connectionString;
         private readonly ILog _log;
@@ -80,6 +86,22 @@ END";
                     catch (Exception ex)
                     {
                         _log.WriteError("AddCorrelationIdScript", $"Exception while adding CorrelationId column", ex);
+                        throw;
+                    }
+                }
+            }
+            
+            using (var connection = new SqlConnection(connectionString)) {
+                connection.Open();
+                using (var command = new SqlCommand(AlterAccountIdScript)) {
+                    command.Connection = connection;
+                    try
+                    {
+                        command.ExecuteNonQuery();
+                    }
+                    catch (Exception ex)
+                    {
+                        _log.WriteError("AlterAccountIdScript", $"Exception while altering AccountId column", ex);
                         throw;
                     }
                 }
