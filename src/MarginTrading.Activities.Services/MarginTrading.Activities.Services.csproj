@@ -10,15 +10,15 @@
   <ItemGroup>
     <PackageReference Include="Axle.Contracts" Version="2.14.0" />
     <PackageReference Include="Lykke.Common" Version="7.5.0" />
-    <PackageReference Include="Lykke.HttpClientGenerator" Version="3.0.0" />
     <PackageReference Include="Lykke.Logs" Version="7.4.0" />
     <PackageReference Include="Lykke.MarginTrading.AccountsManagement.Contracts" Version="6.1.0" />
     <PackageReference Include="Lykke.MarginTrading.BackendSnow.Contracts" Version="1.21.0" />
     <PackageReference Include="Lykke.MarginTrading.AssetService.Contracts" Version="4.11.0" />
     <PackageReference Include="Lykke.Messaging" Version="6.3.1" />
     <PackageReference Include="Lykke.Messaging.RabbitMq" Version="2.2.2" />
-    <PackageReference Include="Lykke.Snow.Common" Version="1.31.0" />
+    <PackageReference Include="Lykke.Snow.Common" Version="1.38.0" />
     <PackageReference Include="LykkeBiz.Cqrs" Version="10.0.0" />
+    <PackageReference Include="LykkeBiz.HttpClientGenerator" Version="4.5.3" />
     <PackageReference Include="Microsoft.ApplicationInsights.DependencyCollector" Version="2.14.0" />
     <PackageReference Include="morelinq" Version="3.3.2" />
     <PackageReference Include="System.ValueTuple" Version="4.5.0" />
