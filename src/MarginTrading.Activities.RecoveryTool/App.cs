@@ -101,10 +101,8 @@ namespace MarginTrading.Activities.RecoveryTool
                     activities.AddRange(res);
                 }
 
-                foreach (var activity in activities)
-                {
-                    await _repository.InsertIfNotExist(activity);
-                }
+                LogStats(activities);
+                await InsertEvents(activities);
 
                 _logger.LogInformation("File {File} uploaded", file);
             }
