@@ -9,9 +9,9 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\src\MarginTrading.Activities.Core\MarginTrading.Activities.Core.csproj" />
-      <ProjectReference Include="..\src\MarginTrading.Activities.Services\MarginTrading.Activities.Services.csproj" />
-      <ProjectReference Include="..\src\MarginTrading.Activities.SqlRepositories\MarginTrading.Activities.SqlRepositories.csproj" />
+      <ProjectReference Include="..\MarginTrading.Activities.Core\MarginTrading.Activities.Core.csproj" />
+      <ProjectReference Include="..\MarginTrading.Activities.Services\MarginTrading.Activities.Services.csproj" />
+      <ProjectReference Include="..\MarginTrading.Activities.SqlRepositories\MarginTrading.Activities.SqlRepositories.csproj" />
     </ItemGroup>
 
     <ItemGroup>
