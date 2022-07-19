@@ -13,6 +13,7 @@ All other supported events are pulled from **Activities.Producer** service log.
 - Events for activity categories **Settings** and **Session** are not logged and therefore cannot be restored.
 - Since **MarginTrading.Activities.Producer** generates new id for every activity event, every run of the app will generate new events in the db, leading to duplication.
 - Currently the app requires logs from both **Activities Producer** and **MT Core** services. If any of those logs are not found, an exception will be thrown.
+- The app writes it own logs to the console only. Make sure to save the output for investigation purposes.
 
 ### Log file preparation
 
@@ -65,4 +66,5 @@ To configure the app, add *appsettings.json* file to the working directory.
 - Prepare log files from **Activities.Producer** and **MT Core** services and put them into the corresponding directories
 - Disable *DryRun* mode for production run
 - Execute command
-`dotnet MarginTrading.Activities.RecoveryTool.dll `
+`dotnet MarginTrading.Activities.RecoveryTool.dll`
+- Make sure to save console output.
