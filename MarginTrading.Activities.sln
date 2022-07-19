@@ -29,7 +29,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MarginTrading.Activities.Sq
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MarginTrading.Activities.Broker", "src\MarginTrading.Activities.Broker\MarginTrading.Activities.Broker.csproj", "{AEB5B49E-3846-44EB-9863-BF89A3C3AAF5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MarginTrading.Activities.RecoveryTool", "MarginTrading.Activities.RecoveryTool\MarginTrading.Activities.RecoveryTool.csproj", "{2FDACB1A-27F8-4583-B9BA-17626654689A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MarginTrading.Activities.RecoveryTool", "src\MarginTrading.Activities.RecoveryTool\MarginTrading.Activities.RecoveryTool.csproj", "{2FDACB1A-27F8-4583-B9BA-17626654689A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
