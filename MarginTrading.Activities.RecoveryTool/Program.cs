@@ -1,12 +1,10 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using Common.Log;
 using Lykke.HttpClientGenerator;
 using Lykke.HttpClientGenerator.Retries;
 using Lykke.MarginTrading.Activities.Contracts.Models;
-using Lykke.SettingsReader;
 using MarginTrading.AccountsManagement.Contracts;
 using MarginTrading.Activities.Core.Repositories;
 using MarginTrading.Activities.Core.Settings;
