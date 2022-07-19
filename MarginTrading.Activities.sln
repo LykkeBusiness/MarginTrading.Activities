@@ -29,6 +29,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MarginTrading.Activities.Sq
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MarginTrading.Activities.Broker", "src\MarginTrading.Activities.Broker\MarginTrading.Activities.Broker.csproj", "{AEB5B49E-3846-44EB-9863-BF89A3C3AAF5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MarginTrading.Activities.RecoveryTool", "MarginTrading.Activities.RecoveryTool\MarginTrading.Activities.RecoveryTool.csproj", "{2FDACB1A-27F8-4583-B9BA-17626654689A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -63,6 +65,10 @@ Global
 		{AEB5B49E-3846-44EB-9863-BF89A3C3AAF5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AEB5B49E-3846-44EB-9863-BF89A3C3AAF5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AEB5B49E-3846-44EB-9863-BF89A3C3AAF5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2FDACB1A-27F8-4583-B9BA-17626654689A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2FDACB1A-27F8-4583-B9BA-17626654689A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2FDACB1A-27F8-4583-B9BA-17626654689A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2FDACB1A-27F8-4583-B9BA-17626654689A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{5C97C0FE-F0F2-42AE-8B0C-D0535153BF9F} = {5E40464C-697B-4A28-8E78-C2B62688484B}
@@ -72,5 +78,6 @@ Global
 		{867D10A3-FFBF-406A-AA4B-D87CFEDCAD57} = {D8AE60E4-2F34-4D91-BCEF-553F27407592}
 		{7CDEF3CD-A18C-4551-9299-76F0F65C6AC7} = {043865F3-09C2-4F61-B6FE-553C242681D5}
 		{AEB5B49E-3846-44EB-9863-BF89A3C3AAF5} = {4B0988D8-CE04-44E6-98BE-0148018142BA}
+		{2FDACB1A-27F8-4583-B9BA-17626654689A} = {4B0988D8-CE04-44E6-98BE-0148018142BA}
 	EndGlobalSection
 EndGlobal
