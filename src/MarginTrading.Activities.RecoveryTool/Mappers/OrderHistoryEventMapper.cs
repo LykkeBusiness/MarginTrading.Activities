@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Threading.Tasks;
 using Common;
 using MarginTrading.Activities.Core.Domain;
@@ -159,7 +160,7 @@ namespace MarginTrading.Activities.RecoveryTool.Mappers
 
         private static string GetValidity(DateTime? validity)
         {
-            return validity.HasValue ? validity.Value.ToString("g") : "GTC";
+            return validity.HasValue ? validity.Value.ToString("g", CultureInfo.InvariantCulture) : "GTC";
         }
 
         private List<string> GetCommonDescriptionAttributesForOrder(OrderContract order)
