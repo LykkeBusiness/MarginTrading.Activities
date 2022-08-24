@@ -141,6 +141,13 @@ namespace MarginTrading.Activities.Core.Domain
         CloseAllStarted = 8000,
         CloseAllFailed = 8001,
         CloseAllRestarted = 8002,
-        CloseAllFinished = 8003
+        CloseAllFinished = 8003,
+        
+        // Price Alerts
+        PriceAlertCreated = 9000,
+        PriceAlertUpdated = 9001,
+        PriceAlertExpired = 9002,
+        PriceAlertCancelled = 9003,
+        PriceAlertTriggered = 9004,
     }
 }
