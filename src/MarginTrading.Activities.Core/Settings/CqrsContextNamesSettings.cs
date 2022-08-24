@@ -14,5 +14,7 @@ namespace MarginTrading.Activities.Core.Settings
         [Optional] public string Activities { get; set; } = nameof(Activities);
 
         [Optional] public string TradingEngine { get; set; } = nameof(TradingEngine);
+
+        [Optional] public string PriceAlertsService { get; set; } = nameof(PriceAlertsService);
     }
 }
