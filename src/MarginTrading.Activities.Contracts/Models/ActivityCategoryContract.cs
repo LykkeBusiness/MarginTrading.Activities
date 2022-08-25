@@ -17,6 +17,7 @@ namespace Lykke.MarginTrading.Activities.Contracts.Models
         Account = 5,
         Session = 6,
         Settings = 7,
-        CloseAll = 8
+        CloseAll = 8,
+        PriceAlert = 9,
     }
 }
