@@ -16,6 +16,7 @@ using Lykke.Messaging.Contract;
 using Lykke.Messaging.RabbitMq;
 using Lykke.Messaging.Serialization;
 using Lykke.Snow.Common.Correlation.Cqrs;
+using Lykke.Snow.PriceAlerts.Contract.Models.Events;
 using MarginTrading.AccountsManagement.Contracts.Events;
 using MarginTrading.Activities.Core.Settings;
 using MarginTrading.Activities.Services.Projections;
@@ -107,6 +108,7 @@ namespace MarginTrading.Activities.Services.Modules
             RegisterAccountsProjection(contextRegistration);
             RegisterAssetPairsProjection(contextRegistration);
             RegisterTradingEngineProjections(contextRegistration);
+            RegisterPriceAlertsProjection(contextRegistration);
             
             contextRegistration.PublishingEvents(typeof(ActivityEvent)).With(EventsRoute);
 
@@ -121,6 +123,16 @@ namespace MarginTrading.Activities.Services.Modules
                 .From(_settings.ContextNames.AccountsManagement).On(EventsRoute)
                 .WithProjection(
                     typeof(AccountsProjection), _settings.ContextNames.AccountsManagement);
+        }
+        
+        private void RegisterPriceAlertsProjection(
+            IBoundedContextRegistration contextRegistration)
+        {
+            contextRegistration.ListeningEvents(
+                    typeof(PriceAlertChangedEvent))
+                .From(_settings.ContextNames.PriceAlertsService).On(EventsRoute)
+                .WithProjection(
+                    typeof(PriceAlertsProjection), _settings.ContextNames.PriceAlertsService);
         }
         
         private void RegisterAssetPairsProjection(
