@@ -52,37 +52,27 @@ namespace MarginTrading.Activities.RecoveryTool
             switch (@event.Type)
             {
                 case EventType.None:
-                    throw new ArgumentOutOfRangeException("Unknown event type");
-                    break;
+                    throw new ArgumentOutOfRangeException(nameof(@event), "Unknown event type");
                 case EventType.AccountChangedEvent:
                     return await _accountChangedEventMapper.Map(@event);
-                    break;
                 case EventType.LiquidationStartedEvent:
                     return await _liquidationStartedEventMapper.Map(@event);
-                    break;
                 case EventType.LiquidationResumedEvent:
                     return await _liquidationResumedEventMapper.Map(@event);
-                    break;
                 case EventType.LiquidationFailedEvent:
                     return await _liquidationFailedEventMapper.Map(@event);
-                    break;
                 case EventType.LiquidationFinishedEvent:
                     return await _liquidationFinishedEventMapper.Map(@event);
-                    break;
                 case EventType.MarginEventMessage:
                     return await _marginEventMessageMapper.Map(@event);
-                    break;
                 case EventType.OrderPlacementRejectedEvent:
                     return await _orderPlacementRejectedEventMapper.Map(@event);
-                    break;
                 case EventType.OrderHistoryEvent:
                     return await _orderHistoryEventMapper.Map(@event);
-                    break;
                 case EventType.PositionHistoryEvent:
                     return await _positionHistoryEventMapper.Map(@event);
-                    break;
                 default:
-                    throw new ArgumentOutOfRangeException("Unknown event type");
+                    throw new ArgumentOutOfRangeException(nameof(@event),"Unknown event type");
             }
         }
     }
