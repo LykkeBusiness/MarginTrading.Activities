@@ -28,32 +28,32 @@ namespace MarginTrading.Activities.RecoveryTool.Mappers
             _assetPairsCacheService = assetPairsCacheService;
         }
 
-        public async Task<List<IActivity>> Map(DomainEvent domainEvent)
+        public Task<List<IActivity>> Map(DomainEvent domainEvent)
         {
+            if (string.IsNullOrEmpty(domainEvent?.Json))
+                return Task.FromResult(new List<IActivity>());
+
             var @event = JsonConvert.DeserializeObject<OrderPlacementRejectedEvent>(domainEvent.Json);
 
-            if (@event.OrderPlaceRequest == null)
-            {
-                return new List<IActivity>();
-            }
+            if (@event == null || @event.OrderPlaceRequest == null)
+                return Task.FromResult(new List<IActivity>());
 
             var commonDescriptionAttributes = OrdersProjection.GetCommonDescriptionAttributesForOrder(
                 _assetPairsCacheService.TryGetAssetPair, @event.OrderPlaceRequest.InstrumentId,
                 @event.OrderPlaceRequest.Direction, @event.OrderPlaceRequest.Type, @event.OrderPlaceRequest.Volume,
                 OrderStatusContract.Rejected, null, null);
-
-
+            
             var activity = new Activity(
                 _identityGenerator.GenerateId(),
                 @event.OrderPlaceRequest.AccountId,
                 @event.OrderPlaceRequest.InstrumentId,
-                eventSourceId: @event.CorrelationId ?? _identityGenerator.GenerateId(),
+                eventSourceId: @event.CorrelationIdDeprecated ?? _identityGenerator.GenerateId(),
                 @event.EventTimestamp,
                 MapType(@event.RejectReason),
                 descriptionAttributes: commonDescriptionAttributes.ToArray(),
                 relatedIds: Array.Empty<string>());
 
-            return new List<IActivity>() {activity};
+            return Task.FromResult(new List<IActivity> {activity});
         }
 
         private static ActivityType MapType(OrderRejectReasonContract eventRejectReason)

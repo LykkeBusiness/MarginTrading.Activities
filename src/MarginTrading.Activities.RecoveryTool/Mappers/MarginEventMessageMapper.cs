@@ -1,6 +1,7 @@
 // Copyright (c) 2019 Lykke Corp.
 // See the LICENSE file in the project root for more information.
 
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using MarginTrading.Activities.Core.Domain;
@@ -21,13 +22,18 @@ namespace MarginTrading.Activities.RecoveryTool.Mappers
             _identityGenerator = identityGenerator;
         }
 
-        public async Task<List<IActivity>> Map(DomainEvent domainEvent)
+        public Task<List<IActivity>> Map(DomainEvent domainEvent)
         {
-            var historyEvent = JsonConvert.DeserializeObject<MarginEventMessage>(domainEvent.Json);
+            if (string.IsNullOrEmpty(domainEvent?.Json))
+                return Task.FromResult(new List<IActivity>());
 
-            var activityType = ActivityType.None;
-            var descriptionAttributes = new string[0];
-            var relatedIds = new string[0];
+            var historyEvent = JsonConvert.DeserializeObject<MarginEventMessage>(domainEvent.Json);
+            if (historyEvent == null)
+                return Task.FromResult(new List<IActivity>());
+
+            ActivityType activityType;
+            var descriptionAttributes = Array.Empty<string>();
+            var relatedIds = Array.Empty<string>();
 
             switch (historyEvent.EventType)
             {
@@ -50,7 +56,7 @@ namespace MarginTrading.Activities.RecoveryTool.Mappers
                     break;
 
                 default:
-                    return new List<IActivity>();
+                    return Task.FromResult(new List<IActivity>());
             }
 
             var activity = new Activity(
@@ -64,7 +70,7 @@ namespace MarginTrading.Activities.RecoveryTool.Mappers
                 relatedIds
             );
 
-            return new List<IActivity>() {activity};
+            return Task.FromResult(new List<IActivity> {activity});
         }
     }
 }

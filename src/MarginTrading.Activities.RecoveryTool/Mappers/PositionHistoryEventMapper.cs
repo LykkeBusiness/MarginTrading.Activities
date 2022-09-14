@@ -28,30 +28,31 @@ namespace MarginTrading.Activities.RecoveryTool.Mappers
         }
 
 
-        public async Task<List<IActivity>> Map(DomainEvent domainEvent)
+        public Task<List<IActivity>> Map(DomainEvent domainEvent)
         {
+            if (string.IsNullOrEmpty(domainEvent?.Json))
+                return Task.FromResult(new List<IActivity>());
+            
             var historyEvent = JsonConvert.DeserializeObject<PositionHistoryEvent>(domainEvent.Json);
+            if (historyEvent == null)
+                return Task.FromResult(new List<IActivity>());
 
             var position = historyEvent.PositionSnapshot;
 
             if (position == null)
-            {
-                return new List<IActivity>();
-            }
+                return Task.FromResult(new List<IActivity>());
 
             var deal = historyEvent.Deal;
 
             if (deal == null && historyEvent.EventType != PositionHistoryTypeContract.Open)
-            {
-                return new List<IActivity>();
-            }
+                return Task.FromResult(new List<IActivity>());
 
             var assetPair = _assetPairsCacheService.TryGetAssetPair(position.AssetPairId);
 
             var eventSourceId = position.Id;
-            var activityType = ActivityType.None;
-            var descriptionAttributes = new string[0];
-            var relatedIds = new string[0];
+            ActivityType activityType;
+            string[] descriptionAttributes;
+            string[] relatedIds;
 
             switch (historyEvent.EventType)
             {
@@ -75,7 +76,7 @@ namespace MarginTrading.Activities.RecoveryTool.Mappers
 
                 case PositionHistoryTypeContract.Close:
 
-                    eventSourceId = deal.DealId;
+                    eventSourceId = deal!.DealId;
                     activityType = ActivityType.PositionClosing;
                     relatedIds = new[] {deal.CloseTradeId, deal.CloseTradeId, position.Id, deal.DealId};
                     descriptionAttributes = new[]
@@ -91,7 +92,7 @@ namespace MarginTrading.Activities.RecoveryTool.Mappers
 
                 case PositionHistoryTypeContract.PartiallyClose:
 
-                    eventSourceId = deal.DealId;
+                    eventSourceId = deal!.DealId;
                     activityType = ActivityType.PositionPartialClosing;
                     relatedIds = new[] {deal.CloseTradeId, deal.CloseTradeId, position.Id, deal.DealId};
                     descriptionAttributes = new[]
@@ -106,7 +107,7 @@ namespace MarginTrading.Activities.RecoveryTool.Mappers
                     break;
 
                 default:
-                    return new List<IActivity>();
+                    return Task.FromResult(new List<IActivity>());
             }
 
             var activity = new Activity(
@@ -120,7 +121,7 @@ namespace MarginTrading.Activities.RecoveryTool.Mappers
                 relatedIds
             );
 
-            return new List<IActivity>() {activity};
+            return Task.FromResult(new List<IActivity> {activity});
         }
     }
 }
