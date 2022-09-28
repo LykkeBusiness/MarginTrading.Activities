@@ -33,22 +33,25 @@ namespace MarginTrading.Activities.RecoveryTool.Mappers
             _assetPairsCacheService = assetPairsCacheService;
         }
 
-        public async Task<List<IActivity>> Map(DomainEvent domainEvent)
+        public Task<List<IActivity>> Map(DomainEvent domainEvent)
         {
+            if (string.IsNullOrEmpty(domainEvent?.Json))
+                return Task.FromResult(new List<IActivity>());
+            
             var historyEvent = JsonConvert.DeserializeObject<OrderHistoryEvent>(domainEvent.Json);
+            if (historyEvent == null)
+                return Task.FromResult(new List<IActivity>());
 
             var order = historyEvent.OrderSnapshot;
 
             var result = new List<IActivity>();
 
             if (order == null)
-            {
-               return result;
-            }
+               return Task.FromResult(result);
 
-            var activityType = ActivityType.None;
+            ActivityType activityType;
             var descriptionAttributes = new List<string>();
-            var relatedIds = new string[0];
+            string[] relatedIds;
 
             switch (historyEvent.Type)
             {
@@ -56,7 +59,7 @@ namespace MarginTrading.Activities.RecoveryTool.Mappers
 
                     //basic orders place event is always combined with another event type
                     if (IsBasicOrder(order) || !string.IsNullOrEmpty(order.PositionId))
-                        return new List<IActivity>();
+                        return Task.FromResult(new List<IActivity>());
 
                     activityType = ActivityType.OrderAcceptance;
                     relatedIds = new[] {order.Id};
@@ -95,7 +98,7 @@ namespace MarginTrading.Activities.RecoveryTool.Mappers
                         descriptionAttributes);
 
                     if (activityType == ActivityType.None)
-                        return new List<IActivity>();
+                        return Task.FromResult(new List<IActivity>());
 
                     break;
 
@@ -130,7 +133,7 @@ namespace MarginTrading.Activities.RecoveryTool.Mappers
                     break;
 
                 default:
-                    return new List<IActivity>();
+                    return Task.FromResult(new List<IActivity>());
             }
 
             var activity = CreateActivity(
@@ -141,7 +144,7 @@ namespace MarginTrading.Activities.RecoveryTool.Mappers
                 relatedIds);
             result.Add(activity);
 
-            return result;
+            return Task.FromResult(result);
         }
         
         

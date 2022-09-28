@@ -17,21 +17,22 @@ namespace MarginTrading.Activities.RecoveryTool.Mappers
     public class LiquidationResumedEventMapper : IActivityMapper
     {
         private readonly IIdentityGenerator _identityGenerator;
-        private readonly IAccountsService _accountsService;
 
-        public LiquidationResumedEventMapper(IIdentityGenerator identityGenerator, IAccountsService accountsService)
+        public LiquidationResumedEventMapper(IIdentityGenerator identityGenerator)
         {
             _identityGenerator = identityGenerator;
-            _accountsService = accountsService;
         }
 
-        public async Task<List<IActivity>> Map(DomainEvent domainEvent)
+        public Task<List<IActivity>> Map(DomainEvent domainEvent)
         {
+            if (string.IsNullOrEmpty(domainEvent?.Json))
+                return Task.FromResult(new List<IActivity>());
+            
             var @event = JsonConvert.DeserializeObject<LiquidationResumedEvent>(domainEvent.Json);
 
-            if (@event.LiquidationType != LiquidationTypeContract.Forced)
+            if (@event == null ||  @event.LiquidationType != LiquidationTypeContract.Forced)
             {
-                return new List<IActivity>();
+                return Task.FromResult(new List<IActivity>());
             }
 
             var activityId = _identityGenerator.GenerateId();
@@ -44,7 +45,7 @@ namespace MarginTrading.Activities.RecoveryTool.Mappers
                 descriptionAttributes: Array.Empty<string>(),
                 relatedIds: Array.Empty<string>());
 
-            return new List<IActivity>() {activity};
+            return Task.FromResult(new List<IActivity>{activity});
         }
     }
 }

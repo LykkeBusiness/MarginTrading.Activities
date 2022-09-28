@@ -1,6 +1,7 @@
 // Copyright (c) 2019 Lykke Corp.
 // See the LICENSE file in the project root for more information.
 
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Common;
@@ -24,7 +25,7 @@ namespace MarginTrading.Activities.RecoveryTool.Mappers
             _identityGenerator = identityGenerator;
         }
         
-        public async Task<List<IActivity>> Map(DomainEvent domainEvent)
+        public Task<List<IActivity>> Map(DomainEvent domainEvent)
         {
             var e = JsonConvert.DeserializeObject<AccountChangedEvent>(domainEvent.Json);
             var activityTypes = GetActivityTypes(e);
@@ -41,12 +42,12 @@ namespace MarginTrading.Activities.RecoveryTool.Mappers
                     e.ChangeTimestamp,
                     activityType,
                     GetDescriptionAttributes(activityType, e),
-                    new string[0]);
+                    Array.Empty<string>());
 
                 result.Add(activity);
             }
 
-            return result;
+            return Task.FromResult(result);
         }
         
         private string[] GetDescriptionAttributes(ActivityType activityType, AccountChangedEvent e)
@@ -58,7 +59,7 @@ namespace MarginTrading.Activities.RecoveryTool.Mappers
                 case ActivityType.AccountComplexityWarningDisabled:
                     return new[] { e.Account.Id, e.ActivitiesMetadata?.DeserializeJson<AccountChangeMetadata>()?.OrderId };
                 
-                default: return new string[0];
+                default: return Array.Empty<string>();
             }
         }
 
