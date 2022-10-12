@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Common.Log;
 using Lykke.HttpClientGenerator;
 using Lykke.HttpClientGenerator.Retries;
+using Lykke.Logs;
 using Lykke.MarginTrading.Activities.Contracts.Models;
 using MarginTrading.AccountsManagement.Contracts;
 using MarginTrading.Activities.Core.Repositories;

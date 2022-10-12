@@ -1,12 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
-    <Version>2.5.0</Version>
+    <TargetFramework>net6.0</TargetFramework>
+    <Version>2.6.0</Version>
     <PackageId>Lykke.MarginTrading.Activities.Contracts</PackageId>
     <Company>Lykke</Company>
     <AssemblyName>Lykke.MarginTrading.Activities.Contracts</AssemblyName>
     <RootNamespace>Lykke.MarginTrading.Activities.Contracts</RootNamespace>
-    <LangVersion>latest</LangVersion>
+    <LangVersion>8.0</LangVersion>
   </PropertyGroup>
   <PropertyGroup>
     <NoWarn>1701;1702;1705;CA2007;0612;0618;1591</NoWarn>
@@ -14,7 +14,7 @@
   <ItemGroup>
     <PackageReference Include="JetBrains.Annotations" Version="2022.1.0" />
     <PackageReference Include="MessagePack" Version="1.9.11" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.1.4" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="6.0.0" />
     <PackageReference Include="Refit" Version="4.6.30" />
     <PackageReference Include="System.Collections.Immutable" Version="1.7.1" />
   </ItemGroup>
