@@ -21,6 +21,7 @@
     <PackageReference Include="LykkeBiz.Cqrs" Version="10.0.0" />
     <PackageReference Include="LykkeBiz.HttpClientGenerator" Version="5.0.1" />
     <PackageReference Include="Microsoft.ApplicationInsights.DependencyCollector" Version="2.21.0" />
+    <PackageReference Include="Microsoft.Data.SqlClient" Version="4.1.1" />
     <PackageReference Include="morelinq" Version="3.3.2" />
     <PackageReference Include="System.ValueTuple" Version="4.5.0" />
     <PackageReference Include="StackExchange.Redis" Version="2.6.66" />

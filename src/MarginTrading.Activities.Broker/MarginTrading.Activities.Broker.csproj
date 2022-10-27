@@ -37,6 +37,7 @@
     <PackageReference Include="LykkeBiz.HttpClientGenerator" Version="4.5.3" />
     <PackageReference Include="LykkeBiz.MarginTrading.BrokerBase" Version="4.5.2" />
     <PackageReference Include="LykkeBiz.RabbitMqBroker" Version="9.2.6" />
+    <PackageReference Include="Microsoft.Data.SqlClient" Version="4.1.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="6.0.0" />
