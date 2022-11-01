@@ -11,19 +11,18 @@ using Lykke.Cqrs.Configuration;
 using Lykke.Cqrs.Configuration.BoundedContext;
 using Lykke.Cqrs.Middleware.Logging;
 using Lykke.MarginTrading.Activities.Contracts.Models;
-using Lykke.Messaging;
-using Lykke.Messaging.Contract;
-using Lykke.Messaging.RabbitMq;
 using Lykke.Messaging.Serialization;
 using Lykke.Snow.Common.Correlation.Cqrs;
+using Lykke.Snow.Common.Startup;
+using Lykke.Snow.Cqrs;
 using Lykke.Snow.PriceAlerts.Contract.Models.Events;
 using MarginTrading.AccountsManagement.Contracts.Events;
 using MarginTrading.Activities.Core.Settings;
 using MarginTrading.Activities.Services.Projections;
 using MarginTrading.Backend.Contracts.Events;
-using MarginTrading.AssetService.Contracts.AssetPair;
 using MarginTrading.AssetService.Contracts.Products;
 using MarginTrading.Backend.Contracts.Workflow.Liquidation.Events;
+using Microsoft.Extensions.Logging;
 
 namespace MarginTrading.Activities.Services.Modules
 {
@@ -49,39 +48,28 @@ namespace MarginTrading.Activities.Services.Modules
                 .As<IDependencyResolver>()
                 .SingleInstance();
 
-            var rabbitMqSettings = new RabbitMQ.Client.ConnectionFactory
-            {
-                Uri = new Uri(_settings.ConnectionString, UriKind.Absolute)
-            };
-            var messagingEngine = new MessagingEngine(_log, new TransportResolver(
-                new Dictionary<string, TransportInfo>
-                {
-                    {
-                        "RabbitMq",
-                        new TransportInfo(rabbitMqSettings.Endpoint.ToString(), rabbitMqSettings.UserName,
-                            rabbitMqSettings.Password, "None", "RabbitMq")
-                    }
-                }), new RabbitMqTransportFactory());
-
             // Sagas & command handlers
             builder.RegisterAssemblyTypes(GetType().Assembly).Where(t =>
                 new[] {"Saga", "CommandsHandler", "Projection"}.Any(ending => t.Name.EndsWith(ending))).AsSelf();
 
-            builder.Register(ctx =>
-                {
-                    var context = ctx.Resolve<IComponentContext>();
-                    return CreateEngine(context, messagingEngine);
-                })
+            builder.Register(CreateEngine)
                 .As<ICqrsEngine>()
                 .AutoActivate()
                 .SingleInstance();
         }
 
-        private CqrsEngine CreateEngine(IComponentContext ctx, IMessagingEngine messagingEngine)
+        private CqrsEngine CreateEngine(IComponentContext ctx)
         {
             var rabbitMqConventionEndpointResolver =
                 new RabbitMqConventionEndpointResolver("RabbitMq", SerializationFormat.MessagePack,
                     environment: _settings.EnvironmentName);
+            
+            var rabbitMqSettings = new RabbitMQ.Client.ConnectionFactory
+            {
+                Uri = new Uri(_settings.ConnectionString, UriKind.Absolute)
+            };
+            
+            var log = new LykkeLoggerAdapter<CqrsModule>(ctx.Resolve<ILogger<CqrsModule>>());
 
             var registrations = new List<IRegistration>
             {
@@ -91,8 +79,16 @@ namespace MarginTrading.Activities.Services.Modules
                 Register.EventInterceptors(new DefaultEventLoggingInterceptor(_log))
             };
 
-            var engine = new CqrsEngine(_log, ctx.Resolve<IDependencyResolver>(), messagingEngine,
-                new DefaultEndpointProvider(), true, registrations.ToArray());
+            var engine = new RabbitMqCqrsEngine(
+                log,
+                ctx.Resolve<IDependencyResolver>(),
+                new DefaultEndpointProvider(),
+                rabbitMqSettings.Endpoint.ToString(),
+                rabbitMqSettings.UserName,
+                rabbitMqSettings.Password,
+                true,
+                registrations.ToArray());
+            
             var correlationManager = ctx.Resolve<CqrsCorrelationManager>();
             engine.SetReadHeadersAction(correlationManager.FetchCorrelationIfExists);
             engine.SetWriteHeadersFunc(correlationManager.BuildCorrelationHeadersIfExists);

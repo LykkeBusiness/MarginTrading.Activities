@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2019 Lykke Corp.
 // See the LICENSE file in the project root for more information.
 
+using System;
 using Autofac;
 using Common.Log;
 using JetBrains.Annotations;
@@ -8,11 +9,8 @@ using Lykke.MarginTrading.BrokerBase;
 using Lykke.MarginTrading.BrokerBase.Models;
 using Lykke.MarginTrading.BrokerBase.Settings;
 using Lykke.SettingsReader;
-using Lykke.Snow.Common.Correlation;
 using MarginTrading.Activities.Core.Repositories;
 using MarginTrading.Activities.SqlRepositories;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
 namespace MarginTrading.Activities.Broker
@@ -33,9 +31,10 @@ namespace MarginTrading.Activities.Broker
             
             if (settings.CurrentValue.Db.StorageMode == StorageMode.Azure)
             {
-                //todo implement azure repos before using
+                throw new NotImplementedException("Azure storage is not implemented yet");
             }
-            else if (settings.CurrentValue.Db.StorageMode == StorageMode.SqlServer)
+
+            if (settings.CurrentValue.Db.StorageMode == StorageMode.SqlServer)
             {
                 builder.RegisterInstance(new ActivitiesRepository(
                         settings.CurrentValue.Db.ConnString, log))

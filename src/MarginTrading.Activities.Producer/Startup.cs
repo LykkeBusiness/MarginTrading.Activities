@@ -10,7 +10,6 @@ using JetBrains.Annotations;
 using Lykke.Common.ApiLibrary.Middleware;
 using Lykke.Common.ApiLibrary.Swagger;
 using Lykke.Cqrs;
-using Lykke.Logs;
 using Lykke.Logs.MsSql;
 using Lykke.Logs.MsSql.Repositories;
 using Lykke.Logs.Serilog;
@@ -219,8 +218,7 @@ namespace MarginTrading.Activities.Producer
             }
             else if (settings.CurrentValue.ActivitiesProducer.Db.StorageMode == StorageMode.Azure)
             {
-                aggregateLogger.AddLog(services.UseLogToAzureStorage(settings.Nested(s => s.ActivitiesProducer.Db.LogsConnString),
-                    null, logName, consoleLogger));
+                throw new NotImplementedException("Azure storage is not implemented");
             }
 
             return aggregateLogger;
