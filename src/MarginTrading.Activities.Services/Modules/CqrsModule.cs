@@ -54,7 +54,6 @@ namespace MarginTrading.Activities.Services.Modules
 
             builder.Register(CreateEngine)
                 .As<ICqrsEngine>()
-                .AutoActivate()
                 .SingleInstance();
         }
 
@@ -92,7 +91,6 @@ namespace MarginTrading.Activities.Services.Modules
             var correlationManager = ctx.Resolve<CqrsCorrelationManager>();
             engine.SetReadHeadersAction(correlationManager.FetchCorrelationIfExists);
             engine.SetWriteHeadersFunc(correlationManager.BuildCorrelationHeadersIfExists);
-            engine.StartPublishers();
 
             return engine;
         }

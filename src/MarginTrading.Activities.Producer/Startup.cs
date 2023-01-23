@@ -132,7 +132,7 @@ namespace MarginTrading.Activities.Producer
                 app.UseSwagger();
                 app.UseSwaggerUI(a => a.SwaggerEndpoint("/swagger/v1/swagger.json", "Main Swagger"));
 
-                appLifetime.ApplicationStarted.Register(() => StartApplication().Wait());
+                appLifetime.ApplicationStarted.Register(() => StartApplication(appLifetime).Wait());
                 appLifetime.ApplicationStopping.Register(() => StopApplication().Wait());
                 appLifetime.ApplicationStopped.Register(() => CleanUp().Wait());
             }
@@ -143,12 +143,13 @@ namespace MarginTrading.Activities.Producer
             }
         }
 
-        private async Task StartApplication()
+        private async Task StartApplication(IApplicationLifetime applicationLifetime)
         {
             try
             {
                 var cqrsEngine = ApplicationContainer.Resolve<ICqrsEngine>();
                 
+                cqrsEngine.StartPublishers();
                 cqrsEngine.StartSubscribers();
                 
                 var customSubscribers = ApplicationContainer.Resolve<ISubscriber[]>();
@@ -163,7 +164,7 @@ namespace MarginTrading.Activities.Producer
             catch (Exception ex)
             {
                 await LogLocator.Log.WriteFatalErrorAsync(nameof(Startup), nameof(StartApplication), "", ex);
-                throw;
+                applicationLifetime.StopApplication();
             }
         }
 
