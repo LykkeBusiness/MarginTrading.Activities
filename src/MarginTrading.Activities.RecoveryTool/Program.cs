@@ -1,10 +1,8 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
-using Common.Log;
 using Lykke.HttpClientGenerator;
 using Lykke.HttpClientGenerator.Retries;
-using Lykke.Logs;
 using Lykke.MarginTrading.Activities.Contracts.Models;
 using MarginTrading.AccountsManagement.Contracts;
 using MarginTrading.Activities.Core.Repositories;
@@ -19,6 +17,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace MarginTrading.Activities.RecoveryTool
 {
@@ -84,7 +83,7 @@ namespace MarginTrading.Activities.RecoveryTool
                     services.AddSingleton<ActivityMapper>();
                     services.AddSingleton<IIdentityGenerator, GuidIdentityGenerator>();
                     services.AddSingleton<IActivitiesRepository, ActivitiesRepository>(x =>
-                        new ActivitiesRepository(cs, EmptyLog.Instance));
+                        new ActivitiesRepository(cs, NullLogger<ActivitiesRepository>.Instance));
                     services.AddSingleton(accountManagementGeneratorBuilder.Create()
                         .Generate<IAccountsApi>());
                     services.AddSingleton(settingsClientGeneratorBuilder.Create().Generate<IAssetPairsApi>());
