@@ -67,18 +67,18 @@ namespace MarginTrading.Activities.Services.Modules
                 Uri = new Uri(_settings.ConnectionString, UriKind.Absolute)
             };
 
-            var logFactory = ctx.Resolve<ILoggerFactory>();
+            var loggerFactory = ctx.Resolve<ILoggerFactory>();
 
             var registrations = new List<IRegistration>
             {
                 Register.DefaultEndpointResolver(rabbitMqConventionEndpointResolver),
                 RegisterContext(),
-                Register.CommandInterceptors(new DefaultCommandLoggingInterceptor(logFactory)),
-                Register.EventInterceptors(new DefaultEventLoggingInterceptor(logFactory))
+                Register.CommandInterceptors(new DefaultCommandLoggingInterceptor(loggerFactory)),
+                Register.EventInterceptors(new DefaultEventLoggingInterceptor(loggerFactory))
             };
 
             var engine = new RabbitMqCqrsEngine(
-                logFactory,
+                loggerFactory,
                 ctx.Resolve<IDependencyResolver>(),
                 new DefaultEndpointProvider(),
                 rabbitMqSettings.Endpoint.ToString(),
