@@ -101,7 +101,7 @@ namespace MarginTrading.Activities.Services.Projections
                 case DepositSucceededEvent e:
                     return new string[] { e.Amount.ToString() };
 
-                case DepositFailedEvent e: //TODO: Get the amount somehow
+                case DepositFailedEvent e: 
                     return new string[] {  };
 
                 case WithdrawalSucceededEvent e:
