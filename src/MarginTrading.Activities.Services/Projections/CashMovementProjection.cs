@@ -30,7 +30,7 @@ namespace MarginTrading.Activities.Services.Projections
                     eventSourceId: e.AccountId, 
                     timestamp: e.EventTimestamp,
                     @event: ActivityType.AccountDepositSucceeded,
-                    descriptionAttributes: Array.Empty<string>(), //TODO: come back 
+                    descriptionAttributes: GetDescriptionAtributes(e), 
                     relatedIds: Array.Empty<string>());
             
             _cqrsSender.PublishActivity(activity);
