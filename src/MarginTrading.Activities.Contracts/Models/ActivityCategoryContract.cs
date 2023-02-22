@@ -19,5 +19,6 @@ namespace Lykke.MarginTrading.Activities.Contracts.Models
         Settings = 7,
         CloseAll = 8,
         PriceAlert = 9,
+        CashMovement = 10,
     }
 }
