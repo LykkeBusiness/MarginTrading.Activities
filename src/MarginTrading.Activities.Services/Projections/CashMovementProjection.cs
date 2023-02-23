@@ -1,7 +1,5 @@
 using System;
 using System.Threading.Tasks;
-using Common;
-using Common.Log;
 using JetBrains.Annotations;
 using MarginTrading.AccountsManagement.Contracts.Events;
 using MarginTrading.Activities.Core.Domain;
@@ -13,16 +11,13 @@ namespace MarginTrading.Activities.Services.Projections
     {
         private readonly IActivitiesSender _cqrsSender;
         private readonly IIdentityGenerator _identityGenerator;
-        private ILog _log;
 
         public CashMovementProjection(
             IActivitiesSender cqrsSender,
-            IIdentityGenerator identityGenerator,
-            ILog log)
+            IIdentityGenerator identityGenerator)
         {
             _cqrsSender = cqrsSender;
             _identityGenerator = identityGenerator;
-            _log = log;
         }
 
         [UsedImplicitly]
@@ -46,10 +41,6 @@ namespace MarginTrading.Activities.Services.Projections
         [UsedImplicitly]
         public Task Handle(DepositFailedEvent e)
         {
-            
-            //TODO Remove
-            _log.WriteInfoAsync(nameof(CashMovementProjection), "DepositFailedEvent", e.ToJson());
-            
             // TODO get operation details here
             // and set accountId and eventSourceID
             var activity = new Activity(
