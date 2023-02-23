@@ -41,13 +41,11 @@ namespace MarginTrading.Activities.Services.Projections
         [UsedImplicitly]
         public Task Handle(DepositFailedEvent e)
         {
-            // TODO get operation details here
-            // and set accountId and eventSourceID
             var activity = new Activity(
                     id: _identityGenerator.GenerateId(),
-                    accountId: string.Empty, 
+                    accountId: e.AccountId, 
                     instrument: string.Empty,
-                    eventSourceId: string.Empty,
+                    eventSourceId: e.AccountId,
                     timestamp: e.EventTimestamp,
                     @event: ActivityType.AccountDepositFailed,
                     descriptionAttributes: GetDescriptionAtributes(e),
@@ -102,13 +100,14 @@ namespace MarginTrading.Activities.Services.Projections
                     return new string[] { e.Amount.ToString() };
 
                 case DepositFailedEvent e: 
-                    return new string[] {  };
+                    return new string[] { e.Amount.ToString() };
 
                 case WithdrawalSucceededEvent e:
                     return new string[] { e.Amount.ToString() };
 
                 case WithdrawalFailedEvent e:
                     return new string[] { e.Amount.ToString() };
+
                 default:
                     return Array.Empty<string>();
             }
