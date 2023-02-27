@@ -13,7 +13,6 @@ using Lykke.Cqrs.Middleware.Logging;
 using Lykke.MarginTrading.Activities.Contracts.Models;
 using Lykke.Messaging.Serialization;
 using Lykke.Snow.Common.Correlation.Cqrs;
-using Lykke.Snow.Common.Startup;
 using Lykke.Snow.Cqrs;
 using Lykke.Snow.PriceAlerts.Contract.Models.Events;
 using MarginTrading.AccountsManagement.Contracts.Events;
@@ -54,7 +53,6 @@ namespace MarginTrading.Activities.Services.Modules
 
             builder.Register(CreateEngine)
                 .As<ICqrsEngine>()
-                .AutoActivate()
                 .SingleInstance();
         }
 
@@ -68,19 +66,19 @@ namespace MarginTrading.Activities.Services.Modules
             {
                 Uri = new Uri(_settings.ConnectionString, UriKind.Absolute)
             };
-            
-            var log = new LykkeLoggerAdapter<CqrsModule>(ctx.Resolve<ILogger<CqrsModule>>());
+
+            var loggerFactory = ctx.Resolve<ILoggerFactory>();
 
             var registrations = new List<IRegistration>
             {
                 Register.DefaultEndpointResolver(rabbitMqConventionEndpointResolver),
                 RegisterContext(),
-                Register.CommandInterceptors(new DefaultCommandLoggingInterceptor(_log)),
-                Register.EventInterceptors(new DefaultEventLoggingInterceptor(_log))
+                Register.CommandInterceptors(new DefaultCommandLoggingInterceptor(loggerFactory)),
+                Register.EventInterceptors(new DefaultEventLoggingInterceptor(loggerFactory))
             };
 
             var engine = new RabbitMqCqrsEngine(
-                log,
+                loggerFactory,
                 ctx.Resolve<IDependencyResolver>(),
                 new DefaultEndpointProvider(),
                 rabbitMqSettings.Endpoint.ToString(),
@@ -92,7 +90,6 @@ namespace MarginTrading.Activities.Services.Modules
             var correlationManager = ctx.Resolve<CqrsCorrelationManager>();
             engine.SetReadHeadersAction(correlationManager.FetchCorrelationIfExists);
             engine.SetWriteHeadersFunc(correlationManager.BuildCorrelationHeadersIfExists);
-            engine.StartPublishers();
 
             return engine;
         }

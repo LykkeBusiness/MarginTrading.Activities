@@ -3,7 +3,6 @@
 
 using System;
 using Autofac;
-using Common.Log;
 using JetBrains.Annotations;
 using Lykke.MarginTrading.BrokerBase;
 using Lykke.MarginTrading.BrokerBase.Models;
@@ -11,21 +10,23 @@ using Lykke.MarginTrading.BrokerBase.Settings;
 using Lykke.SettingsReader;
 using MarginTrading.Activities.Core.Repositories;
 using MarginTrading.Activities.SqlRepositories;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 namespace MarginTrading.Activities.Broker
 {
     [UsedImplicitly]
     public class Startup : BrokerStartupBase<DefaultBrokerApplicationSettings<Settings>, Settings>
     {
-        public Startup(IHostEnvironment env) : base(env)
+        public Startup(IHostEnvironment env, IConfiguration configuration) : base(env, configuration)
         {
         }
         
         protected override string ApplicationName => "ActivitiesBroker";
 
         protected override void RegisterCustomServices(ContainerBuilder builder, 
-            IReloadingManager<Settings> settings, ILog log)
+            IReloadingManager<Settings> settings)
         {
             builder.RegisterType<Application>().As<IBrokerApplication>().SingleInstance();
             
@@ -36,9 +37,10 @@ namespace MarginTrading.Activities.Broker
 
             if (settings.CurrentValue.Db.StorageMode == StorageMode.SqlServer)
             {
-                builder.RegisterInstance(new ActivitiesRepository(
-                        settings.CurrentValue.Db.ConnString, log))
-                    .As<IActivitiesRepository>();
+                builder.Register(c => new ActivitiesRepository(settings.CurrentValue.Db.ConnString,
+                        c.Resolve<ILogger<ActivitiesRepository>>()))
+                    .As<IActivitiesRepository>()
+                    .SingleInstance();
             }
         }
     }

@@ -2,15 +2,12 @@
 // See the LICENSE file in the project root for more information.
 
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Common;
-using Common.Log;
 using Lykke.MarginTrading.Activities.Contracts.Models;
 using Lykke.MarginTrading.BrokerBase;
 using Lykke.MarginTrading.BrokerBase.Models;
 using Lykke.MarginTrading.BrokerBase.Settings;
-using Lykke.SlackNotifications;
 using Lykke.Snow.Common.Correlation;
 using Lykke.Snow.Common.Correlation.RabbitMq;
 using MarginTrading.Activities.Core.Domain;
@@ -23,23 +20,22 @@ namespace MarginTrading.Activities.Broker
     public class Application : BrokerApplicationBase<ActivityEvent>
     {
         private readonly IActivitiesRepository _activitiesRepository;
-        private readonly ILog _log;
+        private readonly ILogger _logger;
         private readonly Settings _settings;
         private readonly CorrelationContextAccessor _correlationContextAccessor;
 
         public Application(
             IActivitiesRepository activitiesRepository,
-            ILog logger,
+            ILogger<Application> logger,
             Settings settings, 
             CurrentApplicationInfo applicationInfo,
-            ISlackNotificationsSender slackNotificationsSender,
             ILoggerFactory loggerFactory,
             RabbitMqCorrelationManager correlationManager,
             CorrelationContextAccessor correlationContextAccessor) 
-        : base(correlationManager, loggerFactory, logger, slackNotificationsSender, applicationInfo, MessageFormat.MessagePack)
+        : base(correlationManager, loggerFactory, logger, applicationInfo, MessageFormat.MessagePack)
         {
             _activitiesRepository = activitiesRepository;
-            _log = logger;
+            _logger = logger;
             _settings = settings;
             _correlationContextAccessor = correlationContextAccessor;
         }
@@ -53,10 +49,7 @@ namespace MarginTrading.Activities.Broker
             var correlationId = _correlationContextAccessor.CorrelationContext?.CorrelationId;
             if (string.IsNullOrWhiteSpace(correlationId))
             {
-                await _log.WriteMonitorAsync(
-                    nameof(HandleMessage), 
-                    nameof(ActivityEvent),
-                    $"Correlation id is empty for activity {e.Id}");
+                _logger.LogDebug("Correlation id is empty for activity {ActivityId}", e.Id);
             }
             
             var contract = e.Activity;
@@ -74,8 +67,7 @@ namespace MarginTrading.Activities.Broker
             }
             catch (Exception ex)
             {
-                await _log.WriteErrorAsync(nameof(Broker), nameof(HandleMessage),
-                    activity.ToJson(), ex);
+                _logger.LogError(ex, "Error while processing activity event: {Json}", activity.ToJson());
                 throw;
             }
         }
