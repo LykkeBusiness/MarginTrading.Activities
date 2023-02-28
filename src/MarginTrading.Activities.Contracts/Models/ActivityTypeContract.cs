@@ -153,11 +153,5 @@ namespace Lykke.MarginTrading.Activities.Contracts.Models
         PriceAlertExpired = 9002,
         PriceAlertCancelled = 9003,
         PriceAlertTriggered = 9004,
-
-        // Cash movement
-        AccountWithdrawalSucceeded = 10000,
-        AccountWithdrawalFailed = 10001,
-        AccountDepositSucceeded = 10010,
-        AccountDepositFailed = 10011,
     }
 }

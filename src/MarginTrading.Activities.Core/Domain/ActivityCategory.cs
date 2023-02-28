@@ -15,6 +15,5 @@ namespace MarginTrading.Activities.Core.Domain
         Settings = 7,
         CloseAll = 8,
         PriceAlert = 9,
-        CashMovement = 10,
     }
 }

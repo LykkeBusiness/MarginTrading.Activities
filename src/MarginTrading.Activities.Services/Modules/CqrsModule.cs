@@ -102,7 +102,6 @@ namespace MarginTrading.Activities.Services.Modules
             RegisterAssetPairsProjection(contextRegistration);
             RegisterTradingEngineProjections(contextRegistration);
             RegisterPriceAlertsProjection(contextRegistration);
-            RegisterCashMovementsProjection(contextRegistration);
             
             contextRegistration.PublishingEvents(typeof(ActivityEvent)).With(EventsRoute);
 
@@ -159,20 +158,6 @@ namespace MarginTrading.Activities.Services.Modules
                 .On(EventsRoute)
                 .WithProjection(
                     typeof(LiquidationProjection), _settings.ContextNames.TradingEngine);
-        }
-
-        private void RegisterCashMovementsProjection(
-            IBoundedContextRegistration contextRegistration)
-        {
-            contextRegistration.ListeningEvents(
-                    typeof(DepositSucceededEvent),
-                    typeof(DepositFailedEvent),
-                    typeof(WithdrawalSucceededEvent),
-                    typeof(WithdrawalFailedEvent))
-                .From(_settings.ContextNames.AccountsManagement)
-                .On(EventsRoute)
-                .WithProjection(
-                    typeof(CashMovementProjection), _settings.ContextNames.AccountsManagement);
         }
     }
 }
