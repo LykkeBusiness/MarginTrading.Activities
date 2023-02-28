@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using MarginTrading.AccountsManagement.Contracts.Events;
-using MarginTrading.Activities.Core.Domain.Abstractions;
+using MarginTrading.Activities.Core.Domain;
 using MarginTrading.Activities.Services.Abstractions;
 using MarginTrading.Activities.Services.Projections;
 using Moq;
@@ -11,7 +11,7 @@ namespace MarginTrading.Activites.Tests
 {
     public class CashMovementProjectionTests
     {
-        private Mock<IActivitiesSender> _activitySenderMock;
+        private ActivitiesSenderStub _activitiesSenderStub;
         private Mock<IIdentityGenerator> _identityGeneratorMock;
 
         private static DepositSucceededEvent DepositSucceededEvent = 
@@ -61,8 +61,8 @@ namespace MarginTrading.Activites.Tests
         [SetUp]
         public void Setup()
         {
-            _activitySenderMock = new Mock<IActivitiesSender>();
             _identityGeneratorMock = new Mock<IIdentityGenerator>();
+            _activitiesSenderStub = new ActivitiesSenderStub();
         }
 
         [Test, TestCaseSource(nameof(DepositSucceededTestCase))]
@@ -70,19 +70,21 @@ namespace MarginTrading.Activites.Tests
         {
             var activityId = "activityId1";
             _identityGeneratorMock.Setup(o => o.GenerateId()).Returns(activityId);
+            var projection = CreateSut(_identityGeneratorMock.Object);
             
-            var projection = CreateSut(_activitySenderMock.Object, _identityGeneratorMock.Object);
+            // Act
             projection.Handle(e);
+
+            var actualActivity = _activitiesSenderStub.GetLastPublishedActivity();
             
-            _activitySenderMock.Verify(m => m.PublishActivity(
-                 It.Is<IActivity>(
-                    a => a.AccountId == e.AccountId &&
-                    a.Id == activityId &&
-                    a.Instrument == string.Empty &&
-                    a.EventSourceId == e.AccountId &&
-                    a.Timestamp == e.EventTimestamp && 
-                    a.Event == Activities.Core.Domain.ActivityType.AccountDepositSucceeded && 
-                    a.DescriptionAttributes[0] == e.Amount.ToString())));
+            Assert.AreEqual(expected: e.AccountId, actual: actualActivity.AccountId);
+            Assert.AreEqual(expected: activityId, actual: actualActivity.Id);
+            Assert.AreEqual(expected: string.Empty, actual: actualActivity.Instrument);
+            Assert.AreEqual(expected: e.AccountId, actual: actualActivity.EventSourceId);
+            Assert.AreEqual(expected: e.EventTimestamp, actual: actualActivity.Timestamp);
+            Assert.AreEqual(expected: ActivityType.AccountDepositSucceeded, actual: actualActivity.Event);
+            Assert.AreEqual(expected: e.Amount.ToString(), actual: actualActivity.DescriptionAttributes[0]);
+            
         }
 
         [Test, TestCaseSource(nameof(DepositFailedTestCase))]
@@ -90,19 +92,20 @@ namespace MarginTrading.Activites.Tests
         {
             var activityId = "activityId2";
             _identityGeneratorMock.Setup(o => o.GenerateId()).Returns(activityId);
+            var projection = CreateSut(_identityGeneratorMock.Object);
             
-            var projection = CreateSut(_activitySenderMock.Object, _identityGeneratorMock.Object);
+            // Act
             projection.Handle(e);
             
-            _activitySenderMock.Verify(m => m.PublishActivity(
-                 It.Is<IActivity>(
-                    a => a.AccountId == e.AccountId &&
-                    a.Id == activityId &&
-                    a.Instrument == string.Empty &&
-                    a.EventSourceId == e.AccountId &&
-                    a.Timestamp == e.EventTimestamp && 
-                    a.Event == Activities.Core.Domain.ActivityType.AccountDepositFailed && 
-                    a.DescriptionAttributes[0] == e.Amount.ToString())));
+            var actualActivity = _activitiesSenderStub.GetLastPublishedActivity();
+            
+            Assert.AreEqual(expected: e.AccountId, actual: actualActivity.AccountId);
+            Assert.AreEqual(expected: activityId, actual: actualActivity.Id);
+            Assert.AreEqual(expected: string.Empty, actual: actualActivity.Instrument);
+            Assert.AreEqual(expected: e.AccountId, actual: actualActivity.EventSourceId);
+            Assert.AreEqual(expected: e.EventTimestamp, actual: actualActivity.Timestamp);
+            Assert.AreEqual(expected: ActivityType.AccountDepositFailed, actual: actualActivity.Event);
+            Assert.AreEqual(expected: e.Amount.ToString(), actual: actualActivity.DescriptionAttributes[0]);
         }
 
         [Test, TestCaseSource(nameof(WithdrawalSucceededTestCase))]
@@ -110,19 +113,20 @@ namespace MarginTrading.Activites.Tests
         {
             var activityId = "activityId3";
             _identityGeneratorMock.Setup(o => o.GenerateId()).Returns(activityId);
+            var projection = CreateSut(_identityGeneratorMock.Object);
             
-            var projection = CreateSut(_activitySenderMock.Object, _identityGeneratorMock.Object);
+            // Act
             projection.Handle(e);
+
+            var actualActivity = _activitiesSenderStub.GetLastPublishedActivity();
             
-            _activitySenderMock.Verify(m => m.PublishActivity(
-                 It.Is<IActivity>(
-                    a => a.AccountId == e.AccountId &&
-                    a.Id == activityId &&
-                    a.Instrument == string.Empty &&
-                    a.EventSourceId == e.AccountId &&
-                    a.Timestamp == e.EventTimestamp && 
-                    a.Event == Activities.Core.Domain.ActivityType.AccountWithdrawalSucceeded && 
-                    a.DescriptionAttributes[0] == e.Amount.ToString())));
+            Assert.AreEqual(expected: e.AccountId, actual: actualActivity.AccountId);
+            Assert.AreEqual(expected: activityId, actual: actualActivity.Id);
+            Assert.AreEqual(expected: string.Empty, actual: actualActivity.Instrument);
+            Assert.AreEqual(expected: e.AccountId, actual: actualActivity.EventSourceId);
+            Assert.AreEqual(expected: e.EventTimestamp, actual: actualActivity.Timestamp);
+            Assert.AreEqual(expected: ActivityType.AccountWithdrawalSucceeded, actual: actualActivity.Event);
+            Assert.AreEqual(expected: e.Amount.ToString(), actual: actualActivity.DescriptionAttributes[0]);
         }
 
         [Test, TestCaseSource(nameof(WithdrawalFailedTestCase))]
@@ -130,24 +134,25 @@ namespace MarginTrading.Activites.Tests
         {
             var activityId = "activityId4";
             _identityGeneratorMock.Setup(o => o.GenerateId()).Returns(activityId);
-            
-            var projection = CreateSut(_activitySenderMock.Object, _identityGeneratorMock.Object);
+            var projection = CreateSut(_identityGeneratorMock.Object);
+
+            //Act
             projection.Handle(e);
             
-            _activitySenderMock.Verify(m => m.PublishActivity(
-                 It.Is<IActivity>(
-                    a => a.AccountId == e.AccountId &&
-                    a.Id == activityId &&
-                    a.Instrument == string.Empty &&
-                    a.EventSourceId == e.AccountId &&
-                    a.Timestamp == e.EventTimestamp && 
-                    a.Event == Activities.Core.Domain.ActivityType.AccountWithdrawalFailed && 
-                    a.DescriptionAttributes[0] == e.Amount.ToString())));
+            var actualActivity = _activitiesSenderStub.GetLastPublishedActivity();
+            
+            Assert.AreEqual(expected: e.AccountId, actual: actualActivity.AccountId);
+            Assert.AreEqual(expected: activityId, actual: actualActivity.Id);
+            Assert.AreEqual(expected: string.Empty, actual: actualActivity.Instrument);
+            Assert.AreEqual(expected: e.AccountId, actual: actualActivity.EventSourceId);
+            Assert.AreEqual(expected: e.EventTimestamp, actual: actualActivity.Timestamp);
+            Assert.AreEqual(expected: ActivityType.AccountWithdrawalFailed, actual: actualActivity.Event);
+            Assert.AreEqual(expected: e.Amount.ToString(), actual: actualActivity.DescriptionAttributes[0]);
         }
         
-        private CashMovementProjection CreateSut(IActivitiesSender activitySender, IIdentityGenerator identityGenerator)
+        private CashMovementProjection CreateSut(IIdentityGenerator identityGenerator)
         {
-            return new CashMovementProjection(activitySender, identityGenerator);
+            return new CashMovementProjection(_activitiesSenderStub, identityGenerator);
         }
     }
 }
