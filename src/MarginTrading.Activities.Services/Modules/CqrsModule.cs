@@ -13,6 +13,7 @@ using Lykke.Cqrs.Middleware.Logging;
 using Lykke.MarginTrading.Activities.Contracts.Models;
 using Lykke.Messaging.Serialization;
 using Lykke.Snow.Common.Correlation.Cqrs;
+using Lykke.Snow.Common.Startup;
 using Lykke.Snow.Cqrs;
 using Lykke.Snow.PriceAlerts.Contract.Models.Events;
 using MarginTrading.AccountsManagement.Contracts.Events;
@@ -67,18 +68,18 @@ namespace MarginTrading.Activities.Services.Modules
                 Uri = new Uri(_settings.ConnectionString, UriKind.Absolute)
             };
 
-            var loggerFactory = ctx.Resolve<ILoggerFactory>();
+            var log = new LykkeLoggerAdapter<CqrsModule>(ctx.Resolve<ILogger<CqrsModule>>());
 
             var registrations = new List<IRegistration>
             {
                 Register.DefaultEndpointResolver(rabbitMqConventionEndpointResolver),
                 RegisterContext(),
-                Register.CommandInterceptors(new DefaultCommandLoggingInterceptor(loggerFactory)),
-                Register.EventInterceptors(new DefaultEventLoggingInterceptor(loggerFactory))
+                Register.CommandInterceptors(new DefaultCommandLoggingInterceptor(log)),
+                Register.EventInterceptors(new DefaultEventLoggingInterceptor(log))
             };
 
             var engine = new RabbitMqCqrsEngine(
-                loggerFactory,
+                log,
                 ctx.Resolve<IDependencyResolver>(),
                 new DefaultEndpointProvider(),
                 rabbitMqSettings.Endpoint.ToString(),
