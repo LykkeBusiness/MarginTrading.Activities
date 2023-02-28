@@ -18,7 +18,7 @@ public class ActivitiesSenderStub : IActivitiesSender
     public IActivity GetLastPublishedActivity()
     {
         if(_activities.Count == 0)
-            throw new InvalidOperationException();
+            throw new InvalidOperationException("could not found any activity");
         
         return _activities.LastOrDefault();
     }
