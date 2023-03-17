@@ -97,16 +97,16 @@ namespace MarginTrading.Activities.Services.Projections
             switch(@event)
             {
                 case DepositSucceededEvent e:
-                    return new string[] { e.Amount.ToString() };
+                    return new string[] { e.Amount.ToString(), e.Currency };
 
                 case DepositFailedEvent e: 
-                    return new string[] { e.Amount.ToString() };
+                    return new string[] { e.Amount.ToString(), e.Currency };
 
                 case WithdrawalSucceededEvent e:
-                    return new string[] { e.Amount.ToString() };
+                    return new string[] { e.Amount.ToString(), e.Currency };
 
                 case WithdrawalFailedEvent e:
-                    return new string[] { e.Amount.ToString() };
+                    return new string[] { e.Amount.ToString(), e.Currency };
 
                 default:
                     return Array.Empty<string>();
