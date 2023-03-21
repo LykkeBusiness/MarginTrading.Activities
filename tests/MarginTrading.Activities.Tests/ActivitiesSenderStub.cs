@@ -9,6 +9,8 @@ namespace MarginTrading.Activites.Tests;
 public class ActivitiesSenderStub : IActivitiesSender
 {
     private List<IActivity> _activities = new List<IActivity>();
+    
+    public IReadOnlyList<IActivity> Activities => _activities;
 
     public void PublishActivity(IActivity activity)
     {

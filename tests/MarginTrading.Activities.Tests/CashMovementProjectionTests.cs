@@ -76,6 +76,8 @@ namespace MarginTrading.Activites.Tests
             projection.Handle(e);
 
             var actualActivity = _activitiesSenderStub.GetLastPublishedActivity();
+
+            Assert.AreEqual(1, _activitiesSenderStub.Activities.Count);
             
             Assert.AreEqual(expected: e.AccountId, actual: actualActivity.AccountId);
             Assert.AreEqual(expected: activityId, actual: actualActivity.Id);
@@ -98,6 +100,8 @@ namespace MarginTrading.Activites.Tests
             projection.Handle(e);
             
             var actualActivity = _activitiesSenderStub.GetLastPublishedActivity();
+
+            Assert.AreEqual(1, _activitiesSenderStub.Activities.Count);
             
             Assert.AreEqual(expected: e.AccountId, actual: actualActivity.AccountId);
             Assert.AreEqual(expected: activityId, actual: actualActivity.Id);
@@ -119,6 +123,8 @@ namespace MarginTrading.Activites.Tests
             projection.Handle(e);
 
             var actualActivity = _activitiesSenderStub.GetLastPublishedActivity();
+
+            Assert.AreEqual(1, _activitiesSenderStub.Activities.Count);
             
             Assert.AreEqual(expected: e.AccountId, actual: actualActivity.AccountId);
             Assert.AreEqual(expected: activityId, actual: actualActivity.Id);
@@ -141,6 +147,8 @@ namespace MarginTrading.Activites.Tests
             
             var actualActivity = _activitiesSenderStub.GetLastPublishedActivity();
             
+            Assert.AreEqual(1, _activitiesSenderStub.Activities.Count);
+
             Assert.AreEqual(expected: e.AccountId, actual: actualActivity.AccountId);
             Assert.AreEqual(expected: activityId, actual: actualActivity.Id);
             Assert.AreEqual(expected: string.Empty, actual: actualActivity.Instrument);
