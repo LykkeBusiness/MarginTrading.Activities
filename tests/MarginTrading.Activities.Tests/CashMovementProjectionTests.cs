@@ -15,16 +15,16 @@ namespace MarginTrading.Activites.Tests
         private Mock<IIdentityGenerator> _identityGeneratorMock;
 
         private static DepositSucceededEvent DepositSucceededEvent = 
-            new DepositSucceededEvent(Guid.NewGuid().ToString(), DateTime.UtcNow, "clientId1", "accountId1", 55.2m);
+            new DepositSucceededEvent(Guid.NewGuid().ToString(), DateTime.UtcNow, "clientId1", "accountId1", 55.2m, "EUR");
 
         private static DepositFailedEvent DepositFailedEvent = 
-            new DepositFailedEvent(Guid.NewGuid().ToString(), DateTime.UtcNow, "clientId2", "accountId2", 1000.0m);
+            new DepositFailedEvent(Guid.NewGuid().ToString(), DateTime.UtcNow, "clientId2", "accountId2", 1000.0m, "EUR");
 
         private static WithdrawalSucceededEvent WithdrawalSucceededEvent = 
-            new WithdrawalSucceededEvent(Guid.NewGuid().ToString(), DateTime.UtcNow, "clientId3", "accountId3", 500.55m);
+            new WithdrawalSucceededEvent(Guid.NewGuid().ToString(), DateTime.UtcNow, "clientId3", "accountId3", 500.55m, "EUR");
 
         private static WithdrawalFailedEvent WithdrawalFailedEvent = 
-            new WithdrawalFailedEvent(Guid.NewGuid().ToString(), DateTime.UtcNow, "reason", "accountId4", "clientId4", 650.30m);
+            new WithdrawalFailedEvent(Guid.NewGuid().ToString(), DateTime.UtcNow, "reason", "accountId4", "clientId4", 650.30m, "EUR");
 
         private static IEnumerable<TestCaseData> DepositSucceededTestCase
         {
