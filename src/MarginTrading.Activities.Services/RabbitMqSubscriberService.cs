@@ -74,8 +74,8 @@ namespace MarginTrading.Activities.Services
                     IsDurable = isDurable,
                 };
                 
-                var rabbitMqSubscriber = new RabbitMqPullingSubscriber<TMessage>(
-                        _loggerFactory.CreateLogger<RabbitMqPullingSubscriber<TMessage>>(),
+                var rabbitMqSubscriber = new RabbitMqSubscriber<TMessage>(
+                        _loggerFactory.CreateLogger<RabbitMqSubscriber<TMessage>>(),
                         subscriptionSettings)
                     .SetMessageDeserializer(deserializer)
                     .Subscribe(handler)
