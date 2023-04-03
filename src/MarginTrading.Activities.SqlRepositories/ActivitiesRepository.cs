@@ -7,11 +7,11 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Common;
-using Common.Log;
 using Dapper;
 using Lykke.Logs.MsSql.Extensions;
 using MarginTrading.Activities.Core.Domain.Abstractions;
 using MarginTrading.Activities.Core.Repositories;
+using Microsoft.Extensions.Logging;
 
 namespace MarginTrading.Activities.SqlRepositories
 {
@@ -52,7 +52,7 @@ BEGIN
 END";
         
         private readonly string _connectionString;
-        private readonly ILog _log;
+        private readonly ILogger _logger;
 
         private static readonly PropertyInfo[] Properties = typeof(ActivityEntity).GetProperties();
 
@@ -60,17 +60,17 @@ END";
 
         private static readonly string GetFields = string.Join(",", Properties.Select(x => "@" + x.Name));
 
-        public ActivitiesRepository(string connectionString, ILog log)
+        public ActivitiesRepository(string connectionString, ILogger<ActivitiesRepository> logger)
         {
             _connectionString = connectionString;
-            _log = log;
+            _logger = logger;
             
             using (var conn = new SqlConnection(connectionString))
             {
                 try { conn.CreateTableIfDoesntExists(CreateTableScript, TableName); }
                 catch (Exception ex)
                 {
-                    _log.WriteError("CreateTableIfDoesntExists", $"Exception while table {TableName} creation", ex);
+                    _logger.LogError(ex, "Exception while table {TableName} creation", TableName);
                     throw;
                 }
             }
@@ -85,7 +85,7 @@ END";
                     }
                     catch (Exception ex)
                     {
-                        _log.WriteError("AddCorrelationIdScript", $"Exception while adding CorrelationId column", ex);
+                        _logger.LogError(ex, "Exception while adding CorrelationId column");
                         throw;
                     }
                 }
@@ -101,7 +101,7 @@ END";
                     }
                     catch (Exception ex)
                     {
-                        _log.WriteError("AlterAccountIdScript", $"Exception while altering AccountId column", ex);
+                        _logger.LogError(ex, "Exception while altering AccountId column");
                         throw;
                     }
                 }
@@ -124,11 +124,9 @@ end
                 var rowsAffected = await conn.ExecuteAsync(sql, entity);
                 if (rowsAffected != 1)
                 {
-                    await _log.WriteWarningAsync(
-                        nameof(ActivitiesRepository),
-                        nameof(InsertIfNotExist),
-                        $"Activity {entity.ToJson()} not inserted in db, " +
-                        $"because row with Id {entity.Id} already exists");
+                    _logger.LogWarning(
+                        "Activity {EntityJson} not inserted into db because row with Id {EntityId} already exists",
+                        entity.ToJson(), entity.Id);
                 }
             }
         }

@@ -53,7 +53,6 @@ namespace MarginTrading.Activities.Services.Modules
 
             builder.Register(CreateEngine)
                 .As<ICqrsEngine>()
-                .AutoActivate()
                 .SingleInstance();
         }
 
@@ -91,7 +90,6 @@ namespace MarginTrading.Activities.Services.Modules
             var correlationManager = ctx.Resolve<CqrsCorrelationManager>();
             engine.SetReadHeadersAction(correlationManager.FetchCorrelationIfExists);
             engine.SetWriteHeadersFunc(correlationManager.BuildCorrelationHeadersIfExists);
-            engine.StartPublishers();
 
             return engine;
         }
@@ -104,6 +102,7 @@ namespace MarginTrading.Activities.Services.Modules
             RegisterAssetPairsProjection(contextRegistration);
             RegisterTradingEngineProjections(contextRegistration);
             RegisterPriceAlertsProjection(contextRegistration);
+            RegisterCashMovementsProjection(contextRegistration);
             
             contextRegistration.PublishingEvents(typeof(ActivityEvent)).With(EventsRoute);
 
@@ -160,6 +159,20 @@ namespace MarginTrading.Activities.Services.Modules
                 .On(EventsRoute)
                 .WithProjection(
                     typeof(LiquidationProjection), _settings.ContextNames.TradingEngine);
+        }
+
+        private void RegisterCashMovementsProjection(
+            IBoundedContextRegistration contextRegistration)
+        {
+            contextRegistration.ListeningEvents(
+                    typeof(DepositSucceededEvent),
+                    typeof(DepositFailedEvent),
+                    typeof(WithdrawalSucceededEvent),
+                    typeof(WithdrawalFailedEvent))
+                .From(_settings.ContextNames.AccountsManagement)
+                .On(EventsRoute)
+                .WithProjection(
+                    typeof(CashMovementProjection), _settings.ContextNames.AccountsManagement);
         }
     }
 }
