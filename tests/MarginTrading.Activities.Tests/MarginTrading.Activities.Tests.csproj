@@ -22,5 +22,6 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\MarginTrading.Activities.Producer\MarginTrading.Activities.Producer.csproj" />
+    <ProjectReference Include="..\..\src\MarginTrading.Activities.Services\MarginTrading.Activities.Services.csproj" />
   </ItemGroup>
 </Project>

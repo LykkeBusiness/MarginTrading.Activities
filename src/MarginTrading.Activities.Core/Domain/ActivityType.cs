@@ -155,6 +155,5 @@ namespace MarginTrading.Activities.Core.Domain
         AccountWithdrawalFailed = 10001,
         AccountDepositSucceeded = 10010,
         AccountDepositFailed = 10011,
-
     }
 }
