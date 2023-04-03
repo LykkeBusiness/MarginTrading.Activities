@@ -33,7 +33,7 @@
     <PackageReference Include="Lykke.Snow.Common" Version="1.52.0" />
     <PackageReference Include="LykkeBiz.HttpClientGenerator" Version="5.5.0" />
     <PackageReference Include="LykkeBiz.MarginTrading.BrokerBase" Version="7.0.2" />
-    <PackageReference Include="LykkeBiz.RabbitMqBroker" Version="11.3.0" />
+    <PackageReference Include="LykkeBiz.RabbitMqBroker" Version="11.4.0" />
     <PackageReference Include="Microsoft.Data.SqlClient" Version="4.1.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="6.0.0" />
