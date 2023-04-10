@@ -8,8 +8,13 @@ ah.ChangeTimestamp,
 'CashMovement',
 'AccountWithdrawalSucceeded',
 CONCAT('[', '"', ABS(ah.ChangeAmount), '"', ',', '"', accounts.BaseAssetId, '"', ']'),
-'[]',
+CONCAT('[', '"', ah.Id, '"', ']'),
 ah.CorrelationId
 FROM AccountHistory ah
 inner join MarginTradingAccounts accounts ON ah.AccountId = accounts.Id
 where ah.ReasonType = 'Withdraw'
+AND NOT EXISTS (
+    SELECT 1
+    FROM Activities
+    WHERE RelatedIds = CONCAT('[', '"', ah.Id, '"', ']')
+);
