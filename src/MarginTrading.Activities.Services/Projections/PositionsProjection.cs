@@ -15,6 +15,7 @@ using MarginTrading.Backend.Contracts.Events;
 using MarginTrading.Backend.Contracts.Orders;
 using MarginTrading.Backend.Contracts.Positions;
 using MarginTrading.Backend.Contracts.TradeMonitoring;
+using Newtonsoft.Json;
 using OrderStatusContract = MarginTrading.Backend.Contracts.Orders.OrderStatusContract;
 
 namespace MarginTrading.Activities.Services.Projections
@@ -142,6 +143,8 @@ namespace MarginTrading.Activities.Services.Projections
                     return Task.CompletedTask;
             }
 
+            var isOnBehalf = CheckIfOnBehalf(historyEvent);
+
             var activity = new Activity(
                 _identityGenerator.GenerateId(),
                 position.AccountId,
@@ -150,12 +153,31 @@ namespace MarginTrading.Activities.Services.Projections
                 historyEvent.Timestamp,
                 activityType,
                 descriptionAttributes,
-                relatedIds
+                relatedIds,
+                additionalInfo: isOnBehalf ? new { IsOnBehalf = true }.ToJson() : null
             );
 
             _cqrsSender.PublishActivity(activity);
             
             return Task.CompletedTask;
         }
+
+        public bool CheckIfOnBehalf(PositionHistoryEvent historyEvent)
+        {
+            try
+            {
+                dynamic additionalInfo = JsonConvert.DeserializeObject(historyEvent?.PositionSnapshot?.AdditionalInfo);
+                
+                if(additionalInfo["IsOnBehalf"] == null)
+                    return false;
+                
+                return additionalInfo["IsOnBehalf"];
+            }
+            catch(Exception)
+            {
+                return false;
+            }
+        }
+
     }
 }
