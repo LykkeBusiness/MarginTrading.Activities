@@ -12,7 +12,7 @@ namespace Lykke.MarginTrading.Activities.Contracts.Models
     {
         public ActivityContract(string id, string accountId, string instrument, string eventSourceId,
             DateTime timestamp, ActivityCategoryContract category, ActivityTypeContract @event,
-            string[] descriptionAttributes, string[] relatedIds)
+            string[] descriptionAttributes, string[] relatedIds, string additionalInfo = null)
         {
             Id = id;
             AccountId = accountId;
@@ -23,6 +23,7 @@ namespace Lykke.MarginTrading.Activities.Contracts.Models
             RelatedIds = relatedIds;
             EventSourceId = eventSourceId;
             Category = category;
+            AdditionalInfo = additionalInfo;
         }
 
         [Key(0)]
@@ -51,5 +52,8 @@ namespace Lykke.MarginTrading.Activities.Contracts.Models
         
         [Key(8)]
         public string[] RelatedIds { get; }
+
+        [Key(9)]
+        public string AdditionalInfo { get; }
     }
 }

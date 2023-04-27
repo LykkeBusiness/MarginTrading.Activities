@@ -20,19 +20,20 @@ namespace MarginTrading.Activities.SqlRepositories
         private const string TableName = "Activities";
 
         private const string CreateTableScript = "CREATE TABLE [{0}](" +
-                                                 @"[OID] [bigint] NOT NULL IDENTITY (1,1),
-[Id] [nvarchar](128) NOT NULL,
-[AccountId] [nvarchar](128) NOT NULL,
-[Instrument] [nvarchar](128) NULL,
-[EventSourceId] [nvarchar](128) NOT NULL,
-[Timestamp] [datetime] NOT NULL,
-[Category] [nvarchar](128) NOT NULL,
-[Event] [nvarchar](128) NOT NULL,
-[DescriptionAttributes] [nvarchar](MAX) NOT NULL,
-[RelatedIds] [nvarchar](MAX) NOT NULL,
-INDEX IX_{0}_Base (AccountId, Instrument, EventSourceId, Timestamp, Category, Event),
-INDEX IX_{0}_Id UNIQUE (Id)
-);";
+                                                @"[OID] [bigint] NOT NULL IDENTITY (1,1),
+                                                  [Id] [nvarchar](128) NOT NULL,
+                                                  [AccountId] [nvarchar](128) NOT NULL,
+                                                  [Instrument] [nvarchar](128) NULL,
+                                                  [EventSourceId] [nvarchar](128) NOT NULL,
+                                                  [Timestamp] [datetime] NOT NULL,
+                                                  [Category] [nvarchar](128) NOT NULL,
+                                                  [Event] [nvarchar](128) NOT NULL,
+                                                  [DescriptionAttributes] [nvarchar](MAX) NOT NULL,
+                                                  [RelatedIds] [nvarchar](MAX) NOT NULL,
+                                                  [AdditionalInfo] [nvarchar](MAX) NULL,
+                                                  INDEX IX_{0}_Base (AccountId, Instrument, EventSourceId, Timestamp, Category, Event),
+                                                  INDEX IX_{0}_Id UNIQUE (Id)
+                                                  );";
 
         private const string AddCorrelationIdScript = @"IF NOT EXISTS (
 SELECT * 
