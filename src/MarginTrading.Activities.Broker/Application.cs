@@ -59,7 +59,7 @@ namespace MarginTrading.Activities.Broker
             }
             
             var activity = new Activity(contract.Id, contract.AccountId, contract.Instrument, contract.EventSourceId,
-                contract.Timestamp, contract.Event.ToType<ActivityType>(), contract.DescriptionAttributes, contract.RelatedIds, correlationId);
+                contract.Timestamp, contract.Event.ToType<ActivityType>(), contract.DescriptionAttributes, contract.RelatedIds, correlationId, contract.AdditionalInfo);
 
             try
             {

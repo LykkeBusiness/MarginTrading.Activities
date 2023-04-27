@@ -80,7 +80,8 @@ namespace MarginTrading.Activities.Services
                         activityCategory,
                         activityType,
                         activity.DescriptionAttributes,
-                        activity.RelatedIds)
+                        activity.RelatedIds,
+                        activity.AdditionalInfo)
                 };
 
                 CqrsEngine.PublishEvent(@event, _activities);
