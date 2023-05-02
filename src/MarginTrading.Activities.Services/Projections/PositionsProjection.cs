@@ -143,8 +143,13 @@ namespace MarginTrading.Activities.Services.Projections
                     return Task.CompletedTask;
             }
 
-            var isOnBehalf = CheckIfOnBehalf(historyEvent);
+            dynamic additionalInfo = new {};
 
+            var isOnBehalf = CheckIfOnBehalf(historyEvent);
+            
+            if(isOnBehalf)
+                additionalInfo.IsOnBehalf = true;
+            
             var activity = new Activity(
                 _identityGenerator.GenerateId(),
                 position.AccountId,
@@ -154,7 +159,7 @@ namespace MarginTrading.Activities.Services.Projections
                 activityType,
                 descriptionAttributes,
                 relatedIds,
-                additionalInfo: isOnBehalf ? new { IsOnBehalf = true }.ToJson() : null
+                additionalInfo: additionalInfo.ToJson()
             );
 
             _cqrsSender.PublishActivity(activity);
@@ -164,20 +169,14 @@ namespace MarginTrading.Activities.Services.Projections
 
         public bool CheckIfOnBehalf(PositionHistoryEvent historyEvent)
         {
-            try
+            if(historyEvent.EventType == PositionHistoryTypeContract.Open)
             {
-                dynamic additionalInfo = JsonConvert.DeserializeObject(historyEvent?.PositionSnapshot?.AdditionalInfo);
-                
-                if(additionalInfo["IsOnBehalf"] == null)
-                    return false;
-                
-                return additionalInfo["IsOnBehalf"];
+                return historyEvent.PositionSnapshot.OpenOriginator == OriginatorTypeContract.OnBehalf;
             }
-            catch(Exception)
+            else
             {
-                return false;
+                return historyEvent.PositionSnapshot.CloseOriginator == OriginatorTypeContract.OnBehalf;
             }
         }
-
     }
 }

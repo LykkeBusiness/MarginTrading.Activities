@@ -294,7 +294,12 @@ namespace MarginTrading.Activities.Services.Projections
         private void PublishActivity(OrderHistoryEvent historyEvent, OrderContract order, ActivityType activityType,
             List<string> descriptionAttributes, string[] relatedIds)
         {
+            dynamic additionalInfo = new {};
+
             var isOnBehalf = CheckIfOnBehalf(historyEvent);
+            
+            if(isOnBehalf)
+                additionalInfo.IsOnBehalf = true;
             
             var activity = new Activity(
                 _identityGenerator.GenerateId(),
@@ -305,29 +310,15 @@ namespace MarginTrading.Activities.Services.Projections
                 activityType,
                 descriptionAttributes.ToArray(),
                 relatedIds,
-                additionalInfo: isOnBehalf ? new { IsOnBehalf = true }.ToJson() : null
+                additionalInfo: additionalInfo.ToJson()
             );
 
             _cqrsSender.PublishActivity(activity);
         }
 
-        public bool CheckIfOnBehalf(OrderHistoryEvent historyEvent)
-        {
-            try
-            {
-                dynamic additionalInfo = JsonConvert.DeserializeObject(historyEvent?.OrderSnapshot?.AdditionalInfo);
-                
-                if(additionalInfo["IsOnBehalf"] == null)
-                    return false;
-                
-                return additionalInfo["IsOnBehalf"];
-            }
-            catch(Exception)
-            {
-                return false;
-            }
-        }
-
+        public bool CheckIfOnBehalf(OrderHistoryEvent historyEvent) => 
+            historyEvent.OrderSnapshot.Originator == OriginatorTypeContract.OnBehalf;
+        
         #endregion
 
 
