@@ -310,7 +310,7 @@ namespace MarginTrading.Activities.Services.Projections
                 activityType,
                 descriptionAttributes.ToArray(),
                 relatedIds,
-                additionalInfo: additionalInfo.ToJson()
+                additionalInfo: isOnBehalf ? new { IsOnBehalf = true }.ToJson() : null
             );
 
             _cqrsSender.PublishActivity(activity);
