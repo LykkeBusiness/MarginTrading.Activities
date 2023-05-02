@@ -143,12 +143,7 @@ namespace MarginTrading.Activities.Services.Projections
                     return Task.CompletedTask;
             }
 
-            dynamic additionalInfo = new {};
-
             var isOnBehalf = CheckIfOnBehalf(historyEvent);
-            
-            if(isOnBehalf)
-                additionalInfo.IsOnBehalf = true;
             
             var activity = new Activity(
                 _identityGenerator.GenerateId(),
@@ -159,7 +154,7 @@ namespace MarginTrading.Activities.Services.Projections
                 activityType,
                 descriptionAttributes,
                 relatedIds,
-                additionalInfo: additionalInfo.ToJson()
+                additionalInfo: isOnBehalf ? new { IsOnBehalf = true }.ToJson() : null
             );
 
             _cqrsSender.PublishActivity(activity);
