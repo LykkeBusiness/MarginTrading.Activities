@@ -13,13 +13,31 @@ namespace MarginTrading.Activites.Tests
     public class PositionsProjectionTests
     {
         [Test]
-        public void CheckIfOnBehalf_ShouldReturnFalse_IfInputIsNotJsonString()
+        [TestCase(PositionHistoryTypeContract.Open, OriginatorTypeContract.Investor, null, false)]
+        [TestCase(PositionHistoryTypeContract.Open, OriginatorTypeContract.OnBehalf, null, true)]
+        [TestCase(PositionHistoryTypeContract.Open, OriginatorTypeContract.System, null, false)]
+        [TestCase(PositionHistoryTypeContract.Close, OriginatorTypeContract.Investor, OriginatorTypeContract.Investor, false)]
+        [TestCase(PositionHistoryTypeContract.Close, OriginatorTypeContract.Investor, OriginatorTypeContract.OnBehalf, true)]
+        [TestCase(PositionHistoryTypeContract.Close, OriginatorTypeContract.Investor, OriginatorTypeContract.System, false)]
+        [TestCase(PositionHistoryTypeContract.Close, OriginatorTypeContract.OnBehalf, OriginatorTypeContract.Investor, false)]
+        [TestCase(PositionHistoryTypeContract.Close, OriginatorTypeContract.OnBehalf, OriginatorTypeContract.OnBehalf, true)]
+        [TestCase(PositionHistoryTypeContract.Close, OriginatorTypeContract.OnBehalf, OriginatorTypeContract.System, false)]
+        [TestCase(PositionHistoryTypeContract.Close, OriginatorTypeContract.System, OriginatorTypeContract.Investor, false)]
+        [TestCase(PositionHistoryTypeContract.Close, OriginatorTypeContract.System, OriginatorTypeContract.OnBehalf, true)]
+        [TestCase(PositionHistoryTypeContract.Close, OriginatorTypeContract.System, OriginatorTypeContract.System, false)]
+        public void CheckIfOnBehalf_ShouldReturnCorrectValues_BasedOnOriginator(
+            PositionHistoryTypeContract historyType,
+            OriginatorTypeContract openOriginator, 
+            OriginatorTypeContract? closeOriginator, 
+            bool expectedResult)
         {
             var positionHistoryEvent = new PositionHistoryEvent
             {
+                EventType = historyType,
                 PositionSnapshot = new PositionContract
                 {
-                    AdditionalInfo = "not-json-string"
+                    OpenOriginator = openOriginator,
+                    CloseOriginator = closeOriginator
                 }
             };
             
@@ -27,97 +45,7 @@ namespace MarginTrading.Activites.Tests
             
             var result = sut.CheckIfOnBehalf(positionHistoryEvent);
             
-            Assert.False(result);
-        }
-
-        [Test]
-        public void CheckIfOnBehalf_ShouldReturnFalse_IfInputIsEmptyObject()
-        {
-            var positionHistoryEvent = new PositionHistoryEvent
-            {
-                PositionSnapshot = new PositionContract
-                {
-                    AdditionalInfo = "{}"
-                }
-            };
-            
-            var sut = CreateSut();
-            
-            var result = sut.CheckIfOnBehalf(positionHistoryEvent);
-            
-            Assert.False(result);
-        }
-
-        [Test]
-        public void CheckIfOnBehalf_ShouldReturnFalse_IfIsOnBehalfPropertyDoesntExist()
-        {
-            var positionHistoryEvent = new PositionHistoryEvent
-            {
-                PositionSnapshot = new PositionContract
-                {
-                    AdditionalInfo = @"{""CreatedBy"": ""user1"", ""CreatedAt"": ""2023-04-26T09:44""}"
-                }
-            };
-            
-            var sut = CreateSut();
-            
-            var result = sut.CheckIfOnBehalf(positionHistoryEvent);
-            
-            Assert.False(result);
-        }
-
-        [Test]
-        public void CheckIfOnBehalf_ShouldReturnFalse_IfIsOnBehalfPropertyInvalid()
-        {
-            var positionHistoryEvent = new PositionHistoryEvent
-            {
-                PositionSnapshot = new PositionContract
-                {
-                    AdditionalInfo = @"{""CreatedBy"": ""user1"", ""CreatedAt"": ""2023-04-26T09:44"", ""IsOnBehalf"": """"}"
-                }
-            };
-            
-            var sut = CreateSut();
-            
-            var result = sut.CheckIfOnBehalf(positionHistoryEvent);
-            
-            Assert.False(result);
-        }
-
-        [Test]
-        public void CheckIfOnBehalf_ShouldReturnFalse_IfIsOnBehalfPropertySetToFalse()
-        {
-            var positionHistoryEvent = new PositionHistoryEvent
-            {
-                PositionSnapshot = new PositionContract
-                {
-                    AdditionalInfo = @"{""CreatedBy"": ""user1"", ""CreatedAt"": ""2023-04-26T09:44"", ""IsOnBehalf"": false}"
-                }
-            };
-            
-            var sut = CreateSut();
-            
-            var result = sut.CheckIfOnBehalf(positionHistoryEvent);
-            
-            Assert.False(result);
-        }
-
-        [Test]
-        public void CheckIfOnBehalf_ShouldReturnTrue_IfIsOnBehalfPropertySetToTrue()
-        {
-            var positionHistoryEvent = new PositionHistoryEvent
-            {
-                PositionSnapshot = new PositionContract
-                {
-                    AdditionalInfo = @"{""CreatedBy"": ""user1"", ""CreatedAt"": ""2023-04-26T09:44"", ""IsOnBehalf"": true}"
-                }
-            };
-            
-            var sut = CreateSut();
-            
-            var result = sut.CheckIfOnBehalf(positionHistoryEvent);
-            
-            Assert.True(result);
+            Assert.AreEqual(expectedResult, result);
         }
 
         private PositionsProjection CreateSut()
