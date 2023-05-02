@@ -294,12 +294,7 @@ namespace MarginTrading.Activities.Services.Projections
         private void PublishActivity(OrderHistoryEvent historyEvent, OrderContract order, ActivityType activityType,
             List<string> descriptionAttributes, string[] relatedIds)
         {
-            dynamic additionalInfo = new {};
-
             var isOnBehalf = CheckIfOnBehalf(historyEvent);
-            
-            if(isOnBehalf)
-                additionalInfo.IsOnBehalf = true;
             
             var activity = new Activity(
                 _identityGenerator.GenerateId(),
