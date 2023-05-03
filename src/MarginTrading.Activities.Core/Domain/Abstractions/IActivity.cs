@@ -28,6 +28,6 @@ namespace MarginTrading.Activities.Core.Domain.Abstractions
 
         string CorrelationId { get; }
 
-        string AdditionalInfo { get; }
+        bool IsOnBehalf { get; }
     }
 }

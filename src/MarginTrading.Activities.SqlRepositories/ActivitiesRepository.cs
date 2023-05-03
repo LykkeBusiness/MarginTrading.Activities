@@ -30,7 +30,7 @@ namespace MarginTrading.Activities.SqlRepositories
                                                   [Event] [nvarchar](128) NOT NULL,
                                                   [DescriptionAttributes] [nvarchar](MAX) NOT NULL,
                                                   [RelatedIds] [nvarchar](MAX) NOT NULL,
-                                                  [AdditionalInfo] [nvarchar](MAX) NULL,
+                                                  [IsOnBehalf] [BIT] NOT NULL DEFAULT 0,
                                                   INDEX IX_{0}_Base (AccountId, Instrument, EventSourceId, Timestamp, Category, Event),
                                                   INDEX IX_{0}_Id UNIQUE (Id)
                                                   );";

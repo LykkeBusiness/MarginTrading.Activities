@@ -154,7 +154,7 @@ namespace MarginTrading.Activities.Services.Projections
                 activityType,
                 descriptionAttributes,
                 relatedIds,
-                additionalInfo: isOnBehalf ? new { IsOnBehalf = true }.ToJson() : null
+                isOnBehalf: isOnBehalf
             );
 
             _cqrsSender.PublishActivity(activity);

@@ -1,4 +1,4 @@
--- Add AdditionalInfo column to Activities table
+-- Add IsOnBehalf column to Activities table
 
 ALTER TABLE [dbo].Activities
-ADD AdditionalInfo [nvarchar](MAX) NULL;
+ADD IsOnBehalf BIT NOT NULL DEFAULT 0;
