@@ -46,7 +46,7 @@ namespace MarginTrading.Activities.SqlRepositories
         
         public string CorrelationId { get; set; }
 
-        public string AdditionalInfo { get; set; }
+        public bool IsOnBehalf { get; set; }
 
         public static ActivityEntity Create(IActivity activity)
         {
@@ -62,7 +62,7 @@ namespace MarginTrading.Activities.SqlRepositories
                 DescriptionAttributes = activity.DescriptionAttributes.ToJson(),
                 RelatedIds = activity.RelatedIds.ToJson(),
                 CorrelationId = activity.CorrelationId,
-                AdditionalInfo = activity.AdditionalInfo
+                IsOnBehalf = activity.IsOnBehalf
             };
         }
     }
