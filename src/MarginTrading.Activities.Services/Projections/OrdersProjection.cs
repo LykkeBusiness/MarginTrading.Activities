@@ -309,9 +309,23 @@ namespace MarginTrading.Activities.Services.Projections
             _cqrsSender.PublishActivity(activity);
         }
 
-        public bool CheckIfOnBehalf(OrderHistoryEvent historyEvent) => 
-            historyEvent.OrderSnapshot.Originator == OriginatorTypeContract.OnBehalf;
-        
+        public bool CheckIfOnBehalf(OrderHistoryEvent historyEvent)
+        {
+            try
+            {
+                dynamic additionalInfo = JsonConvert.DeserializeObject(historyEvent?.OrderSnapshot?.AdditionalInfo);
+
+                if (additionalInfo["IsOnBehalf"] == null)
+                    return false;
+
+                return additionalInfo["IsOnBehalf"];
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
         #endregion
 
 
