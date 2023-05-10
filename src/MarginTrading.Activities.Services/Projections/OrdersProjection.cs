@@ -4,7 +4,6 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Autofac;
 using Common;
 using Common.Log;
 using MarginTrading.Activities.Core.Domain;
@@ -15,7 +14,6 @@ using MarginTrading.Backend.Contracts.Events;
 using MarginTrading.Backend.Contracts.Orders;
 using MarginTrading.Backend.Contracts.TradeMonitoring;
 using MarginTrading.AssetService.Contracts.AssetPair;
-using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using OrderStatusContract = MarginTrading.Backend.Contracts.Orders.OrderStatusContract;
 
@@ -311,9 +309,23 @@ namespace MarginTrading.Activities.Services.Projections
             _cqrsSender.PublishActivity(activity);
         }
 
-        public bool CheckIfOnBehalf(OrderHistoryEvent historyEvent) => 
-            historyEvent.OrderSnapshot.Originator == OriginatorTypeContract.OnBehalf;
-        
+        public bool CheckIfOnBehalf(OrderHistoryEvent historyEvent)
+        {
+            try
+            {
+                dynamic additionalInfo = JsonConvert.DeserializeObject(historyEvent?.OrderSnapshot?.AdditionalInfo);
+
+                if (additionalInfo["IsOnBehalf"] == null)
+                    return false;
+
+                return additionalInfo["IsOnBehalf"];
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
         #endregion
 
 

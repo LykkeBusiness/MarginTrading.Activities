@@ -1,10 +1,7 @@
 // Copyright (c) 2019 Lykke Corp.
 // See the LICENSE file in the project root for more information.
 
-using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
-using Autofac;
 using Common;
 using Common.Log;
 using MarginTrading.Activities.Core.Domain;
@@ -13,10 +10,6 @@ using MarginTrading.Activities.Services.Abstractions;
 using MarginTrading.Backend.Contracts.Activities;
 using MarginTrading.Backend.Contracts.Events;
 using MarginTrading.Backend.Contracts.Orders;
-using MarginTrading.Backend.Contracts.Positions;
-using MarginTrading.Backend.Contracts.TradeMonitoring;
-using Newtonsoft.Json;
-using OrderStatusContract = MarginTrading.Backend.Contracts.Orders.OrderStatusContract;
 
 namespace MarginTrading.Activities.Services.Projections
 {

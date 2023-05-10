@@ -12,27 +12,113 @@ namespace MarginTrading.Activites.Tests
     public class OrdersProjectionTests
     {
         [Test]
-        [TestCase(OriginatorTypeContract.Investor, false)]
-        [TestCase(OriginatorTypeContract.OnBehalf, true)]
-        [TestCase(OriginatorTypeContract.System, false)]
-        public void CheckIfOnBehalf_ShouldReturnTheCorrectValue_BasedOnOriginator(OriginatorTypeContract originator,
-            bool expectedResult)
+        public void CheckIfOnBehalf_ShouldReturnFalse_IfInputIsNotJsonString()
         {
             var orderHistoryEvent = new OrderHistoryEvent
             {
                 OrderSnapshot = new OrderContract
                 {
-                    Originator = originator
+                    AdditionalInfo = "not-json-string"
                 }
             };
-            
+
             var sut = CreateSut();
-            
+
             var result = sut.CheckIfOnBehalf(orderHistoryEvent);
-            
-            Assert.AreEqual(expectedResult, result);
+
+            Assert.False(result);
         }
-        
+
+        [Test]
+        public void CheckIfOnBehalf_ShouldReturnFalse_IfInputIsEmptyObject()
+        {
+            var orderHistoryEvent = new OrderHistoryEvent
+            {
+                OrderSnapshot = new OrderContract
+                {
+                    AdditionalInfo = "{}"
+                }
+            };
+
+            var sut = CreateSut();
+
+            var result = sut.CheckIfOnBehalf(orderHistoryEvent);
+
+            Assert.False(result);
+        }
+
+        [Test]
+        public void CheckIfOnBehalf_ShouldReturnFalse_IfIsOnBehalfPropertyDoesntExist()
+        {
+            var orderHistoryEvent = new OrderHistoryEvent
+            {
+                OrderSnapshot = new OrderContract
+                {
+                    AdditionalInfo = @"{""CreatedBy"": ""user1"", ""CreatedAt"": ""2023-04-26T09:44""}"
+                }
+            };
+
+            var sut = CreateSut();
+
+            var result = sut.CheckIfOnBehalf(orderHistoryEvent);
+
+            Assert.False(result);
+        }
+
+        [Test]
+        public void CheckIfOnBehalf_ShouldReturnFalse_IfIsOnBehalfPropertyInvalid()
+        {
+            var orderHistoryEvent = new OrderHistoryEvent
+            {
+                OrderSnapshot = new OrderContract
+                {
+                    AdditionalInfo = @"{""CreatedBy"": ""user1"", ""CreatedAt"": ""2023-04-26T09:44"", ""IsOnBehalf"": """"}"
+                }
+            };
+
+            var sut = CreateSut();
+
+            var result = sut.CheckIfOnBehalf(orderHistoryEvent);
+
+            Assert.False(result);
+        }
+
+        [Test]
+        public void CheckIfOnBehalf_ShouldReturnFalse_IfIsOnBehalfPropertySetToFalse()
+        {
+            var orderHistoryEvent = new OrderHistoryEvent
+            {
+                OrderSnapshot = new OrderContract
+                {
+                    AdditionalInfo = @"{""CreatedBy"": ""user1"", ""CreatedAt"": ""2023-04-26T09:44"", ""IsOnBehalf"": false}"
+                }
+            };
+
+            var sut = CreateSut();
+
+            var result = sut.CheckIfOnBehalf(orderHistoryEvent);
+
+            Assert.False(result);
+        }
+
+        [Test]
+        public void CheckIfOnBehalf_ShouldReturnTrue_IfIsOnBehalfPropertySetToTrue()
+        {
+            var orderHistoryEvent = new OrderHistoryEvent
+            {
+                OrderSnapshot = new OrderContract
+                {
+                    AdditionalInfo = @"{""CreatedBy"": ""user1"", ""CreatedAt"": ""2023-04-26T09:44"", ""IsOnBehalf"": true}"
+                }
+            };
+
+            var sut = CreateSut();
+
+            var result = sut.CheckIfOnBehalf(orderHistoryEvent);
+
+            Assert.True(result);
+        }
+
         private OrdersProjection CreateSut()
         {
             var mockRabbitMqSubscriberService = new Mock<IRabbitMqSubscriberService>();
