@@ -8,5 +8,12 @@ namespace MarginTrading.Activities.Services.Abstractions
     public interface IAccountsService
     {
         Task<string> GetAccountNameByAccountId(string id);
+        
+        /// <summary>
+        /// Returns AccountName if there's an AccountName for the account, AccountId if not.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        Task<string> GetEitherAccountNameOrAccountId(string id);
     }
 }

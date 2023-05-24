@@ -17,16 +17,19 @@ namespace MarginTrading.Activities.Services.Projections
     {
         private readonly IActivitiesSender _cqrsSender;
         private readonly IIdentityGenerator _identityGenerator;
+        private readonly IAccountsService _accountService;
 
         public AccountsProjection(
             IActivitiesSender cqrsSender,
-            IIdentityGenerator identityGenerator)
+            IIdentityGenerator identityGenerator,
+            IAccountsService accountService)
         {
             _cqrsSender = cqrsSender;
             _identityGenerator = identityGenerator;
+            _accountService = accountService;
         }
         [UsedImplicitly]
-        public Task Handle(AccountChangedEvent e)
+        public async Task Handle(AccountChangedEvent e)
         {
             var activityTypes = GetActivityTypes(e);
 
@@ -39,23 +42,34 @@ namespace MarginTrading.Activities.Services.Projections
                     e.Account.Id,
                     e.ChangeTimestamp,
                     activityType,
-                    GetDescriptionAttributes(activityType, e),
+                    await GetDescriptionAttributes(activityType, e),
                     new string[0]);
 
                 _cqrsSender.PublishActivity(activity);
             }
-            
-            return Task.CompletedTask;
         }
 
-        private string[] GetDescriptionAttributes(ActivityType activityType, AccountChangedEvent e)
+        private async Task<string[]> GetDescriptionAttributes(ActivityType activityType, AccountChangedEvent e)
         {
             switch (activityType)
             {
                 case ActivityType.AccountComplexityWarningEnabled:
-                    return new[] { e.Account.Id };
+                    return new[] { await _accountService.GetEitherAccountNameOrAccountId(e.Account.Id) };
+
                 case ActivityType.AccountComplexityWarningDisabled:
-                    return new[] { e.Account.Id, e.ActivitiesMetadata?.DeserializeJson<AccountChangeMetadata>()?.OrderId };
+                    return new[] { await _accountService.GetEitherAccountNameOrAccountId(e.Account.Id), e.ActivitiesMetadata?.DeserializeJson<AccountChangeMetadata>()?.OrderId };
+
+                case ActivityType.AccountTradingDisabled:
+                    return new[] { await _accountService.GetEitherAccountNameOrAccountId(e.Account.Id) };
+
+                case ActivityType.AccountTradingEnabled:
+                    return new[] { await _accountService.GetEitherAccountNameOrAccountId(e.Account.Id) };
+
+                case ActivityType.AccountWithdrawalDisabled:
+                    return new[] { await _accountService.GetEitherAccountNameOrAccountId(e.Account.Id) };
+
+                case ActivityType.AccountWithdrawalEnabled:
+                    return new[] { await _accountService.GetEitherAccountNameOrAccountId(e.Account.Id) };
                 
                 default: return new string[0];
             }

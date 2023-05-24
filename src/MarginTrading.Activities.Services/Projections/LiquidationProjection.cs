@@ -36,7 +36,7 @@ namespace MarginTrading.Activities.Services.Projections
                 eventSourceId: @event.OperationId,
                 @event.CreationTime,
                 @event: ActivityType.CloseAllStarted,
-                descriptionAttributes: new [] { accountName ?? @event.AccountId },
+                descriptionAttributes: new [] { await _accountsService.GetEitherAccountNameOrAccountId(@event.AccountId) },
                 relatedIds: Array.Empty<string>());
 
             _publisher.PublishActivity(activity);
