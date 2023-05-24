@@ -18,6 +18,7 @@ namespace MarginTrading.Activities.Services.Projections
             IIdentityGenerator identityGenerator,
             IAccountsService accountService)
         {
+            _identityGenerator = identityGenerator;
             _cqrsSender = cqrsSender;
             _accountService = accountService;
         }
