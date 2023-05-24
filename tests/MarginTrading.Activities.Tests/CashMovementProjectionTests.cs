@@ -158,9 +158,16 @@ namespace MarginTrading.Activites.Tests
             Assert.AreEqual(expected: e.Amount.ToString(), actual: actualActivity.DescriptionAttributes[0]);
         }
         
-        private CashMovementProjection CreateSut(IIdentityGenerator identityGenerator)
+        private CashMovementProjection CreateSut(IIdentityGenerator identityGenerator, IAccountsService accountsServiceArg = null)
         {
-            return new CashMovementProjection(_activitiesSenderStub, identityGenerator);
+            IAccountsService accountsService = new Mock<IAccountsService>().Object;
+            
+            if(accountsServiceArg != null)
+            {
+                accountsService = accountsServiceArg;
+            }
+
+            return new CashMovementProjection(_activitiesSenderStub, identityGenerator, accountsService);
         }
     }
 }
