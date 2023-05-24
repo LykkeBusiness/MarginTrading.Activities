@@ -22,5 +22,12 @@ namespace MarginTrading.Activities.Services
 
             return response?.AccountName;
         }
+
+        public async Task<string> GetEitherAccountNameOrAccountId(string id)
+        {
+            var accountName = await GetAccountNameByAccountId(id);
+            
+            return string.IsNullOrEmpty(accountName) ? id : accountName;
+        }
     }
 }

@@ -52,7 +52,7 @@ namespace MarginTrading.Activities.Services.Projections
             var activityType = ActivityType.None;
             var descriptionAttributes = new List<string>();
             var relatedIds = new string[0];
-            var accountName = await _accountsService.GetAccountNameByAccountId(sessionEvent.AccountId);
+            var accountName = await _accountsService.GetEitherAccountNameOrAccountId(sessionEvent.AccountId);
 
             switch (sessionEvent.Type)
             {
@@ -112,19 +112,17 @@ namespace MarginTrading.Activities.Services.Projections
 
         private static IEnumerable<string> GetDescriptionForLogInLogOut(SessionActivity sessionEvent, string accountName)
         {
-            var accountId = string.IsNullOrEmpty(accountName) ? sessionEvent.AccountId : accountName;
             return new []
             {
-                sessionEvent.UserName, accountId, sessionEvent.SessionId.ToString(),
+                sessionEvent.UserName, accountName, sessionEvent.SessionId.ToString(),
             };
         }
 
         private static IEnumerable<string> GetDescriptionForOnBehalfSupport(SessionActivity sessionEvent, string accountName)
         {
-            var accountId = string.IsNullOrEmpty(accountName) ? sessionEvent.AccountId : accountName;
             return new []
             {
-                accountId, sessionEvent.UserName,
+                accountName, sessionEvent.UserName,
             };
         }
     }
