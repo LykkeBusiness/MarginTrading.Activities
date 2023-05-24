@@ -55,8 +55,21 @@ namespace MarginTrading.Activities.Services.Projections
             {
                 case ActivityType.AccountComplexityWarningEnabled:
                     return new[] { await _accountService.GetEitherAccountNameOrAccountId(e.Account.Id) };
+
                 case ActivityType.AccountComplexityWarningDisabled:
                     return new[] { await _accountService.GetEitherAccountNameOrAccountId(e.Account.Id), e.ActivitiesMetadata?.DeserializeJson<AccountChangeMetadata>()?.OrderId };
+
+                case ActivityType.AccountTradingDisabled:
+                    return new[] { await _accountService.GetEitherAccountNameOrAccountId(e.Account.Id) };
+
+                case ActivityType.AccountTradingEnabled:
+                    return new[] { await _accountService.GetEitherAccountNameOrAccountId(e.Account.Id) };
+
+                case ActivityType.AccountWithdrawalDisabled:
+                    return new[] { await _accountService.GetEitherAccountNameOrAccountId(e.Account.Id) };
+
+                case ActivityType.AccountWithdrawalEnabled:
+                    return new[] { await _accountService.GetEitherAccountNameOrAccountId(e.Account.Id) };
                 
                 default: return new string[0];
             }
