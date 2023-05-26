@@ -12,7 +12,7 @@ namespace Lykke.MarginTrading.Activities.Contracts.Models
     {
         public ActivityContract(string id, string accountId, string instrument, string eventSourceId,
             DateTime timestamp, ActivityCategoryContract category, ActivityTypeContract @event,
-            string[] descriptionAttributes, string[] relatedIds, bool isOnBehalf = false)
+            string[] descriptionAttributes, string[] relatedIds, bool? isOnBehalf = null)
         {
             Id = id;
             AccountId = accountId;
@@ -54,6 +54,6 @@ namespace Lykke.MarginTrading.Activities.Contracts.Models
         public string[] RelatedIds { get; }
 
         [Key(9)]
-        public bool IsOnBehalf { get; }
+        public bool? IsOnBehalf { get; }
     }
 }

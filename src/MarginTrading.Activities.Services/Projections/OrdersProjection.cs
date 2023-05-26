@@ -315,9 +315,6 @@ namespace MarginTrading.Activities.Services.Projections
             {
                 dynamic additionalInfo = JsonConvert.DeserializeObject(historyEvent?.OrderSnapshot?.AdditionalInfo);
 
-                if (additionalInfo["IsOnBehalf"] == null)
-                    return false;
-
                 return additionalInfo["IsOnBehalf"];
             }
             catch (Exception)
