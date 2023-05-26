@@ -11,7 +11,7 @@ namespace MarginTrading.Activities.Core.Domain
     {
         public Activity(string id, string accountId, string instrument, string eventSourceId,
             DateTime timestamp, ActivityType @event, string[] descriptionAttributes, string[] relatedIds,
-            string correlationId = null, bool isOnBehalf = false)
+            string correlationId = null, bool? isOnBehalf = null)
         {
             Id = id;
             AccountId = accountId;
@@ -36,6 +36,6 @@ namespace MarginTrading.Activities.Core.Domain
         public string[] DescriptionAttributes { get; }
         public string[] RelatedIds { get; }
         public string CorrelationId { get; }
-        public bool IsOnBehalf { get; }
+        public bool? IsOnBehalf { get; }
     }
 }

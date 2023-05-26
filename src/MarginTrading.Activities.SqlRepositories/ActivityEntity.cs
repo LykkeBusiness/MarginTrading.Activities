@@ -46,7 +46,7 @@ namespace MarginTrading.Activities.SqlRepositories
         
         public string CorrelationId { get; set; }
 
-        public bool IsOnBehalf { get; set; }
+        public bool? IsOnBehalf { get; set; }
 
         public static ActivityEntity Create(IActivity activity)
         {
