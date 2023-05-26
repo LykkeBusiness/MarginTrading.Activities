@@ -4,7 +4,6 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Autofac;
 using Common;
 using Common.Log;
 using MarginTrading.Activities.Core.Domain;
@@ -15,7 +14,6 @@ using MarginTrading.Backend.Contracts.Events;
 using MarginTrading.Backend.Contracts.Orders;
 using MarginTrading.Backend.Contracts.TradeMonitoring;
 using MarginTrading.AssetService.Contracts.AssetPair;
-using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using OrderStatusContract = MarginTrading.Backend.Contracts.Orders.OrderStatusContract;
 
@@ -294,6 +292,8 @@ namespace MarginTrading.Activities.Services.Projections
         private void PublishActivity(OrderHistoryEvent historyEvent, OrderContract order, ActivityType activityType,
             List<string> descriptionAttributes, string[] relatedIds)
         {
+            var isOnBehalf = CheckIfOnBehalf(historyEvent);
+            
             var activity = new Activity(
                 _identityGenerator.GenerateId(),
                 order.AccountId,
@@ -302,17 +302,32 @@ namespace MarginTrading.Activities.Services.Projections
                 historyEvent.Timestamp,
                 activityType,
                 descriptionAttributes.ToArray(),
-                relatedIds
+                relatedIds,
+                isOnBehalf: isOnBehalf
             );
 
             _cqrsSender.PublishActivity(activity);
         }
-        
+
+        public bool CheckIfOnBehalf(OrderHistoryEvent historyEvent)
+        {
+            try
+            {
+                dynamic additionalInfo = JsonConvert.DeserializeObject(historyEvent?.OrderSnapshot?.AdditionalInfo);
+
+                return additionalInfo["IsOnBehalf"];
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
         #endregion
-        
-        
+
+
         #region Mappers
-        
+
         private static ActivityType MapRejectReasonToActivityType(OrderContract order)
         {
             switch (order.RejectReason)

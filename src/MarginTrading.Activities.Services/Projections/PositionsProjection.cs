@@ -1,10 +1,7 @@
 // Copyright (c) 2019 Lykke Corp.
 // See the LICENSE file in the project root for more information.
 
-using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
-using Autofac;
 using Common;
 using Common.Log;
 using MarginTrading.Activities.Core.Domain;
@@ -13,9 +10,6 @@ using MarginTrading.Activities.Services.Abstractions;
 using MarginTrading.Backend.Contracts.Activities;
 using MarginTrading.Backend.Contracts.Events;
 using MarginTrading.Backend.Contracts.Orders;
-using MarginTrading.Backend.Contracts.Positions;
-using MarginTrading.Backend.Contracts.TradeMonitoring;
-using OrderStatusContract = MarginTrading.Backend.Contracts.Orders.OrderStatusContract;
 
 namespace MarginTrading.Activities.Services.Projections
 {
@@ -142,6 +136,8 @@ namespace MarginTrading.Activities.Services.Projections
                     return Task.CompletedTask;
             }
 
+            var isOnBehalf = CheckIfOnBehalf(historyEvent);
+            
             var activity = new Activity(
                 _identityGenerator.GenerateId(),
                 position.AccountId,
@@ -150,12 +146,25 @@ namespace MarginTrading.Activities.Services.Projections
                 historyEvent.Timestamp,
                 activityType,
                 descriptionAttributes,
-                relatedIds
+                relatedIds,
+                isOnBehalf: isOnBehalf
             );
 
             _cqrsSender.PublishActivity(activity);
             
             return Task.CompletedTask;
+        }
+
+        public bool CheckIfOnBehalf(PositionHistoryEvent historyEvent)
+        {
+            if(historyEvent.EventType == PositionHistoryTypeContract.Open)
+            {
+                return historyEvent.PositionSnapshot.OpenOriginator == OriginatorTypeContract.OnBehalf;
+            }
+            else
+            {
+                return historyEvent.PositionSnapshot.CloseOriginator == OriginatorTypeContract.OnBehalf;
+            }
         }
     }
 }
