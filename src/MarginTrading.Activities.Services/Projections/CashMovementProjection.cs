@@ -11,17 +11,20 @@ namespace MarginTrading.Activities.Services.Projections
     {
         private readonly IActivitiesSender _cqrsSender;
         private readonly IIdentityGenerator _identityGenerator;
+        private readonly IAccountsService _accountService;
 
         public CashMovementProjection(
             IActivitiesSender cqrsSender,
-            IIdentityGenerator identityGenerator)
+            IIdentityGenerator identityGenerator,
+            IAccountsService accountService)
         {
-            _cqrsSender = cqrsSender;
             _identityGenerator = identityGenerator;
+            _cqrsSender = cqrsSender;
+            _accountService = accountService;
         }
 
         [UsedImplicitly]
-        public Task Handle(DepositSucceededEvent e)
+        public async Task Handle(DepositSucceededEvent e)
         {
             var activity = new Activity(
                     id: _identityGenerator.GenerateId(),
@@ -30,16 +33,14 @@ namespace MarginTrading.Activities.Services.Projections
                     eventSourceId: e.AccountId, 
                     timestamp: e.EventTimestamp,
                     @event: ActivityType.AccountDepositSucceeded,
-                    descriptionAttributes: GetDescriptionAtributes(e), 
+                    descriptionAttributes: await GetDescriptionAtributes(e, e.AccountId), 
                     relatedIds: Array.Empty<string>());
             
             _cqrsSender.PublishActivity(activity);
-
-            return Task.CompletedTask;
         } 
         
         [UsedImplicitly]
-        public Task Handle(DepositFailedEvent e)
+        public async Task Handle(DepositFailedEvent e)
         {
             var activity = new Activity(
                     id: _identityGenerator.GenerateId(),
@@ -48,16 +49,14 @@ namespace MarginTrading.Activities.Services.Projections
                     eventSourceId: e.AccountId,
                     timestamp: e.EventTimestamp,
                     @event: ActivityType.AccountDepositFailed,
-                    descriptionAttributes: GetDescriptionAtributes(e),
+                    descriptionAttributes: await GetDescriptionAtributes(e, e.AccountId),
                     relatedIds: Array.Empty<string>());
             
             _cqrsSender.PublishActivity(activity);
-
-            return Task.CompletedTask;
         }
 
         [UsedImplicitly]
-        public Task Handle(WithdrawalSucceededEvent e)
+        public async Task Handle(WithdrawalSucceededEvent e)
         {
             var activity = new Activity(
                     id: _identityGenerator.GenerateId(),
@@ -66,16 +65,14 @@ namespace MarginTrading.Activities.Services.Projections
                     eventSourceId: e.AccountId, 
                     timestamp: e.EventTimestamp,
                     @event: ActivityType.AccountWithdrawalSucceeded,
-                    descriptionAttributes: GetDescriptionAtributes(e),
+                    descriptionAttributes: await GetDescriptionAtributes(e, e.AccountId),
                     relatedIds: Array.Empty<string>());
             
             _cqrsSender.PublishActivity(activity);
-
-            return Task.CompletedTask;
         }
 
         [UsedImplicitly]
-        public Task Handle(WithdrawalFailedEvent e)
+        public async Task Handle(WithdrawalFailedEvent e)
         {
             var activity = new Activity(
                     id: _identityGenerator.GenerateId(),
@@ -84,29 +81,27 @@ namespace MarginTrading.Activities.Services.Projections
                     eventSourceId: e.AccountId, 
                     timestamp: e.EventTimestamp,
                     @event: ActivityType.AccountWithdrawalFailed,
-                    descriptionAttributes: GetDescriptionAtributes(e),
+                    descriptionAttributes: await GetDescriptionAtributes(e, e.AccountId),
                     relatedIds: Array.Empty<string>());
             
             _cqrsSender.PublishActivity(activity);
-
-            return Task.CompletedTask;
         }
         
-        private string[] GetDescriptionAtributes(BaseEvent @event)
+        private async Task<string[]> GetDescriptionAtributes(BaseEvent @event, string accountId)
         {
             switch(@event)
             {
                 case DepositSucceededEvent e:
-                    return new string[] { e.Amount.ToString(), e.Currency };
+                    return new string[] { e.Amount.ToString(), e.Currency, await _accountService.GetEitherAccountNameOrAccountId(accountId) };
 
                 case DepositFailedEvent e: 
-                    return new string[] { e.Amount.ToString(), e.Currency };
+                    return new string[] { e.Amount.ToString(), e.Currency, await _accountService.GetEitherAccountNameOrAccountId(accountId) };
 
                 case WithdrawalSucceededEvent e:
-                    return new string[] { e.Amount.ToString(), e.Currency };
+                    return new string[] { e.Amount.ToString(), e.Currency, await _accountService.GetEitherAccountNameOrAccountId(accountId) };
 
                 case WithdrawalFailedEvent e:
-                    return new string[] { e.Amount.ToString(), e.Currency };
+                    return new string[] { e.Amount.ToString(), e.Currency, await _accountService.GetEitherAccountNameOrAccountId(accountId) };
 
                 default:
                     return Array.Empty<string>();
