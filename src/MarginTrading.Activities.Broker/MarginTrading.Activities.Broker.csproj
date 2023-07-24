@@ -30,9 +30,8 @@
     <Copy SourceFiles="appsettings.Serilog.json" DestinationFolder="$(PublishDir)" />
   </Target>
   <ItemGroup>
-    <PackageReference Include="Lykke.Snow.Common" Version="2.6.0" />
-    <PackageReference Include="LykkeBiz.HttpClientGenerator" Version="5.5.0" />
-    <PackageReference Include="LykkeBiz.MarginTrading.BrokerBase" Version="7.0.2" />
+    <PackageReference Include="LykkeBiz.HttpClientGenerator" Version="5.6.0" />
+    <PackageReference Include="LykkeBiz.MarginTrading.BrokerBase" Version="7.0.3" />
     <PackageReference Include="LykkeBiz.RabbitMqBroker" Version="11.4.0" />
     <PackageReference Include="Microsoft.Data.SqlClient" Version="5.1.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="6.0.0" />
@@ -43,7 +42,7 @@
     <PackageReference Include="Microsoft.Extensions.Logging" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="6.0.0" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MarginTrading.Activities.Contracts\MarginTrading.Activities.Contracts.csproj" />
