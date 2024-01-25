@@ -116,6 +116,7 @@ namespace Lykke.MarginTrading.Activities.Contracts.Models
         SettingsChangedGeneralOrderSettingsDefaultParametersStopLoss = 7074,
         SettingsChangedGeneralOrderSettingsDefaultParametersTrailingStop = 7075,
         SettingsChangedGeneralOrderSettingsDefaultParametersForcedOpen = 7076,
+        SettingsDeletedGeneralOrderSettings = 7077,
         SettingsChangedTabRenamedNews = 7081,
         SettingsChangedTabRenamedActivities = 7082,
         SettingsChangedTabRenamedCashMovements = 7083,
