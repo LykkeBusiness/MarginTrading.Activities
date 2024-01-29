@@ -1,3 +1,8 @@
+## 2.15.0 - Nova 2. Delivery 39 (January 29, 2024)
+### What's changed
+* LT-5165: Add history of releases into `changelog.md`
+
+
 ## 2.14.0 - Nova 2. Delivery 37 (2023-10-17)
 ### What's changed
 * LT-4977: Add helper methods descriptionattributeshelper.
