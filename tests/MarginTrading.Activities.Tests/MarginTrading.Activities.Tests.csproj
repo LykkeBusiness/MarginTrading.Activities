@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
-    <Version>2.15.0</Version>
+    <Version>2.15.1</Version>
     <LangVersion>latest</LangVersion>
     <AspNetCoreHostingModel>OutOfProcess</AspNetCoreHostingModel>
     <AspNetCoreModuleName>AspNetCoreModuleV2</AspNetCoreModuleName>
@@ -21,7 +21,9 @@
     <PackageReference Include="NUnit3TestAdapter" Version="4.3.0" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\MarginTrading.Activities.Producer\MarginTrading.Activities.Producer.csproj" />
-    <ProjectReference Include="..\..\src\MarginTrading.Activities.Services\MarginTrading.Activities.Services.csproj" />
+    <ProjectReference
+      Include="..\..\src\MarginTrading.Activities.Producer\MarginTrading.Activities.Producer.csproj" />
+    <ProjectReference
+      Include="..\..\src\MarginTrading.Activities.Services\MarginTrading.Activities.Services.csproj" />
   </ItemGroup>
 </Project>
