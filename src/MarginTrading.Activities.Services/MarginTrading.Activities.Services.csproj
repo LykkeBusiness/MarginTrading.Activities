@@ -9,7 +9,7 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Axle.Contracts" Version="2.14.0" />
-    <PackageReference Include="Lykke.MarginTrading.AccountsManagement.Contracts" Version="7.10.0" />
+    <PackageReference Include="Lykke.MarginTrading.AccountsManagement.Contracts" Version="7.17.0" />
     <PackageReference Include="Lykke.MarginTrading.BackendSnow.Contracts" Version="1.46.0" />
     <PackageReference Include="Lykke.MarginTrading.AssetService.Contracts" Version="11.6.0" />
     <PackageReference Include="Lykke.Snow.Common.Startup" Version="3.10.0" />
