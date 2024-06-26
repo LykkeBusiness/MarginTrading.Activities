@@ -8,6 +8,7 @@ using MarginTrading.Activities.Core.Domain;
 using MarginTrading.Activities.Core.Domain.Abstractions;
 using MarginTrading.Activities.RecoveryTool.Model;
 using MarginTrading.Activities.Services.Abstractions;
+using MarginTrading.Activities.Services.MessageHandlers;
 using MarginTrading.Activities.Services.Projections;
 using MarginTrading.Backend.Contracts.Events;
 using MarginTrading.Backend.Contracts.TradeMonitoring;
@@ -38,7 +39,7 @@ namespace MarginTrading.Activities.RecoveryTool.Mappers
             if (@event == null || @event.OrderPlaceRequest == null)
                 return Task.FromResult(new List<IActivity>());
 
-            var commonDescriptionAttributes = OrdersProjection.GetCommonDescriptionAttributesForOrder(
+            var commonDescriptionAttributes = OrdersHistoryHandler.GetCommonDescriptionAttributesForOrder(
                 _assetPairsCacheService.TryGetAssetPair, @event.OrderPlaceRequest.InstrumentId,
                 @event.OrderPlaceRequest.Direction, @event.OrderPlaceRequest.Type, @event.OrderPlaceRequest.Volume,
                 OrderStatusContract.Rejected, null, null);

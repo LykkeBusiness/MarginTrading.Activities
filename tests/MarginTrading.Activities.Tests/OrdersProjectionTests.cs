@@ -1,139 +1,106 @@
-using Common.Log;
-using MarginTrading.Activities.Core.Settings;
-using MarginTrading.Activities.Services.Abstractions;
-using MarginTrading.Activities.Services.Projections;
+using MarginTrading.Activities.Services.MessageHandlers;
 using MarginTrading.Backend.Contracts.Events;
 using MarginTrading.Backend.Contracts.Orders;
-using Moq;
+
 using NUnit.Framework;
 
-namespace MarginTrading.Activites.Tests
+namespace MarginTrading.Activities.Tests;
+
+public class OrdersProjectionTests
 {
-    public class OrdersProjectionTests
+    [Test]
+    public void CheckIfOnBehalf_ShouldReturnFalse_IfInputIsNotJsonString()
     {
-        [Test]
-        public void CheckIfOnBehalf_ShouldReturnFalse_IfInputIsNotJsonString()
+        var orderHistoryEvent = new OrderHistoryEvent
         {
-            var orderHistoryEvent = new OrderHistoryEvent
+            OrderSnapshot = new OrderContract
             {
-                OrderSnapshot = new OrderContract
-                {
-                    AdditionalInfo = "not-json-string"
-                }
-            };
+                AdditionalInfo = "not-json-string"
+            }
+        };
 
-            var sut = CreateSut();
+        var result = OrdersHistoryHandler.CheckIfOnBehalf(orderHistoryEvent);
 
-            var result = sut.CheckIfOnBehalf(orderHistoryEvent);
+        Assert.False(result);
+    }
 
-            Assert.False(result);
-        }
-
-        [Test]
-        public void CheckIfOnBehalf_ShouldReturnFalse_IfInputIsEmptyObject()
+    [Test]
+    public void CheckIfOnBehalf_ShouldReturnFalse_IfInputIsEmptyObject()
+    {
+        var orderHistoryEvent = new OrderHistoryEvent
         {
-            var orderHistoryEvent = new OrderHistoryEvent
+            OrderSnapshot = new OrderContract
             {
-                OrderSnapshot = new OrderContract
-                {
-                    AdditionalInfo = "{}"
-                }
-            };
+                AdditionalInfo = "{}"
+            }
+        };
 
-            var sut = CreateSut();
+        var result = OrdersHistoryHandler.CheckIfOnBehalf(orderHistoryEvent);
 
-            var result = sut.CheckIfOnBehalf(orderHistoryEvent);
+        Assert.False(result);
+    }
 
-            Assert.False(result);
-        }
-
-        [Test]
-        public void CheckIfOnBehalf_ShouldReturnFalse_IfIsOnBehalfPropertyDoesntExist()
+    [Test]
+    public void CheckIfOnBehalf_ShouldReturnFalse_IfIsOnBehalfPropertyDoesntExist()
+    {
+        var orderHistoryEvent = new OrderHistoryEvent
         {
-            var orderHistoryEvent = new OrderHistoryEvent
+            OrderSnapshot = new OrderContract
             {
-                OrderSnapshot = new OrderContract
-                {
-                    AdditionalInfo = @"{""CreatedBy"": ""user1"", ""CreatedAt"": ""2023-04-26T09:44""}"
-                }
-            };
+                AdditionalInfo = @"{""CreatedBy"": ""user1"", ""CreatedAt"": ""2023-04-26T09:44""}"
+            }
+        };
 
-            var sut = CreateSut();
+        var result = OrdersHistoryHandler.CheckIfOnBehalf(orderHistoryEvent);
 
-            var result = sut.CheckIfOnBehalf(orderHistoryEvent);
+        Assert.False(result);
+    }
 
-            Assert.False(result);
-        }
-
-        [Test]
-        public void CheckIfOnBehalf_ShouldReturnFalse_IfIsOnBehalfPropertyInvalid()
+    [Test]
+    public void CheckIfOnBehalf_ShouldReturnFalse_IfIsOnBehalfPropertyInvalid()
+    {
+        var orderHistoryEvent = new OrderHistoryEvent
         {
-            var orderHistoryEvent = new OrderHistoryEvent
+            OrderSnapshot = new OrderContract
             {
-                OrderSnapshot = new OrderContract
-                {
-                    AdditionalInfo = @"{""CreatedBy"": ""user1"", ""CreatedAt"": ""2023-04-26T09:44"", ""IsOnBehalf"": """"}"
-                }
-            };
+                AdditionalInfo = @"{""CreatedBy"": ""user1"", ""CreatedAt"": ""2023-04-26T09:44"", ""IsOnBehalf"": """"}"
+            }
+        };
 
-            var sut = CreateSut();
+        var result = OrdersHistoryHandler.CheckIfOnBehalf(orderHistoryEvent);
 
-            var result = sut.CheckIfOnBehalf(orderHistoryEvent);
+        Assert.False(result);
+    }
 
-            Assert.False(result);
-        }
-
-        [Test]
-        public void CheckIfOnBehalf_ShouldReturnFalse_IfIsOnBehalfPropertySetToFalse()
+    [Test]
+    public void CheckIfOnBehalf_ShouldReturnFalse_IfIsOnBehalfPropertySetToFalse()
+    {
+        var orderHistoryEvent = new OrderHistoryEvent
         {
-            var orderHistoryEvent = new OrderHistoryEvent
+            OrderSnapshot = new OrderContract
             {
-                OrderSnapshot = new OrderContract
-                {
-                    AdditionalInfo = @"{""CreatedBy"": ""user1"", ""CreatedAt"": ""2023-04-26T09:44"", ""IsOnBehalf"": false}"
-                }
-            };
+                AdditionalInfo = @"{""CreatedBy"": ""user1"", ""CreatedAt"": ""2023-04-26T09:44"", ""IsOnBehalf"": false}"
+            }
+        };
 
-            var sut = CreateSut();
+        var result = OrdersHistoryHandler.CheckIfOnBehalf(orderHistoryEvent);
 
-            var result = sut.CheckIfOnBehalf(orderHistoryEvent);
+        Assert.False(result);
+    }
 
-            Assert.False(result);
-        }
-
-        [Test]
-        public void CheckIfOnBehalf_ShouldReturnTrue_IfIsOnBehalfPropertySetToTrue()
+    [Test]
+    public void CheckIfOnBehalf_ShouldReturnTrue_IfIsOnBehalfPropertySetToTrue()
+    {
+        var orderHistoryEvent = new OrderHistoryEvent
         {
-            var orderHistoryEvent = new OrderHistoryEvent
+            OrderSnapshot = new OrderContract
             {
-                OrderSnapshot = new OrderContract
-                {
-                    AdditionalInfo = @"{""CreatedBy"": ""user1"", ""CreatedAt"": ""2023-04-26T09:44"", ""IsOnBehalf"": true}"
-                }
-            };
+                AdditionalInfo = @"{""CreatedBy"": ""user1"", ""CreatedAt"": ""2023-04-26T09:44"", ""IsOnBehalf"": true}"
+            }
+        };
 
-            var sut = CreateSut();
+        var result = OrdersHistoryHandler.CheckIfOnBehalf(orderHistoryEvent);
 
-            var result = sut.CheckIfOnBehalf(orderHistoryEvent);
-
-            Assert.True(result);
-        }
-
-        private OrdersProjection CreateSut()
-        {
-            var mockRabbitMqSubscriberService = new Mock<IRabbitMqSubscriberService>();
-            var mockActivitiesSender = new Mock<IActivitiesSender>();
-            var mockIdentityGenerator = new Mock<IIdentityGenerator>();
-            var mockLog = new Mock<ILog>();
-            var mockAssetPairCacheService = new Mock<IAssetPairsCacheService>();
-            
-            return new OrdersProjection(
-                mockRabbitMqSubscriberService.Object,
-                new ActivitiesSettings(),
-                mockActivitiesSender.Object,
-                mockIdentityGenerator.Object,
-                mockLog.Object,
-                mockAssetPairCacheService.Object);
-        }
+        Assert.True(result);
     }
 }

@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Autofac;
-using Common.Log;
 using Lykke.Cqrs;
 using Lykke.Cqrs.Configuration;
 using Lykke.Cqrs.Configuration.BoundedContext;
@@ -30,12 +29,10 @@ namespace MarginTrading.Activities.Services.Modules
     {
         private const string EventsRoute = "events";
         private readonly CqrsSettings _settings;
-        private readonly ILog _log;
 
-        public CqrsModule(CqrsSettings settings, ILog log)
+        public CqrsModule(CqrsSettings settings)
         {
             _settings = settings;
-            _log = log;
         }
 
         protected override void Load(ContainerBuilder builder)
@@ -68,18 +65,18 @@ namespace MarginTrading.Activities.Services.Modules
                 Uri = new Uri(_settings.ConnectionString, UriKind.Absolute)
             };
 
-            var logFactory = ctx.Resolve<ILoggerFactory>();
+            var loggerAdapter = new LykkeLoggerAdapter<CqrsModule>(ctx.Resolve<ILogger<CqrsModule>>());
 
             var registrations = new List<IRegistration>
             {
                 Register.DefaultEndpointResolver(rabbitMqConventionEndpointResolver),
                 RegisterContext(),
-                Register.CommandInterceptors(new DefaultCommandLoggingInterceptor(logFactory)),
-                Register.EventInterceptors(new DefaultEventLoggingInterceptor(logFactory))
+                Register.CommandInterceptors(new DefaultCommandLoggingInterceptor(loggerAdapter)),
+                Register.EventInterceptors(new DefaultEventLoggingInterceptor(loggerAdapter))
             };
-
+            
             var engine = new RabbitMqCqrsEngine(
-                logFactory,
+                loggerAdapter,
                 ctx.Resolve<IDependencyResolver>(),
                 new DefaultEndpointProvider(),
                 rabbitMqSettings.Endpoint.ToString(),
