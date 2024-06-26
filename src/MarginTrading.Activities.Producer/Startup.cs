@@ -90,7 +90,7 @@ namespace MarginTrading.Activities.Producer
         {
             builder.RegisterModule(new SettingsModule(_mtSettingsManager.CurrentValue));
             builder.RegisterModule(new ActivitiesModule(_mtSettingsManager, LogLocator.Log));
-            builder.RegisterModule(new CqrsModule(_mtSettingsManager.CurrentValue.ActivitiesProducer.Cqrs, LogLocator.Log));
+            builder.RegisterModule(new CqrsModule(_mtSettingsManager.CurrentValue.ActivitiesProducer.Cqrs));
             builder.RegisterModule(new ServicesModule(_mtSettingsManager.CurrentValue));
             builder.RegisterModule(new ListenersModule(_mtSettingsManager.CurrentValue));
         }
