@@ -13,7 +13,6 @@ using Lykke.Cqrs;
 using Lykke.Logs.MsSql;
 using Lykke.Logs.MsSql.Repositories;
 using Lykke.Logs.Serilog;
-using Lykke.MarginTrading.Activities.Contracts.Api;
 using Lykke.SettingsReader;
 using Lykke.Snow.Common.Correlation;
 using Lykke.Snow.Common.Startup.Hosting;
@@ -22,7 +21,6 @@ using MarginTrading.Activities.Core.Settings;
 using MarginTrading.Activities.Producer.Infrastructure;
 using MarginTrading.Activities.Producer.Modules;
 using MarginTrading.Activities.Services;
-using MarginTrading.Activities.Services.Abstractions;
 using MarginTrading.Activities.Services.Modules;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -31,7 +29,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.PlatformAbstractions;
-using MoreLinq;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 using IApplicationLifetime = Microsoft.AspNetCore.Hosting.IApplicationLifetime;
@@ -95,6 +92,7 @@ namespace MarginTrading.Activities.Producer
             builder.RegisterModule(new ActivitiesModule(_mtSettingsManager, LogLocator.Log));
             builder.RegisterModule(new CqrsModule(_mtSettingsManager.CurrentValue.ActivitiesProducer.Cqrs, LogLocator.Log));
             builder.RegisterModule(new ServicesModule(_mtSettingsManager.CurrentValue));
+            builder.RegisterModule(new ListenersModule(_mtSettingsManager.CurrentValue));
         }
 
         [UsedImplicitly]
@@ -149,13 +147,7 @@ namespace MarginTrading.Activities.Producer
             {
                 var cqrsEngine = ApplicationContainer.Resolve<ICqrsEngine>();
                 
-                cqrsEngine.StartPublishers();
-                cqrsEngine.StartSubscribers();
-                
-                var customSubscribers = ApplicationContainer.Resolve<ISubscriber[]>();
-                customSubscribers.ForEach(s => s.Start());
-                
-                cqrsEngine.StartProcesses();
+                cqrsEngine.StartAll();
                 
                 Program.AppHost.WriteLogs(Environment, LogLocator.Log);
                 

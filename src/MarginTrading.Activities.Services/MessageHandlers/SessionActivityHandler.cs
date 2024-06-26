@@ -1,88 +1,77 @@
 // Copyright (c) 2019 Lykke Corp.
 // See the LICENSE file in the project root for more information.
 
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Autofac;
+
 using Axle.Contracts;
-using Common.Log;
+
+using JetBrains.Annotations;
+
+using Lykke.RabbitMqBroker.Subscriber;
+
 using MarginTrading.Activities.Core.Domain;
-using MarginTrading.Activities.Core.Settings;
 using MarginTrading.Activities.Services.Abstractions;
 
-namespace MarginTrading.Activities.Services.Projections
+namespace MarginTrading.Activities.Services.MessageHandlers
 {
-    public class SessionActivityProjection : ISubscriber
+    [UsedImplicitly]
+    internal sealed class SessionActivityHandler : IMessageHandler<SessionActivity>
     {
-        private readonly IRabbitMqSubscriberService _rabbitMqSubscriberService;
-        private readonly ActivitiesSettings _settings;
         private readonly IActivitiesSender _cqrsSender;
         private readonly IIdentityGenerator _identityGenerator;
         private readonly IDateService _dateService;
         private readonly IAccountsService _accountsService;
-        private readonly ILog _log;
-        
-        public SessionActivityProjection(IRabbitMqSubscriberService rabbitMqSubscriberService,
-            ActivitiesSettings settings,
+
+        public SessionActivityHandler(
             IActivitiesSender cqrsSender,
             IIdentityGenerator identityGenerator,
             IDateService dateService,
-            IAccountsService accountsService,
-            ILog log)
+            IAccountsService accountsService)
         {
-            _rabbitMqSubscriberService = rabbitMqSubscriberService;
-            _settings = settings;
             _cqrsSender = cqrsSender;
             _identityGenerator = identityGenerator;
             _dateService = dateService;
             _accountsService = accountsService;
-            _log = log;
-        }
-        
-        public void Start()
-        {
-            _rabbitMqSubscriberService.Subscribe(_settings.Consumers.SessionActivity,
-                true,
-                HandleSessionActivityEvent,
-                _rabbitMqSubscriberService.GetMsgPackDeserializer<SessionActivity>());
         }
 
-        private async Task HandleSessionActivityEvent(SessionActivity sessionEvent)
+        public async Task Handle(SessionActivity message)
         {
-            var activityType = ActivityType.None;
+            ActivityType activityType;
             var descriptionAttributes = new List<string>();
-            var relatedIds = new string[0];
-            var accountName = await _accountsService.GetEitherAccountNameOrAccountId(sessionEvent.AccountId);
+            var relatedIds = Array.Empty<string>();
+            var accountName = await _accountsService.GetEitherAccountNameOrAccountId(message.AccountId);
 
-            switch (sessionEvent.Type)
+            switch (message.Type)
             {
                 case SessionActivityType.Login:
                     activityType = ActivityType.SessionLogIn;
-                    descriptionAttributes.AddRange(GetDescriptionForLogInLogOut(sessionEvent, accountName));
+                    descriptionAttributes.AddRange(GetDescriptionForLogInLogOut(message, accountName));
                     break;
                 case SessionActivityType.SignOut:
                     activityType = ActivityType.SessionSignOut;
-                    descriptionAttributes.AddRange(GetDescriptionForLogInLogOut(sessionEvent, accountName));
+                    descriptionAttributes.AddRange(GetDescriptionForLogInLogOut(message, accountName));
                     break;
                 case SessionActivityType.TimeOut:
                     activityType = ActivityType.SessionTimeOutTermination;
-                    descriptionAttributes.AddRange(GetDescriptionForTermination(sessionEvent));
+                    descriptionAttributes.AddRange(GetDescriptionForTermination(message));
                     break;
                 case SessionActivityType.DifferentDeviceTermination:
                     activityType = ActivityType.SessionDifferentDeviceTermination;
-                    descriptionAttributes.AddRange(GetDescriptionForTermination(sessionEvent));
+                    descriptionAttributes.AddRange(GetDescriptionForTermination(message));
                     break;
                 case SessionActivityType.ManualTermination:
                     activityType = ActivityType.SessionManualTermination;
-                    descriptionAttributes.AddRange(GetDescriptionForTermination(sessionEvent));
+                    descriptionAttributes.AddRange(GetDescriptionForTermination(message));
                     break;
                 case SessionActivityType.OnBehalfSupportConnected:
                     activityType = ActivityType.SessionConnectedByOnBehalfSupport;
-                    descriptionAttributes.AddRange(GetDescriptionForOnBehalfSupport(sessionEvent, accountName));
+                    descriptionAttributes.AddRange(GetDescriptionForOnBehalfSupport(message, accountName));
                     break;
                 case SessionActivityType.OnBehalfSupportDisconnected:
                     activityType = ActivityType.SessionDisconnectedByOnBehalfSupport;
-                    descriptionAttributes.AddRange(GetDescriptionForOnBehalfSupport(sessionEvent, accountName));
+                    descriptionAttributes.AddRange(GetDescriptionForOnBehalfSupport(message, accountName));
                     break;
                 default:
                     return;
@@ -90,9 +79,9 @@ namespace MarginTrading.Activities.Services.Projections
 
             var activity = new Activity(
                 _identityGenerator.GenerateId(),
-                sessionEvent.AccountId,
+                message.AccountId,
                 string.Empty,
-                sessionEvent.SessionId.ToString(),
+                message.SessionId.ToString(),
                 _dateService.Now(),
                 activityType,
                 descriptionAttributes.ToArray(),
@@ -101,7 +90,7 @@ namespace MarginTrading.Activities.Services.Projections
 
             _cqrsSender.PublishActivity(activity);
         }
-
+        
         private static IEnumerable<string> GetDescriptionForTermination(SessionActivity sessionEvent)
         {
             return new []
