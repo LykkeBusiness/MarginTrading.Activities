@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Common;
 using Lykke.MarginTrading.Activities.Contracts.Models;
 using Lykke.MarginTrading.BrokerBase;
-using Lykke.MarginTrading.BrokerBase.Models;
+using Lykke.MarginTrading.BrokerBase.Messaging;
 using Lykke.MarginTrading.BrokerBase.Settings;
 using Lykke.Snow.Common.Correlation;
 using Lykke.Snow.Common.Correlation.RabbitMq;
@@ -31,8 +31,9 @@ namespace MarginTrading.Activities.Broker
             CurrentApplicationInfo applicationInfo,
             ILoggerFactory loggerFactory,
             RabbitMqCorrelationManager correlationManager,
-            CorrelationContextAccessor correlationContextAccessor) 
-        : base(correlationManager, loggerFactory, logger, applicationInfo, MessageFormat.MessagePack)
+            CorrelationContextAccessor correlationContextAccessor,
+            IMessagingComponentFactory<ActivityEvent> messagingComponentFactory) 
+        : base(correlationManager, loggerFactory, applicationInfo, messagingComponentFactory)
         {
             _activitiesRepository = activitiesRepository;
             _logger = logger;
