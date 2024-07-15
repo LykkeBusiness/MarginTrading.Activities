@@ -35,7 +35,7 @@ namespace MarginTrading.Activities.Services.Modules
                 opt =>
                 {
                     opt.SerializationFormat = SerializationFormat.Json;
-                    opt.ConsumerCount = (byte)_settings.ActivitiesProducer.Consumers.Orders.ConsumerCount;
+                    opt.ConsumerCount = _settings.ActivitiesProducer.Consumers.Orders.ConsumerCount;
                     opt.ShareConnection = true;
                     opt.SubscriptionTemplate = SubscriptionTemplate.NoLoss;
                 },
@@ -48,7 +48,7 @@ namespace MarginTrading.Activities.Services.Modules
                 opt =>
                 {
                     opt.SerializationFormat = SerializationFormat.Json;
-                    opt.ConsumerCount = (byte)_settings.ActivitiesProducer.Consumers.Positions.ConsumerCount;
+                    opt.ConsumerCount = _settings.ActivitiesProducer.Consumers.Positions.ConsumerCount;
                     opt.ShareConnection = true;
                     opt.SubscriptionTemplate = SubscriptionTemplate.NoLoss;
                 },
@@ -61,7 +61,7 @@ namespace MarginTrading.Activities.Services.Modules
                 opt =>
                 {
                     opt.SerializationFormat = SerializationFormat.Json;
-                    opt.ConsumerCount = (byte)_settings.ActivitiesProducer.Consumers.MarginControl.ConsumerCount;
+                    opt.ConsumerCount = _settings.ActivitiesProducer.Consumers.MarginControl.ConsumerCount;
                     opt.ShareConnection = true;
                     opt.SubscriptionTemplate = SubscriptionTemplate.NoLoss;
                 },
@@ -74,7 +74,7 @@ namespace MarginTrading.Activities.Services.Modules
                 opt =>
                 {
                     opt.SerializationFormat = SerializationFormat.Messagepack;
-                    opt.ConsumerCount = (byte)_settings.ActivitiesProducer.Consumers.SessionActivity.ConsumerCount;
+                    opt.ConsumerCount = _settings.ActivitiesProducer.Consumers.SessionActivity.ConsumerCount;
                     opt.ShareConnection = true;
                     opt.SubscriptionTemplate = SubscriptionTemplate.NoLoss;
                 },
