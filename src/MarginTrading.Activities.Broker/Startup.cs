@@ -4,6 +4,8 @@
 using System;
 using Autofac;
 using JetBrains.Annotations;
+
+using Lykke.MarginTrading.Activities.Contracts.Models;
 using Lykke.MarginTrading.BrokerBase;
 using Lykke.MarginTrading.BrokerBase.Models;
 using Lykke.MarginTrading.BrokerBase.Settings;
@@ -28,6 +30,7 @@ namespace MarginTrading.Activities.Broker
         protected override void RegisterCustomServices(ContainerBuilder builder, 
             IReloadingManager<Settings> settings)
         {
+            builder.AddMessagePackBrokerMessagingFactory<ActivityEvent>();
             builder.RegisterType<Application>().As<IBrokerApplication>().SingleInstance();
             
             if (settings.CurrentValue.Db.StorageMode == StorageMode.Azure)

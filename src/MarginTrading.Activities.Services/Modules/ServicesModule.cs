@@ -3,13 +3,14 @@
 
 using System;
 using Autofac;
+
 using Lykke.HttpClientGenerator;
 using Lykke.HttpClientGenerator.Retries;
 using Lykke.MarginTrading.Activities.Contracts.Models;
+
 using MarginTrading.AccountsManagement.Contracts;
 using MarginTrading.Activities.Core.Settings;
 using MarginTrading.Activities.Services.Abstractions;
-using MarginTrading.Activities.Services.Projections;
 using MarginTrading.AssetService.Contracts;
 
 namespace MarginTrading.Activities.Services.Modules
@@ -33,10 +34,6 @@ namespace MarginTrading.Activities.Services.Modules
                 .As<IDateService>()
                 .SingleInstance();
 
-            builder.RegisterType<RabbitMqSubscriberService>()
-                .As<IRabbitMqSubscriberService>()
-                .SingleInstance();
-
             builder.RegisterType<AssetPairsCacheService>()
                 .As<IAssetPairsCacheService>()
                 .As<IStartable>()
@@ -46,24 +43,6 @@ namespace MarginTrading.Activities.Services.Modules
                 .As<IAccountsService>()
                 .SingleInstance();
 
-            //Projections
-
-            builder.RegisterType<OrdersProjection>()
-                .As<ISubscriber>()
-                .SingleInstance();
-                
-            builder.RegisterType<PositionsProjection>()
-                .As<ISubscriber>()
-                .SingleInstance();
-            
-            builder.RegisterType<MarginControlProjection>()
-                .As<ISubscriber>()
-                .SingleInstance();
-            
-            builder.RegisterType<SessionActivityProjection>()
-                .As<ISubscriber>()
-                .SingleInstance();
-            
             //External
             
             var settingsClientGeneratorBuilder = HttpClientGenerator

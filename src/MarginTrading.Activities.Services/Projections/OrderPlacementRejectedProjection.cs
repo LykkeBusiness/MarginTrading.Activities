@@ -2,13 +2,12 @@
 // See the LICENSE file in the project root for more information.
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Common.Log;
 using JetBrains.Annotations;
 using MarginTrading.Activities.Core.Domain;
 using MarginTrading.Activities.Services.Abstractions;
+using MarginTrading.Activities.Services.MessageHandlers;
 using MarginTrading.Backend.Contracts.Events;
 using MarginTrading.Backend.Contracts.TradeMonitoring;
 using OrderStatusContract = MarginTrading.Backend.Contracts.Orders.OrderStatusContract;
@@ -48,7 +47,7 @@ namespace MarginTrading.Activities.Services.Projections
                 return;
             }
             
-            var commonDescriptionAttributes = OrdersProjection.GetCommonDescriptionAttributesForOrder(
+            var commonDescriptionAttributes = OrdersHistoryHandler.GetCommonDescriptionAttributesForOrder(
                 _assetPairsCacheService.TryGetAssetPair, @event.OrderPlaceRequest.InstrumentId, 
                 @event.OrderPlaceRequest.Direction, @event.OrderPlaceRequest.Type, @event.OrderPlaceRequest.Volume, 
                 OrderStatusContract.Rejected, null, null);

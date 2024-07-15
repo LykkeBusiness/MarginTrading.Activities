@@ -4,73 +4,68 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+
 using Common;
 using Common.Log;
+
+using JetBrains.Annotations;
+
+using Lykke.RabbitMqBroker.Subscriber;
+
 using MarginTrading.Activities.Core.Domain;
-using MarginTrading.Activities.Core.Settings;
 using MarginTrading.Activities.Services.Abstractions;
+using MarginTrading.AssetService.Contracts.AssetPair;
 using MarginTrading.Backend.Contracts.Activities;
 using MarginTrading.Backend.Contracts.Events;
 using MarginTrading.Backend.Contracts.Orders;
 using MarginTrading.Backend.Contracts.TradeMonitoring;
-using MarginTrading.AssetService.Contracts.AssetPair;
+
 using Newtonsoft.Json;
+
 using OrderStatusContract = MarginTrading.Backend.Contracts.Orders.OrderStatusContract;
 
-namespace MarginTrading.Activities.Services.Projections
+namespace MarginTrading.Activities.Services.MessageHandlers
 {
-    public class OrdersProjection : ISubscriber
+    [UsedImplicitly]
+    public sealed class OrdersHistoryHandler : IMessageHandler<OrderHistoryEvent>
     {
-        private readonly IRabbitMqSubscriberService _rabbitMqSubscriberService;
-        private readonly ActivitiesSettings _settings;
         private readonly IActivitiesSender _cqrsSender;
         private readonly IIdentityGenerator _identityGenerator;
-        private readonly ILog _log;
         private readonly IAssetPairsCacheService _assetPairsCacheService;
-        
-        public OrdersProjection(IRabbitMqSubscriberService rabbitMqSubscriberService,
-            ActivitiesSettings settings,
+        private readonly ILog _log;
+
+        public OrdersHistoryHandler(
             IActivitiesSender cqrsSender,
             IIdentityGenerator identityGenerator,
-            ILog log,
-            IAssetPairsCacheService assetPairsCacheService)
+            IAssetPairsCacheService assetPairsCacheService,
+            ILog log)
         {
-            _rabbitMqSubscriberService = rabbitMqSubscriberService;
-            _settings = settings;
             _cqrsSender = cqrsSender;
             _identityGenerator = identityGenerator;
-            _log = log;
             _assetPairsCacheService = assetPairsCacheService;
-        }
-        
-        public void Start()
-        {
-            _rabbitMqSubscriberService.Subscribe(_settings.Consumers.Orders,
-                true,
-                HandleOrderHistoryEvent,
-                _rabbitMqSubscriberService.GetJsonDeserializer<OrderHistoryEvent>());
+            _log = log;
         }
 
-        private Task HandleOrderHistoryEvent(OrderHistoryEvent historyEvent)
+        public Task Handle(OrderHistoryEvent message)
         {
-            var order = historyEvent.OrderSnapshot;
+            var order = message.OrderSnapshot;
 
             if (order == null)
             {
                 _log.WriteWarning(
-                    nameof(HandleOrderHistoryEvent),
-                    historyEvent?.ToJson(),
+                    nameof(Handle),
+                    message.ToJson(),
                     "Order snapshot is null. Unable to create activity."
                 );
-                
+
                 return Task.CompletedTask;
             }
 
-            var activityType = ActivityType.None;
+            ActivityType activityType;
             var descriptionAttributes = new List<string>();
-            var relatedIds = new string[0];
-            
-            switch (historyEvent.Type)
+            string[] relatedIds;
+
+            switch (message.Type)
             {
                 case OrderHistoryTypeContract.Place:
 
@@ -79,81 +74,81 @@ namespace MarginTrading.Activities.Services.Projections
                         return Task.CompletedTask;
 
                     activityType = ActivityType.OrderAcceptance;
-                    relatedIds = new[] {order.Id};
+                    relatedIds = new[] { order.Id };
                     descriptionAttributes.AddRange(GetCommonDescriptionAttributesForOrder(order));
                     descriptionAttributes.Add(GetValidity(order.ValidityTime));
-                    
+
                     break;
-                
+
                 case OrderHistoryTypeContract.Activate:
 
                     if (IsBasicPendingOrder(order) || !string.IsNullOrEmpty(order.PositionId))
                     {
                         activityType = ActivityType.OrderAcceptanceAndActivation;
-                        relatedIds = new[] {order.Id};
+                        relatedIds = new[] { order.Id };
                         descriptionAttributes.AddRange(GetCommonDescriptionAttributesForOrder(order));
                         descriptionAttributes.Add(GetValidity(order.ValidityTime));
                     }
                     else
                     {
                         activityType = ActivityType.OrderActivation;
-                        relatedIds = new[] {order.Id};
+                        relatedIds = new[] { order.Id };
                         descriptionAttributes.AddRange(GetCommonDescriptionAttributesForOrder(order));
                     }
-                    
+
                     break;
-                
+
                 case OrderHistoryTypeContract.Change:
 
-                    relatedIds = new[] {order.Id};
-                    
+                    relatedIds = new[] { order.Id };
+
                     descriptionAttributes.AddRange(GetCommonDescriptionAttributesForOrder(order));
 
                     activityType = MapOrderChangeToActivityType(
                         order,
-                        historyEvent.ActivitiesMetadata,
+                        message.ActivitiesMetadata,
                         descriptionAttributes);
 
                     if (activityType == ActivityType.None)
                         return Task.CompletedTask;
 
                     break;
-                
+
                 case OrderHistoryTypeContract.Reject:
 
-                    relatedIds = new[] {order.Id};
+                    relatedIds = new[] { order.Id };
                     descriptionAttributes.AddRange(GetCommonDescriptionAttributesForOrder(order));
                     activityType = MapRejectReasonToActivityType(order);
-                    
+
                     break;
-                
+
                 case OrderHistoryTypeContract.Cancel:
 
-                    relatedIds = new[] {order.Id};
+                    relatedIds = new[] { order.Id };
                     descriptionAttributes.AddRange(GetCommonDescriptionAttributesForOrder(order));
-                    activityType = MapOrderCancelToActivityType(historyEvent.ActivitiesMetadata);
-                    
+                    activityType = MapOrderCancelToActivityType(message.ActivitiesMetadata);
+
                     break;
-                
+
                 case OrderHistoryTypeContract.Executed:
 
-                    relatedIds = new[] {order.Id, order.Id};
+                    relatedIds = new[] { order.Id, order.Id };
                     descriptionAttributes.AddRange(GetCommonDescriptionAttributesForOrder(order));
 
-                    activityType = order.Type == OrderTypeContract.Market ? 
-                        ActivityType.OrderAcceptanceAndExecution 
+                    activityType = order.Type == OrderTypeContract.Market
+                        ? ActivityType.OrderAcceptanceAndExecution
                         : ActivityType.OrderExecution;
 
-                    HandleCancellationAndAdjustment(historyEvent, order);
-                    
+                    HandleCancellationAndAdjustment(message, order);
+
                     break;
-                
+
                 default:
                     return Task.CompletedTask;
             }
 
             PublishActivity(
-                historyEvent,
+                message,
                 order,
                 activityType,
                 descriptionAttributes,
@@ -162,9 +157,9 @@ namespace MarginTrading.Activities.Services.Projections
             return Task.CompletedTask;
         }
 
-        
+
         #region Helpers
-        
+
         private static bool IsBasicPendingOrder(OrderContract order)
         {
             return order.Type == OrderTypeContract.Limit || order.Type == OrderTypeContract.Stop;
@@ -183,14 +178,26 @@ namespace MarginTrading.Activities.Services.Projections
 
         private List<string> GetCommonDescriptionAttributesForOrder(OrderContract order)
         {
-            return GetCommonDescriptionAttributesForOrder(_assetPairsCacheService.TryGetAssetPair, 
-                order.AssetPairId, order.Direction, order.Type, order.Volume, order.Status, order.ExecutionPrice,
+            return GetCommonDescriptionAttributesForOrder(
+                _assetPairsCacheService.TryGetAssetPair,
+                order.AssetPairId,
+                order.Direction,
+                order.Type,
+                order.Volume,
+                order.Status,
+                order.ExecutionPrice,
                 order.ExpectedOpenPrice);
         }
-        
-        public static List<string> GetCommonDescriptionAttributesForOrder(Func<string, AssetPairContract> getAssetPair, 
-            string assetPairId, OrderDirectionContract direction, OrderTypeContract type, decimal? volume, 
-            OrderStatusContract status, decimal? executionPrice, decimal? expectedOpenPrice)
+
+        public static List<string> GetCommonDescriptionAttributesForOrder(
+            Func<string, AssetPairContract> getAssetPair,
+            string assetPairId,
+            OrderDirectionContract direction,
+            OrderTypeContract type,
+            decimal? volume,
+            OrderStatusContract status,
+            decimal? executionPrice,
+            decimal? expectedOpenPrice)
         {
             var assetPair = getAssetPair(assetPairId);
 
@@ -206,38 +213,26 @@ namespace MarginTrading.Activities.Services.Projections
             {
                 if (status == OrderStatusContract.Executed)
                 {
-                    result.AddRange(new[]
-                    {
-                        executionPrice.ToUiString(assetPair?.Accuracy),
-                        assetPair?.QuoteAssetId
-                    });
+                    result.AddRange(new[] { executionPrice.ToUiString(assetPair?.Accuracy), assetPair?.QuoteAssetId });
                 }
             }
             else
             {
-
                 if (status != OrderStatusContract.Rejected)
                 {
-                    result.AddRange(new[]
-                    {
-                        expectedOpenPrice.ToUiString(assetPair?.Accuracy),
-                        assetPair?.QuoteAssetId
-                    });
+                    result.AddRange(
+                        new[] { expectedOpenPrice.ToUiString(assetPair?.Accuracy), assetPair?.QuoteAssetId });
                 }
 
                 if (status == OrderStatusContract.Executed)
                 {
-                    result.AddRange(new[]
-                    {
-                        executionPrice.ToUiString(assetPair?.Accuracy),
-                        assetPair?.QuoteAssetId
-                    });
+                    result.AddRange(new[] { executionPrice.ToUiString(assetPair?.Accuracy), assetPair?.QuoteAssetId });
                 }
             }
 
             return result;
         }
-        
+
         private void HandleCancellationAndAdjustment(OrderHistoryEvent historyEvent, OrderContract order)
         {
             if (string.IsNullOrEmpty(order.AdditionalInfo))
@@ -245,9 +240,7 @@ namespace MarginTrading.Activities.Services.Projections
 
             var additionalAttributes = new
             {
-                TargetTradeId = "",
-                IsCancellationTrade = false,
-                IsAdjustmentTrade = false
+                TargetTradeId = "", IsCancellationTrade = false, IsAdjustmentTrade = false
             };
             try
             {
@@ -265,35 +258,41 @@ namespace MarginTrading.Activities.Services.Projections
                 var activityType = ActivityType.CancellationTrade;
                 var descriptionAttributes = GetCommonDescriptionAttributesForOrder(order);
                 descriptionAttributes.Add(additionalAttributes.TargetTradeId);
-                var relatedIds = new[] {order.Id, order.Id};
+                var relatedIds = new[] { order.Id, order.Id };
 
-                PublishActivity(historyEvent,
+                PublishActivity(
+                    historyEvent,
                     order,
                     activityType,
                     descriptionAttributes,
                     relatedIds);
             }
-            
+
             if (additionalAttributes.IsAdjustmentTrade)
             {
                 var activityType = ActivityType.AdjustmentTrade;
                 var descriptionAttributes = GetCommonDescriptionAttributesForOrder(order);
                 descriptionAttributes.Add(additionalAttributes.TargetTradeId);
-                var relatedIds = new[] {order.Id, order.Id};
+                var relatedIds = new[] { order.Id, order.Id };
 
-                PublishActivity(historyEvent,
+                PublishActivity(
+                    historyEvent,
                     order,
                     activityType,
                     descriptionAttributes,
                     relatedIds);
             }
         }
-        
-        private void PublishActivity(OrderHistoryEvent historyEvent, OrderContract order, ActivityType activityType,
-            List<string> descriptionAttributes, string[] relatedIds)
+
+        private void PublishActivity(
+            OrderHistoryEvent historyEvent,
+            OrderContract order,
+            ActivityType activityType,
+            List<string> descriptionAttributes,
+            string[] relatedIds)
         {
             var isOnBehalf = CheckIfOnBehalf(historyEvent);
-            
+
             var activity = new Activity(
                 _identityGenerator.GenerateId(),
                 order.AccountId,
@@ -309,7 +308,7 @@ namespace MarginTrading.Activities.Services.Projections
             _cqrsSender.PublishActivity(activity);
         }
 
-        public bool CheckIfOnBehalf(OrderHistoryEvent historyEvent)
+        public static bool CheckIfOnBehalf(OrderHistoryEvent historyEvent)
         {
             try
             {
@@ -334,10 +333,10 @@ namespace MarginTrading.Activities.Services.Projections
             {
                 case OrderRejectReasonContract.InvalidVolume:
                     return ActivityType.OrderRejection; //any other
-                
+
                 case OrderRejectReasonContract.ShortPositionsDisabled:
                     return ActivityType.OrderRejectionBecauseShortDisabled;
-                
+
                 case OrderRejectReasonContract.MaxPositionLimit:
                     return ActivityType.OrderRejectionBecauseMaxPositionLimit;
 
@@ -352,14 +351,15 @@ namespace MarginTrading.Activities.Services.Projections
 
                 case OrderRejectReasonContract.MaxOrderSizeLimit:
                     return ActivityType.OrderRejectionBecauseMaxOrderSizeLimit;
-                
+
                 default:
                     return ActivityType.OrderRejection;
             }
         }
-        
-        private static ActivityType MapOrderChangeToActivityType(OrderContract order, 
-            string metadata, 
+
+        private static ActivityType MapOrderChangeToActivityType(
+            OrderContract order,
+            string metadata,
             List<string> descriptionAttributes)
         {
             var metadataObject = metadata.DeserializeJson<OrderChangedMetadata>();
@@ -381,11 +381,11 @@ namespace MarginTrading.Activities.Services.Projections
 
                 case OrderChangedProperty.RelatedOrderRemoved:
                     return ActivityType.OrderModificationRelatedOrderRemoved;
-                
+
                 case OrderChangedProperty.ForceOpen:
                     descriptionAttributes.Add(order.ForceOpen.ToString());
                     return ActivityType.OrderModificationForceOpen;
-                
+
 
                 case OrderChangedProperty.None:
                     return ActivityType.None;
@@ -403,31 +403,30 @@ namespace MarginTrading.Activities.Services.Projections
             {
                 case OrderCancellationReasonContract.Expired:
                     return ActivityType.OrderExpiry;
-                
+
                 case OrderCancellationReasonContract.CorporateAction:
                     return ActivityType.OrderCancellationBecauseCorporateAction;
-                
+
                 case OrderCancellationReasonContract.AccountInactivated:
                     return ActivityType.OrderCancellationBecauseAccountIsNotValid;
-                
+
                 case OrderCancellationReasonContract.InstrumentInvalidated:
                     return ActivityType.OrderCancellationBecauseInstrumentInNotValid;
-                
+
                 case OrderCancellationReasonContract.BaseOrderCancelled:
                     return ActivityType.OrderCancellationBecauseBaseOrderCancelled;
-                
+
                 case OrderCancellationReasonContract.ParentPositionClosed:
                     return ActivityType.OrderCancellationBecausePositionClosed;
-                
+
                 case OrderCancellationReasonContract.ConnectedOrderExecuted:
                     return ActivityType.OrderCancellationBecauseConnectedOrderExecuted;
-                
+
                 default:
                     return ActivityType.OrderCancellation;
             }
         }
-        
+
         #endregion
-        
     }
 }
