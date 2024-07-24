@@ -114,10 +114,10 @@ namespace MarginTrading.Activities.Producer
 
                 app.UseCorrelation();
 #if DEBUG
-                app.UseLykkeMiddleware(ServiceName, ex => ex.ToString());
+                app.UseLykkeMiddleware(ServiceName, ex => ex.ToString(), false, false);
 #else
                 app.UseLykkeMiddleware(ServiceName,
-                    ex => new ErrorResponse {ErrorMessage = "Technical problem", Details = ex.Message});
+                    ex => new ErrorResponse {ErrorMessage = "Technical problem", Details = ex.Message}, false, false);
 #endif
                 
                 
