@@ -8,9 +8,6 @@
     <AspNetCoreHostingModel>OutOfProcess</AspNetCoreHostingModel>
     <AspNetCoreModuleName>AspNetCoreModuleV2</AspNetCoreModuleName>
   </PropertyGroup>
-  <ItemGroup>
-    <FrameworkReference Include="Microsoft.AspNetCore.App" />
-  </ItemGroup>
   <PropertyGroup>
     <NoWarn>1701;1702;1705;CA2007;0612;0618;1591;NU1608</NoWarn>
     <UserSecretsId>F7428201-B7F7-4571-9ABD-12BDABF81524</UserSecretsId>
@@ -57,9 +54,13 @@
     <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\MarginTrading.Activities.Contracts\MarginTrading.Activities.Contracts.csproj" />
-    <ProjectReference Include="..\MarginTrading.Activities.Core\MarginTrading.Activities.Core.csproj" />
-    <ProjectReference Include="..\MarginTrading.Activities.Services\MarginTrading.Activities.Services.csproj" />
-    <ProjectReference Include="..\MarginTrading.Activities.SqlRepositories\MarginTrading.Activities.SqlRepositories.csproj" />
+    <ProjectReference
+      Include="..\MarginTrading.Activities.Contracts\MarginTrading.Activities.Contracts.csproj" />
+    <ProjectReference
+      Include="..\MarginTrading.Activities.Core\MarginTrading.Activities.Core.csproj" />
+    <ProjectReference
+      Include="..\MarginTrading.Activities.Services\MarginTrading.Activities.Services.csproj" />
+    <ProjectReference
+      Include="..\MarginTrading.Activities.SqlRepositories\MarginTrading.Activities.SqlRepositories.csproj" />
   </ItemGroup>
 </Project>

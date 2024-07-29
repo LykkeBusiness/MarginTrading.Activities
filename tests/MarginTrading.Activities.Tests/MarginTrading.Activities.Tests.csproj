@@ -5,9 +5,6 @@
     <AspNetCoreHostingModel>OutOfProcess</AspNetCoreHostingModel>
     <AspNetCoreModuleName>AspNetCoreModuleV2</AspNetCoreModuleName>
   </PropertyGroup>
-  <ItemGroup>
-    <FrameworkReference Include="Microsoft.AspNetCore.App" />
-  </ItemGroup>
   <PropertyGroup>
     <NoWarn>1701;1702;1705;CA2007;0612;0618;1591</NoWarn>
   </PropertyGroup>
@@ -24,7 +21,9 @@
     <PackageReference Include="NUnit3TestAdapter" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\MarginTrading.Activities.Producer\MarginTrading.Activities.Producer.csproj" />
-    <ProjectReference Include="..\..\src\MarginTrading.Activities.Services\MarginTrading.Activities.Services.csproj" />
+    <ProjectReference
+      Include="..\..\src\MarginTrading.Activities.Producer\MarginTrading.Activities.Producer.csproj" />
+    <ProjectReference
+      Include="..\..\src\MarginTrading.Activities.Services\MarginTrading.Activities.Services.csproj" />
   </ItemGroup>
 </Project>
