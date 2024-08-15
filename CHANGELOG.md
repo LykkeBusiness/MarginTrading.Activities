@@ -1,16 +1,32 @@
+## 2.18.0 - Nova 2. Delivery 44 (August 15, 2024)
+### What's changed
+* LT-5526: Update rabbitmq broker library with new rabbitmq.client and templates.
+
+### Deployment
+Please ensure that the mirroring policy is configured on the RabbitMQ server side for the following queues:
+- `dev.Activities.events.exchange.MarginTrading.Activities.Broker.DefaultEnv`
+- `lykke.mt.orderhistory.MarginTrading.Activities.Producer.dev`
+- `lykke.mt.position.history.MarginTrading.Activities.Producer.dev`
+- `lykke.mt.account.marginevents.MarginTrading.Activities.Producer.dev`
+- `lykke.axle.activities.MarginTrading.Activities.Producer.dev`
+
+These queues require the mirroring policy to be enabled as part of our ongoing initiative to enhance system reliability. They are now classified as "no loss" queues, which necessitates proper configuration. The mirroring feature must be enabled on the RabbitMQ server side.
+
+In some cases, you may encounter an error indicating that the server-side configuration of a queue differs from the client’s expected configuration. If this occurs, please delete the queue, allowing it to be automatically recreated by the client.
+
+**Warning**: The "no loss" configuration is only valid if the mirroring policy is enabled on the server side.
+
+Please be aware that the provided queue names may include environment-specific identifiers (e.g., dev, test, prod). Be sure to replace these with the actual environment name in use. The same applies to instance names embedded within the queue names (e.g., DefaultEnv, etc.).
+
 ## 2.17.0 - Nova 2. Delivery 41 (March 29, 2024)
 ### What's changed
 * LT-5444: Update packages.
-
-
 
 
 ## 2.16.0 - Nova 2. Delivery 40 (February 28, 2024)
 ### What's changed
 * LT-5216: Update lykke.httpclientgenerator to 5.6.2.
 * LT-5187: Add SettingsDeletedGeneralOrderSettings.
-
-
 
 
 ## 2.15.1 - Nova 2. Delivery 39. Hotfix 2 (February 7, 2024)
