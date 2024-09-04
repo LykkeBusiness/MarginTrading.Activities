@@ -13,6 +13,10 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="coverlet.msbuild">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
     <PackageReference Include="FluentAssertions" />
     <PackageReference Include="JetBrains.Annotations" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
@@ -21,9 +25,7 @@
     <PackageReference Include="NUnit3TestAdapter" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference
-      Include="..\..\src\MarginTrading.Activities.Producer\MarginTrading.Activities.Producer.csproj" />
-    <ProjectReference
-      Include="..\..\src\MarginTrading.Activities.Services\MarginTrading.Activities.Services.csproj" />
+    <ProjectReference Include="..\..\src\MarginTrading.Activities.Producer\MarginTrading.Activities.Producer.csproj" />
+    <ProjectReference Include="..\..\src\MarginTrading.Activities.Services\MarginTrading.Activities.Services.csproj" />
   </ItemGroup>
 </Project>
