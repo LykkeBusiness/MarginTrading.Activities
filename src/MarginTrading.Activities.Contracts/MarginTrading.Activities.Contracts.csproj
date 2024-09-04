@@ -6,6 +6,7 @@
     <Company>Lykke</Company>
     <AssemblyName>Lykke.MarginTrading.Activities.Contracts</AssemblyName>
     <RootNamespace>Lykke.MarginTrading.Activities.Contracts</RootNamespace>
+    <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
   </PropertyGroup>
   <PropertyGroup>
     <NoWarn>1701;1702;1705;CA2007;0612;0618;1591</NoWarn>
