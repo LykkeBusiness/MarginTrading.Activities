@@ -1,17 +1,14 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <NoWarn>$(NoWarn);1591</NoWarn>
     <Version>2.18.0</Version>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <LangVersion>8.0</LangVersion>
     <AspNetCoreHostingModel>OutOfProcess</AspNetCoreHostingModel>
     <AspNetCoreModuleName>AspNetCoreModuleV2</AspNetCoreModuleName>
+    <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
   </PropertyGroup>
-  <ItemGroup>
-    <FrameworkReference Include="Microsoft.AspNetCore.App" />
-  </ItemGroup>
   <PropertyGroup>
     <NoWarn>1701;1702;1705;CA2007;0612;0618;1591;NU1608</NoWarn>
     <UserSecretsId>F7428201-B7F7-4571-9ABD-12BDABF81524</UserSecretsId>
@@ -37,27 +34,25 @@
     <Copy SourceFiles="appsettings.Serilog.json" DestinationFolder="$(PublishDir)" />
   </Target>
   <ItemGroup>
-    <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="8.0.0" />
-    <PackageReference Include="JetBrains.Annotations" Version="2022.3.1" />
-    <PackageReference Include="Lykke.Common.ApiLibrary" Version="3.1.1" />
-    <PackageReference Include="Lykke.Snow.Common.Startup" Version="3.15.0" />
-    <PackageReference Include="LykkeBiz.Logs.Serilog" Version="3.3.1" />
-    <PackageReference Include="LykkeBiz.RabbitMqBroker" Version="13.10.0" />
-    <PackageReference Include="Microsoft.Data.SqlClient" Version="5.1.3" />
-    <PackageReference Include="Microsoft.Extensions.Configuration" Version="6.0.1" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="6.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables"
-      Version="6.0.1" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="6.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="6.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="6.0.0" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions"
-      Version="6.0.0" />
-    <PackageReference Include="morelinq" Version="3.3.2" />
-    <PackageReference Include="StackExchange.Redis" Version="2.6.66" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="6.0.10" />
-    <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="5.4.1" />
-    <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="6.3.0" />
+    <PackageReference Include="Autofac.Extensions.DependencyInjection" />
+    <PackageReference Include="JetBrains.Annotations" />
+    <PackageReference Include="LykkeBiz.Common.ApiLibrary" />
+    <PackageReference Include="Lykke.Snow.Common.Startup" />
+    <PackageReference Include="LykkeBiz.Logs.Serilog" />
+    <PackageReference Include="LykkeBiz.RabbitMqBroker" />
+    <PackageReference Include="Microsoft.Data.SqlClient" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" />
+    <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
+    <PackageReference Include="morelinq" />
+    <PackageReference Include="StackExchange.Redis" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" />
+    <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" />
+    <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference
