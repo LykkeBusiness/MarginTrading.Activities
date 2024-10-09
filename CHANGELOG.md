@@ -1,3 +1,7 @@
+## 2.19.0 - Nova 2. Delivery 46 (September 26, 2024)
+### What's changed
+* LT-5593: Migrate to net 8.
+
 ## 2.18.0 - Nova 2. Delivery 44 (August 15, 2024)
 ### What's changed
 * LT-5526: Update rabbitmq broker library with new rabbitmq.client and templates.
