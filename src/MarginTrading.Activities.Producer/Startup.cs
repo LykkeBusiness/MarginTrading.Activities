@@ -148,11 +148,11 @@ namespace MarginTrading.Activities.Producer
         {
             try
             {
+                ApplicationContainer.Resolve<AssemblyLogger>().StartLogging();
+                
                 var cqrsEngine = ApplicationContainer.Resolve<ICqrsEngine>();
                 
                 cqrsEngine.StartAll();
-                
-                ApplicationContainer.Resolve<AssemblyLogger>().StartLogging();
                 
                 Program.AppHost.WriteLogs(Environment, LogLocator.Log);
                 
