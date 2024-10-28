@@ -32,53 +32,54 @@ namespace MarginTrading.Activities.Services.Modules
                 _settings.ActivitiesProducer.Consumers.Orders.ToInstanceSubscriptionSettings(
                     _settings.ActivitiesProducer.Cqrs.EnvironmentName,
                     true),
-                opt =>
-                {
-                    opt.SerializationFormat = SerializationFormat.Json;
-                    opt.ConsumerCount = _settings.ActivitiesProducer.Consumers.Orders.ConsumerCount;
-                    opt.ShareConnection = true;
-                    opt.SubscriptionTemplate = SubscriptionTemplate.NoLoss;
-                },
-                ConfigureCorrelationIdReader);
+                ConfigureCorrelationIdReader)
+                .AddOptions(
+                    opt =>
+                    {
+                        opt.SerializationFormat = SerializationFormat.Json;
+                        opt.ConsumerCount = _settings.ActivitiesProducer.Consumers.Orders.ConsumerCount;
+                        opt.ShareConnection = true;
+                        opt.SubscriptionTemplate = SubscriptionTemplate.NoLoss;
+                    });
 
             builder.AddRabbitMqListener<PositionHistoryEvent, PositionsHistoryHandler>(
                 _settings.ActivitiesProducer.Consumers.Positions.ToInstanceSubscriptionSettings(
                     _settings.ActivitiesProducer.Cqrs.EnvironmentName,
                     true),
-                opt =>
+                ConfigureCorrelationIdReader)
+                .AddOptions(opt =>
                 {
                     opt.SerializationFormat = SerializationFormat.Json;
                     opt.ConsumerCount = _settings.ActivitiesProducer.Consumers.Positions.ConsumerCount;
                     opt.ShareConnection = true;
                     opt.SubscriptionTemplate = SubscriptionTemplate.NoLoss;
-                },
-                ConfigureCorrelationIdReader);
+                });
 
             builder.AddRabbitMqListener<MarginEventMessage, MarginEventHandler>(
                 _settings.ActivitiesProducer.Consumers.MarginControl.ToInstanceSubscriptionSettings(
                     _settings.ActivitiesProducer.Cqrs.EnvironmentName,
                     true),
-                opt =>
+                ConfigureCorrelationIdReader)
+                .AddOptions(opt =>
                 {
                     opt.SerializationFormat = SerializationFormat.Json;
                     opt.ConsumerCount = _settings.ActivitiesProducer.Consumers.MarginControl.ConsumerCount;
                     opt.ShareConnection = true;
                     opt.SubscriptionTemplate = SubscriptionTemplate.NoLoss;
-                },
-                ConfigureCorrelationIdReader);
+                });
 
             builder.AddRabbitMqListener<SessionActivity, SessionActivityHandler>(
                 _settings.ActivitiesProducer.Consumers.SessionActivity.ToInstanceSubscriptionSettings(
                     _settings.ActivitiesProducer.Cqrs.EnvironmentName,
                     true),
-                opt =>
+                ConfigureCorrelationIdReader)
+                .AddOptions(opt =>
                 {
                     opt.SerializationFormat = SerializationFormat.Messagepack;
                     opt.ConsumerCount = _settings.ActivitiesProducer.Consumers.SessionActivity.ConsumerCount;
                     opt.ShareConnection = true;
                     opt.SubscriptionTemplate = SubscriptionTemplate.NoLoss;
-                },
-                ConfigureCorrelationIdReader);
+                });
         }
         
         private static void ConfigureCorrelationIdReader<T>(RabbitMqSubscriber<T> subscriber, IComponentContext provider)
