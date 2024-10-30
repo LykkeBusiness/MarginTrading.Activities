@@ -7,6 +7,7 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Axle.Contracts" />
+      <PackageReference Include="Lykke.Contracts" />
     <PackageReference Include="Lykke.MarginTrading.AccountsManagement.Contracts" />
     <PackageReference Include="Lykke.MarginTrading.BackendSnow.Contracts" />
     <PackageReference Include="Lykke.MarginTrading.AssetService.Contracts" />
