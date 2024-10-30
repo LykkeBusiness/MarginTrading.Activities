@@ -5,6 +5,8 @@ using System;
 using System.Globalization;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
+
+using Lykke.Contracts.Messaging;
 using Lykke.Snow.PriceAlerts.Contract.Models.Contracts;
 using Lykke.Snow.PriceAlerts.Contract.Models.Events;
 using MarginTrading.Activities.Core.Domain;
