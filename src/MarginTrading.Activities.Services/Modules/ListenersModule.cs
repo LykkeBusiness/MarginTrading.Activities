@@ -18,10 +18,12 @@ namespace MarginTrading.Activities.Services.Modules
     public class ListenersModule : Module
     {
         private readonly AppSettings _settings;
+        private readonly string _envName;
 
         public ListenersModule(AppSettings settings)
         {
             _settings = settings;
+            _envName = settings.ActivitiesProducer.Cqrs.EnvironmentName;
         }
 
         protected override void Load(ContainerBuilder builder)
@@ -29,34 +31,56 @@ namespace MarginTrading.Activities.Services.Modules
             builder.AddRabbitMqConnectionProvider();
 
             builder.AddRabbitMqListener<OrderHistoryEvent, OrdersHistoryHandler>(
-                _settings.ActivitiesProducer.Consumers.Orders.ToInstanceSubscriptionSettings(
-                    _settings.ActivitiesProducer.Cqrs.EnvironmentName,
-                    true),
+                _settings.ActivitiesProducer.Consumers.Orders.ToSubscriptionSettings(_envName),
                 ConfigureCorrelationIdReader)
-                .AddOptions(RabbitMqListenerOptions<OrderHistoryEvent>.Json.NoLoss);
+                .AddOptions(opt =>
+                {
+                    opt.SerializationFormat = SerializationFormat.Json;
+                    opt.ConsumerCount = _settings.ActivitiesProducer.Consumers.Orders.ConsumerCount;
+                    opt.ShareConnection = true;
+                    opt.SubscriptionTemplate = SubscriptionTemplate.NoLoss;
+                })
+                .AutoStart();
 
             builder.AddRabbitMqListener<PositionHistoryEvent, PositionsHistoryHandler>(
-                _settings.ActivitiesProducer.Consumers.Positions.ToInstanceSubscriptionSettings(
-                    _settings.ActivitiesProducer.Cqrs.EnvironmentName,
-                    true),
+                _settings.ActivitiesProducer.Consumers.Positions.ToSubscriptionSettings(_envName),
                 ConfigureCorrelationIdReader)
-                .AddOptions(RabbitMqListenerOptions<PositionHistoryEvent>.Json.NoLoss);
+                .AddOptions(opt =>
+                {
+                    opt.SerializationFormat = SerializationFormat.Json;
+                    opt.ConsumerCount = _settings.ActivitiesProducer.Consumers.Positions.ConsumerCount;
+                    opt.ShareConnection = true;
+                    opt.SubscriptionTemplate = SubscriptionTemplate.NoLoss;
+                })
+                .AutoStart();
 
             builder.AddRabbitMqListener<MarginEventMessage, MarginEventHandler>(
-                _settings.ActivitiesProducer.Consumers.MarginControl.ToInstanceSubscriptionSettings(
-                    _settings.ActivitiesProducer.Cqrs.EnvironmentName,
-                    true),
+                _settings.ActivitiesProducer.Consumers.MarginControl.ToSubscriptionSettings(_envName),
                 ConfigureCorrelationIdReader)
-                .AddOptions(RabbitMqListenerOptions<MarginEventMessage>.Json.NoLoss);
+                .AddOptions(
+                opt =>
+                {
+                    opt.SerializationFormat = SerializationFormat.Json;
+                    opt.ConsumerCount = _settings.ActivitiesProducer.Consumers.MarginControl.ConsumerCount;
+                    opt.ShareConnection = true;
+                    opt.SubscriptionTemplate = SubscriptionTemplate.NoLoss;
+                })
+                .AutoStart();
 
             builder.AddRabbitMqListener<SessionActivity, SessionActivityHandler>(
-                _settings.ActivitiesProducer.Consumers.SessionActivity.ToInstanceSubscriptionSettings(
-                    _settings.ActivitiesProducer.Cqrs.EnvironmentName,
-                    true),
+                _settings.ActivitiesProducer.Consumers.SessionActivity.ToSubscriptionSettings(_envName),
                 ConfigureCorrelationIdReader)
-                .AddOptions(RabbitMqListenerOptions<SessionActivity>.MessagePack.NoLoss);
+                .AddOptions(
+                opt =>
+                {
+                    opt.SerializationFormat = SerializationFormat.Messagepack;
+                    opt.ConsumerCount = _settings.ActivitiesProducer.Consumers.SessionActivity.ConsumerCount;
+                    opt.ShareConnection = true;
+                    opt.SubscriptionTemplate = SubscriptionTemplate.NoLoss;
+                })
+                .AutoStart();
         }
-        
+
         private static void ConfigureCorrelationIdReader<T>(RabbitMqSubscriber<T> subscriber, IComponentContext provider)
         {
             var correlationManager = provider.Resolve<RabbitMqCorrelationManager>();
