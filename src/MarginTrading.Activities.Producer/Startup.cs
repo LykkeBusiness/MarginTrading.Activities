@@ -148,8 +148,6 @@ namespace MarginTrading.Activities.Producer
         {
             try
             {
-                ApplicationContainer.Resolve<AssemblyLogger>().StartLogging();
-                
                 var cqrsEngine = ApplicationContainer.Resolve<ICqrsEngine>();
                 
                 cqrsEngine.StartAll();
