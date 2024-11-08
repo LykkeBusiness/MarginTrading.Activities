@@ -15,6 +15,7 @@ using Lykke.Logs.MsSql.Repositories;
 using Lykke.Logs.Serilog;
 using Lykke.MarginTrading.Activities.Contracts.Api;
 using Lykke.SettingsReader;
+using Lykke.Snow.Common.AssemblyLogging;
 using Lykke.Snow.Common.Correlation;
 using Lykke.Snow.Common.Startup.Hosting;
 using Lykke.Snow.Common.Startup.Log;
@@ -60,6 +61,7 @@ namespace MarginTrading.Activities.Producer
         {
             try
             {
+                services.AddAssemblyLogger();
                 services
                     .AddControllers()
                     .AddNewtonsoftJson(options =>
