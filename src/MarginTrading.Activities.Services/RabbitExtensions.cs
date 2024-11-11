@@ -10,10 +10,10 @@ namespace MarginTrading.Activities.Services
 {
     public static class RabbitExtensions
     {
-        public static RabbitMqSubscriptionSettings ToInstanceSubscriptionSettings(
+        public static RabbitMqSubscriptionSettings ToSubscriptionSettings(
             this RabbitMqSettings config,
             string instanceId,
-            bool isDurable)
+            bool isDurable = true)
         {
             return new RabbitMqSubscriptionSettings
             {
