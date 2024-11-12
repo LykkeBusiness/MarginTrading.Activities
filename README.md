@@ -56,77 +56,9 @@ All variables and value constraints are default. For instance, to set host URL t
 ### Settings ###
 
 Settings schema for producer:
-
-```json
-{
-  "ActivitiesProducer": 
-  {
-    "UseSerilog": false,
-    "Cqrs": 
-    {
-      "ConnectionString": "rabbit mq connection",
-      "EnvironmentName": "dev"
-    },
-    "Db": 
-    {
-      "StorageMode": "SqlServer",
-      "LogsConnString": "sql connection string"
-    },
-    "Consumers": 
-    {
-      "Orders": 
-      {
-        "ConnectionString": "rabbit mq connection",
-        "ExchangeName": "lykke.mt.orderhistory",
-        "ConsumerCount": 10
-      },
-      "Positions": 
-      {
-        "ConnectionString": "rabbit mq connection",
-        "ExchangeName": "lykke.mt.position.history",
-        "ConsumerCount": 10
-      },
-      "MarginControl": 
-      {
-        "ConnectionString": "rabbit mq connection",
-        "ExchangeName": "lykke.mt.account.marginevents",
-        "ConsumerCount": 10
-      }
-    }
-  },
-  "MarginTradingSettingsServiceClient": 
-  {
-    "ServiceUrl": "http://mt-settings-service.mt.svc.cluster.local"
-  }
-}
-```
+<!-- MARKDOWN-AUTO-DOCS:START (CODE:src=./producer.json) -->
+<!-- MARKDOWN-AUTO-DOCS:END -->
 
 Settings schema for broker:
-
-```json
-{
-  "MtBrokerSettings": 
-  {
-    "MtRabbitMqConnString": "rabbit mq connection",
-    "UseSerilog": false,
-    "Db": 
-    {
-      "StorageMode": "SqlServer",
-      "ConnString": "sql server connection"
-    },
-    "RabbitMqQueues": 
-    {
-      "Activities": 
-      {
-        "ExchangeName": "dev.Activities.events.exchange"
-      }
-    }
-  },
-  "MtBrokersLogs": 
-  {
-    "StorageMode": "SqlServer",
-    "LogsConnString": "sql server connection",
-    "UseSerilog": false
-  }
-}
-```
+<!-- MARKDOWN-AUTO-DOCS:START (CODE:src=./broker.json) -->
+<!-- MARKDOWN-AUTO-DOCS:END -->
