@@ -10,9 +10,12 @@ using Lykke.MarginTrading.BrokerBase;
 using Lykke.MarginTrading.BrokerBase.Models;
 using Lykke.MarginTrading.BrokerBase.Settings;
 using Lykke.SettingsReader;
+using Lykke.SettingsReader.SettingsTemplate;
 using MarginTrading.Activities.Core.Repositories;
 using MarginTrading.Activities.SqlRepositories;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
@@ -24,15 +27,26 @@ namespace MarginTrading.Activities.Broker
         public Startup(IHostEnvironment env, IConfiguration configuration) : base(env, configuration)
         {
         }
-        
+
         protected override string ApplicationName => "ActivitiesBroker";
 
-        protected override void RegisterCustomServices(ContainerBuilder builder, 
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            base.ConfigureServices(services);
+            services.AddSettingsTemplateGenerator();
+        }
+
+        protected override void ConfigureEndpoints(IEndpointRouteBuilder endpointRouteBuilder)
+        {
+            endpointRouteBuilder.AddSettingsTemplateEndpoint();
+        }
+
+        protected override void RegisterCustomServices(ContainerBuilder builder,
             IReloadingManager<Settings> settings)
         {
             builder.AddMessagePackBrokerMessagingFactory<ActivityEvent>();
             builder.RegisterType<Application>().As<IBrokerApplication>().SingleInstance();
-            
+
             if (settings.CurrentValue.Db.StorageMode == StorageMode.Azure)
             {
                 throw new NotImplementedException("Azure storage is not implemented yet");

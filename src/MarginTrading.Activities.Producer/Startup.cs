@@ -13,12 +13,14 @@ using Lykke.Cqrs;
 using Lykke.Logs.MsSql;
 using Lykke.Logs.MsSql.Repositories;
 using Lykke.Logs.Serilog;
-using Lykke.MarginTrading.Activities.Contracts.Api;
 using Lykke.SettingsReader;
+using Lykke.SettingsReader.ConfigurationProvider;
+using Lykke.SettingsReader.SettingsTemplate;
 using Lykke.Snow.Common.AssemblyLogging;
 using Lykke.Snow.Common.Correlation;
 using Lykke.Snow.Common.Startup.Hosting;
 using Lykke.Snow.Common.Startup.Log;
+using Lykke.MarginTrading.Activities.Contracts.Api;
 using MarginTrading.Activities.Core.Settings;
 using MarginTrading.Activities.Producer.Infrastructure;
 using MarginTrading.Activities.Producer.Modules;
@@ -52,6 +54,7 @@ namespace MarginTrading.Activities.Producer
             Configuration = new ConfigurationBuilder()
                 .SetBasePath(env.ContentRootPath)
                 .AddSerilogJson(env)
+                .AddHttpSourceConfiguration()
                 .AddEnvironmentVariables()
                 .Build();
             Environment = env;
@@ -80,6 +83,7 @@ namespace MarginTrading.Activities.Producer
                 LogLocator.Log = CreateLog(Configuration, services, _mtSettingsManager);
                 services.AddSingleton<ILoggerFactory>(x => new WebHostLoggerFactory(LogLocator.Log));
                 services.AddCorrelation();
+                services.AddSettingsTemplateGenerator();
             }
             catch (Exception ex)
             {
@@ -104,7 +108,7 @@ namespace MarginTrading.Activities.Producer
             try
             {
                 ApplicationContainer = app.ApplicationServices.GetAutofacRoot();
-                
+
                 if (env.IsDevelopment())
                 {
                     app.UseDeveloperExceptionPage();
@@ -121,14 +125,15 @@ namespace MarginTrading.Activities.Producer
                 app.UseLykkeMiddleware(ServiceName,
                     ex => new ErrorResponse {ErrorMessage = "Technical problem", Details = ex.Message}, false, false);
 #endif
-                
-                
+
+
                 app.UseRouting();
                 app.UseAuthentication();
                 app.UseAuthorization();
                 app.UseEndpoints(endpoints =>
                 {
                     endpoints.MapControllers();
+                    endpoints.AddSettingsTemplateEndpoint();
                 });
                 app.UseSwagger();
                 app.UseSwaggerUI(a => a.SwaggerEndpoint("/swagger/v1/swagger.json", "Main Swagger"));
@@ -149,11 +154,11 @@ namespace MarginTrading.Activities.Producer
             try
             {
                 var cqrsEngine = ApplicationContainer.Resolve<ICqrsEngine>();
-                
+
                 cqrsEngine.StartAll();
-                
+
                 Program.AppHost.WriteLogs(Environment, LogLocator.Log);
-                
+
                 await LogLocator.Log.WriteMonitorAsync("", "", "Started");
             }
             catch (Exception ex)
@@ -172,7 +177,7 @@ namespace MarginTrading.Activities.Producer
             catch (Exception ex)
             {
                 await LogLocator.Log.WriteFatalErrorAsync(nameof(Startup), nameof(StopApplication), "", ex);
-                
+
                 throw;
             }
         }
@@ -193,11 +198,11 @@ namespace MarginTrading.Activities.Producer
             }
         }
 
-        private static ILog CreateLog(IConfiguration configuration, IServiceCollection services, 
+        private static ILog CreateLog(IConfiguration configuration, IServiceCollection services,
             IReloadingManager<AppSettings> settings)
         {
             var logName = $"{nameof(Activities)}Log";
-            
+
             var consoleLogger = new LogToConsole();
             var aggregateLogger = new AggregateLogger();
 
