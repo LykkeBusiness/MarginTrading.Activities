@@ -20,6 +20,7 @@ using Lykke.Snow.Common.AssemblyLogging;
 using Lykke.Snow.Common.Correlation;
 using Lykke.Snow.Common.Startup.Hosting;
 using Lykke.Snow.Common.Startup.Log;
+using Lykke.MarginTrading.Activities.Contracts.Api;
 using MarginTrading.Activities.Core.Settings;
 using MarginTrading.Activities.Producer.Infrastructure;
 using MarginTrading.Activities.Producer.Modules;
