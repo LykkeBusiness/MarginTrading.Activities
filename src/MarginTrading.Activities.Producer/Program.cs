@@ -6,9 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Autofac.Extensions.DependencyInjection;
 using JetBrains.Annotations;
-
 using Lykke.SettingsReader.ConfigurationProvider;
-
 using MarginTrading.Activities.Services;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -39,12 +37,17 @@ namespace MarginTrading.Activities.Producer
             {
                 try
                 {
-                    var configuration = new ConfigurationBuilder()
+                    var configurationBuilder = new ConfigurationBuilder()
                         .AddJsonFile("appsettings.json", optional: true)
                         .AddUserSecrets<Startup>()
-                        .AddHttpSourceConfiguration()
-                        .AddEnvironmentVariables()
-                        .Build();
+                        .AddEnvironmentVariables();
+
+                    if (Environment.GetEnvironmentVariable("SettingsUrl")?.StartsWith("http") ?? false)
+                    {
+                        configurationBuilder.AddHttpSourceConfiguration();
+                    }
+
+                    var configuration = configurationBuilder.Build();
 
                     AppHost = Host.CreateDefaultBuilder()
                         .UseServiceProviderFactory(new AutofacServiceProviderFactory())
