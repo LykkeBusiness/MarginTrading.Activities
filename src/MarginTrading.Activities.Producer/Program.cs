@@ -39,12 +39,17 @@ namespace MarginTrading.Activities.Producer
             {
                 try
                 {
-                    var configuration = new ConfigurationBuilder()
+                    var configurationBuilder = new ConfigurationBuilder()
                         .AddJsonFile("appsettings.json", optional: true)
                         .AddUserSecrets<Startup>()
-                        .AddHttpSourceConfiguration()
-                        .AddEnvironmentVariables()
-                        .Build();
+                        .AddEnvironmentVariables();
+
+                    if (Environment.GetEnvironmentVariable("SettingsUrl")?.StartsWith("http") ?? false)
+                    {
+                        configurationBuilder.AddHttpSourceConfiguration();
+                    }
+
+                    var configuration = configurationBuilder.Build();
 
                     AppHost = Host.CreateDefaultBuilder()
                         .UseServiceProviderFactory(new AutofacServiceProviderFactory())
