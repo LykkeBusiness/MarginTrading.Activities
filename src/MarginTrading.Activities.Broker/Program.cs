@@ -9,7 +9,6 @@ namespace MarginTrading.Activities.Broker
     [UsedImplicitly]
     public class Program: WebAppProgramBase<Startup>
     {
-        //test
         public static void Main(string[] args)
         {
             RunOnPort(5082, true);
