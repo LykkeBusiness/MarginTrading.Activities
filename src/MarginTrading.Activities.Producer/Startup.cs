@@ -133,7 +133,7 @@ namespace MarginTrading.Activities.Producer
                 app.UseEndpoints(endpoints =>
                 {
                     endpoints.MapControllers();
-                    endpoints.AddSettingsTemplateEndpoint();
+                    endpoints.MapSettingsTemplate();
                 });
                 app.UseSwagger();
                 app.UseSwaggerUI(a => a.SwaggerEndpoint("/swagger/v1/swagger.json", "Main Swagger"));
