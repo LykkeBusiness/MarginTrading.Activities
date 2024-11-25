@@ -16,6 +16,7 @@
     <PackageReference Include="MessagePack" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
     <PackageReference Include="Refit" />
+    <PackageReference Include="Refit.Newtonsoft.Json" />
     <PackageReference Include="System.Collections.Immutable" />
   </ItemGroup>
 </Project>
