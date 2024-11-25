@@ -28,6 +28,7 @@
   </Target>
   <ItemGroup>
     <PackageReference Include="Autofac.Extensions.DependencyInjection" />
+    <PackageReference Include="Lykke.MarginTrading.Activities.Contracts" />
     <PackageReference Include="LykkeBiz.HttpClientGenerator" />
     <PackageReference Include="LykkeBiz.MarginTrading.BrokerBase" />
     <PackageReference Include="LykkeBiz.RabbitMqBroker" />
@@ -43,8 +44,6 @@
     <PackageReference Include="Newtonsoft.Json" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference
-      Include="..\MarginTrading.Activities.Contracts\MarginTrading.Activities.Contracts.csproj" />
     <ProjectReference
       Include="..\MarginTrading.Activities.Core\MarginTrading.Activities.Core.csproj" />
     <ProjectReference

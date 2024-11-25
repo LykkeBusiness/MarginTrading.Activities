@@ -36,6 +36,7 @@
   <ItemGroup>
     <PackageReference Include="Autofac.Extensions.DependencyInjection" />
     <PackageReference Include="JetBrains.Annotations" />
+    <PackageReference Include="Lykke.MarginTrading.Activities.Contracts" />
     <PackageReference Include="LykkeBiz.Common.ApiLibrary" />
     <PackageReference Include="Lykke.Snow.Common.Startup" />
     <PackageReference Include="LykkeBiz.Logs.Serilog" />
@@ -55,8 +56,6 @@
     <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference
-      Include="..\MarginTrading.Activities.Contracts\MarginTrading.Activities.Contracts.csproj" />
     <ProjectReference
       Include="..\MarginTrading.Activities.Core\MarginTrading.Activities.Core.csproj" />
     <ProjectReference

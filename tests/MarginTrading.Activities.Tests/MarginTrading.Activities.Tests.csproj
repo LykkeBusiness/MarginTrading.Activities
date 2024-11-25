@@ -20,6 +20,7 @@
     </PackageReference>
     <PackageReference Include="FluentAssertions" />
     <PackageReference Include="JetBrains.Annotations" />
+    <PackageReference Include="Lykke.MarginTrading.Activities.Contracts" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
     <PackageReference Include="Moq" />
     <PackageReference Include="NUnit" />

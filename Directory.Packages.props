@@ -13,6 +13,7 @@
     <PackageVersion Include="Lykke.Common" Version="7.6.0" />
     <PackageVersion Include="Lykke.Contracts" Version="4.0.1" />
     <PackageVersion Include="Lykke.MarginTrading.AccountsManagement.Contracts" Version="9.0.0" />
+    <PackageVersion Include="Lykke.MarginTrading.Activities.Contracts" Version="2.0.0" />
     <PackageVersion Include="Lykke.MarginTrading.AssetService.Contracts" Version="14.0.11" />
     <PackageVersion Include="Lykke.MarginTrading.BackendSnow.Contracts" Version="2.0.0" />
     <PackageVersion Include="Lykke.Snow.PriceAlerts.Contracts" Version="1.7.0" />

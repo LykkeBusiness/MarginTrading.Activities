@@ -9,6 +9,7 @@
     <PackageReference Include="Axle.Contracts" />
       <PackageReference Include="Lykke.Contracts" />
     <PackageReference Include="Lykke.MarginTrading.AccountsManagement.Contracts" />
+    <PackageReference Include="Lykke.MarginTrading.Activities.Contracts" />
     <PackageReference Include="Lykke.MarginTrading.BackendSnow.Contracts" />
     <PackageReference Include="Lykke.MarginTrading.AssetService.Contracts" />
     <PackageReference Include="Lykke.Snow.Common.Startup" />
@@ -20,7 +21,6 @@
     <PackageReference Include="StackExchange.Redis" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\MarginTrading.Activities.Contracts\MarginTrading.Activities.Contracts.csproj" />
     <ProjectReference Include="..\MarginTrading.Activities.Core\MarginTrading.Activities.Core.csproj" />
   </ItemGroup>
 </Project>
