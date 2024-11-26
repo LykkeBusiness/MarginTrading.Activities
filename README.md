@@ -57,8 +57,137 @@ All variables and value constraints are default. For instance, to set host URL t
 
 Settings schema for producer:
 <!-- MARKDOWN-AUTO-DOCS:START (CODE:src=./producer.json) -->
+<!-- The below code snippet is automatically added from ./producer.json -->
+```json
+{
+  "ActivitiesProducer": {
+    "Consumers": {
+      "MarginControl": {
+        "ConnectionString": "String",
+        "ConsumerCount": "Integer",
+        "ExchangeName": "String"
+      },
+      "Orders": {
+        "ConnectionString": "String",
+        "ConsumerCount": "Integer",
+        "ExchangeName": "String"
+      },
+      "Positions": {
+        "ConnectionString": "String",
+        "ConsumerCount": "Integer",
+        "ExchangeName": "String"
+      },
+      "SessionActivity": {
+        "ConnectionString": "String",
+        "ConsumerCount": "Integer",
+        "ExchangeName": "String"
+      }
+    },
+    "Cqrs": {
+      "ConnectionString": "String",
+      "EnvironmentName": "String"
+    },
+    "Db": {
+      "LogsConnString": "String",
+      "StorageMode": "String"
+    },
+    "LegalEntitySettings": {
+      "DefaultLegalEntity": "String"
+    },
+    "UseSerilog": "Boolean"
+  },
+  "APP_UID": "Integer",
+  "ASPNETCORE_ENVIRONMENT": "String",
+  "ASPNETCORE_ENVIRONMENT_TEST1": "String",
+  "ENVIRONMENT": "String",
+  "ENVIRONMENT_TEST1": "String",
+  "Kestrel": {
+    "EndPoints": {
+      "Http": {
+        "Url": "String"
+      }
+    }
+  },
+  "Logging": {
+    "LogLevel": {
+      "Microsoft": "String"
+    }
+  },
+  "MarginTradingAccountManagementServiceClient": {
+    "ApiKey": {},
+    "ServiceUrl": "String"
+  },
+  "MarginTradingSettingsServiceClient": {
+    "ApiKey": "String",
+    "ServiceUrl": "String"
+  },
+  "serilog": {
+    "minimumLevel": {
+      "default": "String"
+    }
+  },
+  "TZ": "String"
+}
+```
 <!-- MARKDOWN-AUTO-DOCS:END -->
 
 Settings schema for broker:
 <!-- MARKDOWN-AUTO-DOCS:START (CODE:src=./broker.json) -->
+<!-- The below code snippet is automatically added from ./broker.json -->
+```json
+{
+  "APP_UID": "Integer",
+  "ASPNETCORE_ENVIRONMENT": "String",
+  "ASPNETCORE_ENVIRONMENT_TEST1": "String",
+  "ENVIRONMENT": "String",
+  "ENVIRONMENT_TEST1": "String",
+  "MtBrokerSettings": {
+    "Db": {
+      "ConnString": "String",
+      "StorageMode": "String"
+    },
+    "MtRabbitMqConnString": "String",
+    "RabbitMqQueues": {
+      "Activities": {
+        "ExchangeName": "String"
+      }
+    }
+  },
+  "MtBrokersLogs": {
+    "LogsConnString": "String",
+    "StorageMode": "String",
+    "UseSerilog": "Boolean"
+  },
+  "serilog": {
+    "Enrich": [
+      "String"
+    ],
+    "minimumLevel": {
+      "default": "String"
+    },
+    "Properties": {
+      "Application": "String"
+    },
+    "Using": [
+      "String"
+    ],
+    "writeTo": [
+      {
+        "Args": {
+          "configure": [
+            {
+              "Args": {
+                "outputTemplate": "String"
+              },
+              "Name": "String"
+            }
+          ]
+        },
+        "Name": "String"
+      }
+    ]
+  },
+  "TZ": "String"
+}
+```
 <!-- MARKDOWN-AUTO-DOCS:END -->
