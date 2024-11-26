@@ -136,9 +136,7 @@ Settings schema for broker:
 {
   "APP_UID": "Integer",
   "ASPNETCORE_ENVIRONMENT": "String",
-  "ASPNETCORE_ENVIRONMENT_TEST1": "String",
   "ENVIRONMENT": "String",
-  "ENVIRONMENT_TEST1": "String",
   "MtBrokerSettings": {
     "Db": {
       "ConnString": "String",
