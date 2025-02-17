@@ -1,3 +1,8 @@
+## 2.22.1 - Nova 2. Delivery 49. Hotfix 1 (February 17, 2025)
+### What's changed
+* LT-6051 Don't use settingsService explicitly in broker
+
+
 ## 2.22.0 - Nova 2. Delivery 49 (February 07, 2025)
 ### What's changed
 * LT-5994: Update rabbitmqbroker in margintrading.activities.
@@ -138,7 +143,7 @@ DROP COLUMN IsOnBehalf;
   - `./src/MarginTrading.Activities.SqlRepositories/Scripts/LT-4622-add-all-past-deposit-activities.sql`
   - `./src/MarginTrading.Activities.SqlRepositories/Scripts/LT-4622-add-all-past-withdrawal-activities.sql`
 
- 
+
 
 
 **Full change log**: https://github.com/lykkebusiness/margintrading.activities/compare/v2.10.2...v2.12.0
@@ -284,7 +289,7 @@ END;
 ```
 
 ## v2.2.0 - Handle product start date
-### Tasks 
+### Tasks
 * LT-2734: Improve asset adding workflow
 
 ## v2.1.0 - Nova 2. New ref data usage.
@@ -405,12 +410,12 @@ LT-1541: Update licenses in lego service to be up to latest requirements
 MTC-756: Session activities updates
 MTC-803: Error in mt-activities-producer after Log In
 MTC-804: Errors in mt-broker-activities after SettingsChangedGeneralOrderSettingsAcknowledgementPositionClose
-MTC-817: Secure all "visible" endpoints in mt-core 
+MTC-817: Secure all "visible" endpoints in mt-core
 
 ### Producer deployment
 Add new section to settings root (optional, if settings service does not use API key):
 ```json
-"MarginTradingSettingsServiceClient": 
+"MarginTradingSettingsServiceClient":
   {
     "ServiceUrl": "settings service url",
     "ApiKey": "settings service secret key"
