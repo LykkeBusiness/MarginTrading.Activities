@@ -31,7 +31,6 @@
     <PackageReference Include="Lykke.MarginTrading.Activities.Contracts" />
     <PackageReference Include="LykkeBiz.HttpClientGenerator" />
     <PackageReference Include="LykkeBiz.MarginTrading.BrokerBase" />
-    <PackageReference Include="LykkeBiz.RabbitMqBroker" />
     <PackageReference Include="Microsoft.Data.SqlClient" />
     <PackageReference Include="Microsoft.Extensions.Configuration" />
     <PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" />

@@ -11,7 +11,7 @@
     <PackageReference Include="Autofac.Extensions.DependencyInjection" />
     <PackageReference Include="JetBrains.Annotations" />
     <PackageReference Include="Lykke.Common" />
-    <PackageReference Include="LykkeBiz.RabbitMqBroker" />
+    <PackageReference Include="LykkeBiz.MarginTrading.BrokerBase" />
     <PackageReference Include="LykkeBiz.SettingsReader" />
     <PackageReference Include="Newtonsoft.Json" />
     <PackageReference Include="StackExchange.Redis" />
