@@ -137,23 +137,6 @@ Settings schema for broker:
   "APP_UID": "Integer",
   "ASPNETCORE_ENVIRONMENT": "String",
   "ENVIRONMENT": "String",
-  "MtBrokerSettings": {
-    "Db": {
-      "ConnString": "String",
-      "StorageMode": "String"
-    },
-    "MtRabbitMqConnString": "String",
-    "RabbitMqQueues": {
-      "Activities": {
-        "ExchangeName": "String"
-      }
-    }
-  },
-  "MtBrokersLogs": {
-    "LogsConnString": "String",
-    "StorageMode": "String",
-    "UseSerilog": "Boolean"
-  },
   "serilog": {
     "Enrich": [
       "String"
